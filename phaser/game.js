@@ -397,7 +397,7 @@ PhaserGame.prototype = {
         this.load.bitmapFont('shmupfont', 'assets/shmupfont.png', 'assets/shmupfont.xml');
 
 
-        this.load.image('enemy', 'assets/avi.png');
+        this.load.image('enemy', 'assets/enemy.png');
 
         for (var i = 1; i <= 11; i++)
         {
@@ -424,7 +424,7 @@ PhaserGame.prototype = {
         this.load.image('cursor1', 'assets/cursor2.png');
         this.load.image('cursor2', 'assets/cursor3.png');
 
-        this.load.imgae('enemy', 'assets/enemy.png');
+        this.load.image('enemy', 'assets/enemy.png');
 
     },
 
@@ -440,12 +440,17 @@ PhaserGame.prototype = {
 
         this.currentWeapon = 0;
 
-        this.enemy = game.add.sprite(250, 250, 'enemy');
-        this.enemy.scale.setTo(0.25, 0.25)
-        this.enemy.name = 'enemy';
-        game.physics.enable(this.enemy, Phaser.Physics.ARCADE);
-        this.enemy.body.collideWorldBounds = true;
-
+        this.enemies = []
+        for (let i = 0; i < 6; i++) {
+          enemy = game.add.sprite(250, 250, 'enemy');
+          // enemy.scale.setTo(0.25, 0.25)
+          enemy.name = 'enemy';
+          game.physics.enable(enemy, Phaser.Physics.ARCADE);
+          enemy.body.collideWorldBounds = true;
+          enemy.x = Math.floor(1600 * Math.random())
+          enemy.y = Math.floor(900 * Math.random())
+          this.enemies.push(enemy)
+        }
 
         for (var i = 1; i < this.weapons.length; i++)
         {
@@ -483,7 +488,7 @@ PhaserGame.prototype = {
     },
 
     onNewGameState: function(gameState) {
-      this.weaponLVactive = 3 || gameState.weaponLevel
+      this.weaponLVactive = gameState.weaponLevel
       this.updateLV()
     },
 
@@ -580,12 +585,12 @@ PhaserGame.prototype = {
 
 
       const markEnemyAndBulletForDeletion = (enemy, bullet) => {
-        console.log(bullet)
         enemy.destroy_in_next_tick = true
-        bullet.destroy_in_next_tick = true
+        bullet.destroy()
       }
-      this.physics.arcade.overlap(this.enemy, this.weapons[this.currentWeapon], markEnemyAndBulletForDeletion, null, this);
-
+      this.enemies.map(enemy => {
+        this.physics.arcade.overlap(enemy, this.weapons[this.currentWeapon], markEnemyAndBulletForDeletion, null, this);
+      })
         this.player.body.velocity.set(0);
 
         if (this.cursors.left.isDown)
@@ -620,7 +625,7 @@ PhaserGame.prototype = {
 
         if (this.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
         {
-            if (this.weaponLV.active > this.currentWeapon)
+            if (this.weaponLVactive > this.currentWeapon)
             {
                 this.weapons[this.currentWeapon].fire(this.player);
             }

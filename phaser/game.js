@@ -73,6 +73,37 @@ class Bullet extends Phaser.Sprite {
   }
 }
 
+// class Enemy extends Phaser.Sprite {
+//
+//   constructor(game, key, x, y, towardRight) {
+//     super(game, x, y, 'player-red')
+//     this.anchor.set(0.5,0.5)
+//     //this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST
+//     //this.collideWorldBounds = true
+//     this.name = 'enemy'
+//
+//     // this.checkWorldBounds = true
+//     // this.outOfBoundsKill = true
+//     // this.exists = true
+//
+//     this.towardRight = towardRight
+//     this.speed       = 10
+//     console.log('making enemy at', x, y)
+//     console.log(this)
+//   }
+//
+//   update() {
+//     if (this.tracking) {
+//       this.rotation = Math.atan2(this.body.velocity.y, this.body.velocity.x)
+//     }
+//
+//     if (this.towardRight === true) {
+//       this.scale.x += this.speed
+//     }
+//     else { this.scale.x -= this.speed }
+//   }
+// }
+
 class SingleBulletWeapon extends Phaser.Group {
 
   constructor(game) {
@@ -167,20 +198,6 @@ class BeamWeapon extends Phaser.Group {
 
 class Main extends Phaser.State {
 
-  constructor() {
-    super()
-    this.background = null
-    this.foreground = null
-
-    this.player = null
-    this.cursors = null
-    this.speed = 100
-
-    this.weapons = []
-    this.currentWeapon = 0
-    this.weaponName = null
-  }
-
   init () {
     this.game.renderer.renderSession.roundPixels = true
     this.physics.startSystem(Phaser.Physics.ARCADE)
@@ -190,8 +207,6 @@ class Main extends Phaser.State {
     this.load.image('background', 'assets/back2.png')
     this.load.image('player', 'assets/ship2.png')
     this.load.bitmapFont('shmupfont', 'assets/shmupfont.png', 'assets/shmupfont.xml')
-
-    this.load.image('enemy', 'assets/enemy.png')
 
     for (var i = 1; i <= 11; i++)  {
       this.load.image('bullet' + i, 'assets/bullet' + i + '.png')
@@ -219,6 +234,17 @@ class Main extends Phaser.State {
 
     this.load.image('hpBar', 'assets/hpBar.png');
     this.load.image('hpBarOutline', 'assets/hpBarOutline.png');
+
+    this.background = null
+    this.foreground = null
+
+    this.player = null
+    this.cursors = null
+    this.speed = 100
+
+    this.weapons = []
+    this.currentWeapon = 0
+    this.weaponName = null
   }
 
   create() {
@@ -232,16 +258,45 @@ class Main extends Phaser.State {
     this.currentWeapon = 0;
 
     this.enemies = []
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
       let enemy = this.game.add.sprite(250, 250, 'enemy')
-      // enemy.scale.setTo(0.25, 0.25)
       enemy.name = 'enemy';
+      enemy.scale.x = -0.5
+      enemy.scale.y = 0.5
       this.game.physics.enable(enemy, Phaser.Physics.ARCADE)
-      enemy.body.collideWorldBounds = true;
-      enemy.x = Math.floor(1600 * Math.random())
-      enemy.y = Math.floor(900 * Math.random())
+      enemy.body.collideWorldBounds = true
+      enemy.x = 0
+      enemy.y = Math.floor((window.innerHeight-150)*Math.random()+150)
+      enemy.update = () => {
+        enemy.x += Math.random()*0.4
+        enemy.y += Math.random()*0.2-0.1
+      }
       this.enemies.push(enemy)
     }
+
+    for (let i = 0; i < 4; i++) {
+      let enemy = this.game.add.sprite(250, 250, 'enemy')
+      enemy.name = 'enemy';
+      enemy.scale.x = 0.5
+      enemy.scale.y = 0.5
+      this.game.physics.enable(enemy, Phaser.Physics.ARCADE)
+      enemy.body.collideWorldBounds = true
+      enemy.x = window.innerWidth
+      enemy.y = Math.floor((window.innerHeight-150)*Math.random()+150)
+      enemy.update = () => {
+        enemy.x -= Math.random()*0.4
+        enemy.y += Math.random()*0.2-0.1
+      }
+      this.enemies.push(enemy)
+    }
+
+    // this.enemies.update = () => {
+
+    // this.enemies = []
+    // for (let i = 0; i < 4; i++) {
+    //   this.enemies.push(new Enemy(this.game, 'enemy', 100, Math.floor(window.innerHeight * Math.random()), true))
+    //   this.enemies.push(new Enemy(this.game, 'enemy', window.innerWidth-100, Math.floor(window.innerHeight * Math.random()), false))
+    // }
 
     for (var i = 1; i < this.weapons.length; i++) {
       this.weapons[i].visible = false;
@@ -295,7 +350,7 @@ class Main extends Phaser.State {
   }
 
   onNewGameState (gameState) {
-    this.weaponLVactive = 3 || gameState.weaponLevel
+    this.weaponLVactive = gameState.weaponLevel || 0
     this.updateLV()
   }
 
@@ -327,22 +382,6 @@ class Main extends Phaser.State {
     this.weapons[this.currentWeapon].visible = true;
   }
 
-  nextColor () {
-    this.player.currentColor = (this.player.currentColor + 1) % 4;
-
-    if (this.playekr.currentColor === 0) {
-      this.player.loadTexture('player', 0)
-    }
-    else if (this.player.currentColor === 1) {
-      this.player.loadTexture('player-red', 0)
-    }
-    else if (this.player.currentColor === 2) {
-      this.player.loadTexture('player-green', 0)
-    }
-    else if (this.player.currentColor === 3) {
-      this.player.loadTexture('player-blue', 0)
-    }
-  }
 
   updateLV () {
     if (this.weaponLVactive === 0) {
@@ -373,6 +412,7 @@ class Main extends Phaser.State {
     this.enemies.map(enemy => {
       this.physics.arcade.overlap(enemy, this.weapons[this.currentWeapon], markEnemyAndBulletForDeletion, null, this)
     })
+
     this.player.body.velocity.set(0)
 
     if (this.cursors.left.isDown) {
@@ -407,7 +447,6 @@ class Main extends Phaser.State {
 }
 
 class Game extends Phaser.Game {
-
   constructor() {
     super(window.innerWidth, window.innerHeight, Phaser.AUTO)
     this.state.add('Main', Main, false)

@@ -71,24 +71,6 @@ Bullet.prototype.fire = function (x, y, angle, speed, gx, gy) {
     this.game.physics.arcade.velocityFromAngle(angle, speed, this.body.velocity);
 
     this.angle = angle;
-
-    // if (source.currentColor === 0)
-    // {
-    //     this.loadTexture('bullet-white', 0);
-    // }
-    // else if (source.currentColor === 1)
-    // {
-    //     this.loadTexture('bullet-red', 0);
-    // }
-    // else if (source.currentColor === 2)
-    // {
-    //     this.loadTexture('bullet-green', 0);
-    // }
-    // else if (source.currentColor === 3)
-    // {
-    //     this.loadTexture('bullet-blue', 0);
-    // }
-
     this.body.gravity.set(gx, gy);
 
 };
@@ -409,10 +391,6 @@ PhaserGame.prototype = {
         this.load.image('bullet-blue' , 'assets/newBullet-blue.png' );
         this.load.image('bullet-green', 'assets/newBullet-green.png');
 
-        this.load.image('player-red'  , 'assets/ship2-red.png'  )
-        this.load.image('player-blue' , 'assets/ship2-blue.png' );
-        this.load.image('player-green', 'assets/ship2-green.png');
-
         //  Note: Graphics are not for use in any commercial project
 
         this.load.image('weaponLV0', 'assets/weaponLV0.png');
@@ -441,16 +419,29 @@ PhaserGame.prototype = {
         this.currentWeapon = 0;
 
         this.enemies = []
-        for (let i = 0; i < 6; i++) {
-          enemy = game.add.sprite(250, 250, 'enemy');
-          // enemy.scale.setTo(0.25, 0.25)
-          enemy.name = 'enemy';
-          game.physics.enable(enemy, Phaser.Physics.ARCADE);
-          enemy.body.collideWorldBounds = true;
-          enemy.x = Math.floor(1600 * Math.random())
-          enemy.y = Math.floor(900 * Math.random())
-          this.enemies.push(enemy)
+
+        for (let i = 0; i < 4; i++) {
+            enemy = game.add.sprite(0, Math.floor(900*Math.random()), 'enemy')
+            enemy.body.collideWorldBounds = true
+            game.physics.enable(enemy, Phaser.Physics.ARCADE)
+            enemy.towardRight = true
+            enemy.name = 'enemy';
+            this.enemies.push(enemy)
         }
+
+        for (let i = 0; i < 4; i++) {
+            enemy = game.add.sprite(0, Math.floor(900*Math.random()), 'enemy')
+            enemy.body.collideWorldBounds = false
+            game.physics.enable(enemy, Phaser.Physics.ARCADE)
+            enemy.towardRight = true
+            enemy.name = 'enemy';
+            this.enemies.push(enemy)
+        }
+
+
+
+
+
 
         for (var i = 1; i < this.weapons.length; i++)
         {
@@ -508,26 +499,11 @@ PhaserGame.prototype = {
 
         //  Activate the new one
         this.currentWeapon++;
-        if (this.currentWeapon > 2) { this.currentWeapon = 0; }
-
-        if (this.currentWeapon === 0)
-        {
-            this.weaponCursor.loadTexture('cursor0', 0);
-        }
-        else if (this.currentWeapon === 1)
-        {
-            this.weaponCursor.loadTexture('cursor1', 0);
-        }
-        else if (this.currentWeapon === 2)
-        {
-            this.weaponCursor.loadTexture('cursor2', 0);
-        }
-
+        if (this.currentWeapon > 2) { this.currentWeapon = 0 }
+        if      (this.currentWeapon === 0) { this.weaponCursor.loadTexture('cursor0', 0) }
+        else if (this.currentWeapon === 1) { this.weaponCursor.loadTexture('cursor1', 0) }
+        else if (this.currentWeapon === 2) { this.weaponCursor.loadTexture('cursor2', 0) }
         this.weapons[this.currentWeapon].visible = true;
-
-        console.log(this.currentWeapon)
-
-
 
         // this.weaponName.text = this.weapons[this.currentWeapon].name;
 
@@ -557,24 +533,22 @@ PhaserGame.prototype = {
 
     updateLV: function () {
 
-        if (this.weaponLVactive === 0)
-        {
-            this.weaponLV.loadTexture('weaponLV0', 0);
-        }
-        else if (this.weaponLVactive === 1)
-        {
-            this.weaponLV.loadTexture('weaponLV1', 0);
-        }
-        else if (this.weaponLVactive === 2)
-        {
-            this.weaponLV.loadTexture('weaponLV2', 0);
-        }
-        else if (this.weaponLVactive === 3)
-        {
-            this.weaponLV.loadTexture('weaponLV3', 0);
-        }
+        if      (this.weaponLVactive === 0) { this.weaponLV.loadTexture('weaponLV0', 0) }
+        else if (this.weaponLVactive === 1) { this.weaponLV.loadTexture('weaponLV1', 0) }
+        else if (this.weaponLVactive === 2) { this.weaponLV.loadTexture('weaponLV2', 0) }
+        else if (this.weaponLVactive === 3) { this.weaponLV.loadTexture('weaponLV3', 0) }
 
     },
+
+
+    function checkPos (rat) {
+
+    if (rat.x > 800)
+    {
+        rat.x = -100;
+    }
+
+    }
 
     update: function () {
 
@@ -584,52 +558,34 @@ PhaserGame.prototype = {
       }
 
 
-      const markEnemyAndBulletForDeletion = (enemy, bullet) => {
-        enemy.destroy_in_next_tick = true
-        bullet.destroy()
-      }
-      this.enemies.map(enemy => {
-        this.physics.arcade.overlap(enemy, this.weapons[this.currentWeapon], markEnemyAndBulletForDeletion, null, this);
-      })
+        const markEnemyAndBulletForDeletion = (enemy, bullet) => {
+            enemy.destroy_in_next_tick = true
+            bullet.destroy()
+        }
+
+        this.enemies.map(enemy => {
+            this.physics.arcade.overlap(enemy, this.weapons[this.currentWeapon], markEnemyAndBulletForDeletion, null, this);
+        })
+
         this.player.body.velocity.set(0);
 
-        if (this.cursors.left.isDown)
+        if (this.cursors.left.isDown && this.player.isRight === true)
         {
-            if (this.player.isRight === true)
-            {
-                this.player.isRight = false;
-                this.player.scale.x = -1.0;
-            }
-
+            this.player.isRight = false;
+            this.player.scale.x = -1.0;
         }
-        else if (this.cursors.right.isDown)
+        else if (this.cursors.right.isDown && this.player.isRight === false)
         {
-            if (this.player.isRight === false)
-            {
-                this.player.isRight = true;
-                this.player.scale.x = 1.0;
-            }
-
-
             this.player.isRight = true;
+            this.player.scale.x = 1.0;
         }
 
-        if (this.cursors.up.isDown)
-        {
-            this.player.body.velocity.y = -this.speed;
-        }
-        else if (this.cursors.down.isDown)
-        {
-            this.player.body.velocity.y = this.speed;
-        }
+        if      (this.cursors.up.isDown)   { this.player.body.velocity.y = -this.speed; }
+        else if (this.cursors.down.isDown) { this.player.body.velocity.y =  this.speed; }
 
-        if (this.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
+        if (this.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && this.weaponLVactive > this.currentWeapon)
         {
-            if (this.weaponLVactive > this.currentWeapon)
-            {
-                this.weapons[this.currentWeapon].fire(this.player);
-            }
-
+            this.weapons[this.currentWeapon].fire(this.player);
         }
 
     }

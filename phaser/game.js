@@ -83,7 +83,7 @@ Weapon.SingleBullet = function (game) {
 
     this.nextFire = 0;
     this.bulletSpeed = 600;
-    this.fireRate = 1000;
+    this.fireRate = 500;
 
     this.pattern = Phaser.ArrayUtils.numberArrayStep(-800, 800, 200);
     this.pattern = this.pattern.concat(Phaser.ArrayUtils.numberArrayStep(800, -800, -200));
@@ -138,11 +138,11 @@ Weapon.ThreeWay = function (game) {
 
     this.nextFire = 0;
     this.bulletSpeed = 600;
-    this.fireRate = 100;
+    this.fireRate = 1000;
 
-    for (var i = 0; i < 96; i++)
+    for (var i = 0; i < 128; i++)
     {
-        this.add(new Bullet(game, 'bullet7'), true);
+        this.add(new Bullet(game, 'bullet-white'), true);
     }
 
     return this;
@@ -161,17 +161,17 @@ Weapon.ThreeWay.prototype.fire = function (source) {
     if (source.isRight === true)
     {
         var x = source.x + 70;
-        angle = 0;
+        angle = 315;
     }
     else
     {
         var x = source.x - 70;
-        angle = 180;
+        angle = 225;
     }
 
-    this.getFirstExists(false).fire(x, y, 270, this.bulletSpeed, 0, 0);
-    this.getFirstExists(false).fire(x, y, angle, this.bulletSpeed, 0, 0);
-    this.getFirstExists(false).fire(x, y, 90, this.bulletSpeed, 0, 0);
+    this.getFirstExists(false).fire(x, y, angle+10, this.bulletSpeed, 0, 600);
+    this.getFirstExists(false).fire(x, y, angle,    this.bulletSpeed, 0, 600);
+    this.getFirstExists(false).fire(x, y, angle-10, this.bulletSpeed, 0, 600);
 
     this.nextFire = this.game.time.time + this.fireRate;
 
@@ -380,6 +380,10 @@ PhaserGame.prototype = {
         this.load.image('weaponLV2', 'assets/weaponLV2.png');
         this.load.image('weaponLV3', 'assets/weaponLV3.png');
 
+        this.load.image('cursor0', 'assets/cursor1.png');
+        this.load.image('cursor1', 'assets/cursor2.png');
+        this.load.image('cursor2', 'assets/cursor3.png');
+
     },
 
     create: function () {
@@ -390,7 +394,7 @@ PhaserGame.prototype = {
         this.weapons.push(new Weapon.SingleBullet(this.game));
         this.weapons.push(new Weapon.ThreeWay(this.game));
         this.weapons.push(new Weapon.Beam(this.game));
-        this.weapons.push(new Weapon.SplitShot(this.game));
+        // this.weapons.push(new Weapon.SplitShot(this.game));
 
         this.currentWeapon = 0;
 
@@ -410,9 +414,14 @@ PhaserGame.prototype = {
 
         // this.weaponName = this.add.bitmapText(8, 364, 'shmupfont', "ENTER = Next Weapon", 24);
 
-        this.weaponLV = this.add.sprite(0, 0, 'weaponLV0');
-        this.weaponLV.scale.x = 0.75;
-        this.weaponLV.scale.y = 0.75;
+        this.weaponLVactive = 3;
+        this.weaponLV = this.add.sprite(0, 20, 'weaponLV3');
+        this.weaponLV.scale.x = 0.5;
+        this.weaponLV.scale.y = 0.5;
+
+        this.weaponCursor = this.add.sprite(400, 20, 'cursor0');
+        this.weaponCursor.scale.x = 0.5;
+        this.weaponCursor.scale.y = 0.5;
 
         //  Cursor keys to fly + space to fire
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -430,7 +439,7 @@ PhaserGame.prototype = {
     nextWeapon: function () {
 
         //  Tidy-up the current weapon
-        if (this.currentWeapon > 3)
+        if (this.currentWeapon > 2)
         {
             this.weapons[this.currentWeapon].reset();
         }
@@ -443,28 +452,26 @@ PhaserGame.prototype = {
 
         //  Activate the new one
         this.currentWeapon++;
+        if (this.currentWeapon > 2) { this.currentWeapon = 0; }
 
-        if (this.currentWeapon > 3) { this.currentWeapon = 0; }
+        if (this.currentWeapon === 0)
+        {
+            this.weaponCursor.loadTexture('cursor0', 0);
+        }
+        else if (this.currentWeapon === 1)
+        {
+            this.weaponCursor.loadTexture('cursor1', 0);
+        }
+        else if (this.currentWeapon === 2)
+        {
+            this.weaponCursor.loadTexture('cursor2', 0);
+        }
+
         this.weapons[this.currentWeapon].visible = true;
 
         console.log(this.currentWeapon)
 
-        if (this.currentWeapon === 0)
-        {
-            this.weaponLV.loadTexture('weaponLV0', 0);
-        }
-        else if (this.currentWeapon === 1)
-        {
-            this.weaponLV.loadTexture('weaponLV1', 0);
-        }
-        else if (this.currentWeapon === 2)
-        {
-            this.weaponLV.loadTexture('weaponLV2', 0);
-        }
-        else if (this.currentWeapon === 3)
-        {
-            this.weaponLV.loadTexture('weaponLV3', 0);
-        }
+
 
         // this.weaponName.text = this.weapons[this.currentWeapon].name;
 
@@ -493,6 +500,26 @@ PhaserGame.prototype = {
     },
 
 
+    updateLV: function () {
+
+        if (this.weaponLVactive === 0)
+        {
+            this.weaponLV.loadTexture('weaponLV0', 0);
+        }
+        else if (this.weaponLVactive === 1)
+        {
+            this.weaponLV.loadTexture('weaponLV1', 0);
+        }
+        else if (this.weaponLVactive === 2)
+        {
+            this.weaponLV.loadTexture('weaponLV2', 0);
+        }
+        else if (this.weaponLVactive === 3)
+        {
+            this.weaponLV.loadTexture('weaponLV3', 0);
+        }
+
+    },
 
     update: function () {
 

@@ -600,7 +600,7 @@ PhaserGame.prototype = {
 
         if (this.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
         {
-            if (this.weaponLV > this.currentWeapon)
+            if (this.weaponLV.active > this.currentWeapon)
             {
                 this.weapons[this.currentWeapon].fire(this.player);
             }

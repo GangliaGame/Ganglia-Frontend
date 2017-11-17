@@ -268,18 +268,19 @@ class Main extends Phaser.State {
     // HitPoints Part
     /////////////////////////
 
-    this.player.hitPoints    = 100
-    this.player.hitPointsMax = 100
-    this.player.hitPointsBarOutline = this.add.sprite(this.player.x, this.player.y-122, 'hpBarOutline')
+    this.player.maxHealth = 100
+    this.player.health = 100
+    this.player.hitPointsBarOutline = this.add.sprite(this.player.x+3, this.player.y-119, 'hpBarOutline')
     this.player.hitPointsBarOutline.anchor.setTo(.5,.5)
     this.player.hitPointsBar = this.add.sprite(this.player.x-125, this.player.y-132, 'hpBar')
-    this.player.hitPointsBar.update(() => {
-        this.player.hitPointsBarOutline.x = this.player.x
-        this.player.hitPointsBarOutline.y = this.player.y
+    this.player.hitPointsBar.anchor.setTo(0,0)
+    this.player.hitPointsBar.update = () => {
+        this.player.hitPointsBarOutline.x = this.player.x+3
+        this.player.hitPointsBarOutline.y = this.player.y-119
         this.player.hitPointsBar.x        = this.player.x-125
         this.player.hitPointsBar.y        = this.player.y-132
-        this.player.hitPointsBar.scale.x = this.player.hitPoints/this.player.hitPointsMax;
-    })
+        this.player.hitPointsBar.scale.x = this.player.health/this.player.maxHealth
+    }
 
     // this.weaponName = this.add.bitmapText(8, 364, 'shmupfont', "ENTER = Next Weapon", 24)
 

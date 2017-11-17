@@ -375,6 +375,11 @@ PhaserGame.prototype = {
 
         //  Note: Graphics are not for use in any commercial project
 
+        this.load.image('weaponLV0', 'assets/weaponLV0.png');
+        this.load.image('weaponLV1', 'assets/weaponLV1.png');
+        this.load.image('weaponLV2', 'assets/weaponLV2.png');
+        this.load.image('weaponLV3', 'assets/weaponLV3.png');
+
     },
 
     create: function () {
@@ -383,7 +388,7 @@ PhaserGame.prototype = {
         this.background.autoScroll(0, -50);
 
         this.weapons.push(new Weapon.SingleBullet(this.game));
-        // this.weapons.push(new Weapon.ThreeWay(this.game));
+        this.weapons.push(new Weapon.ThreeWay(this.game));
         this.weapons.push(new Weapon.Beam(this.game));
         this.weapons.push(new Weapon.SplitShot(this.game));
 
@@ -403,7 +408,11 @@ PhaserGame.prototype = {
 
         this.player.body.collideWorldBounds = true;
 
-        this.weaponName = this.add.bitmapText(8, 364, 'shmupfont', "ENTER = Next Weapon", 24);
+        // this.weaponName = this.add.bitmapText(8, 364, 'shmupfont', "ENTER = Next Weapon", 24);
+
+        this.weaponLV = this.add.sprite(0, 0, 'weaponLV0');
+        this.weaponLV.scale.x = 0.75;
+        this.weaponLV.scale.y = 0.75;
 
         //  Cursor keys to fly + space to fire
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -421,7 +430,7 @@ PhaserGame.prototype = {
     nextWeapon: function () {
 
         //  Tidy-up the current weapon
-        if (this.currentWeapon > 9)
+        if (this.currentWeapon > 3)
         {
             this.weapons[this.currentWeapon].reset();
         }
@@ -435,14 +444,29 @@ PhaserGame.prototype = {
         //  Activate the new one
         this.currentWeapon++;
 
-        if (this.currentWeapon === this.weapons.length)
-        {
-            this.currentWeapon = 0;
-        }
-
+        if (this.currentWeapon > 3) { this.currentWeapon = 0; }
         this.weapons[this.currentWeapon].visible = true;
 
-        this.weaponName.text = this.weapons[this.currentWeapon].name;
+        console.log(this.currentWeapon)
+
+        if (this.currentWeapon === 0)
+        {
+            this.weaponLV.loadTexture('weaponLV0', 0);
+        }
+        else if (this.currentWeapon === 1)
+        {
+            this.weaponLV.loadTexture('weaponLV1', 0);
+        }
+        else if (this.currentWeapon === 2)
+        {
+            this.weaponLV.loadTexture('weaponLV2', 0);
+        }
+        else if (this.currentWeapon === 3)
+        {
+            this.weaponLV.loadTexture('weaponLV3', 0);
+        }
+
+        // this.weaponName.text = this.weapons[this.currentWeapon].name;
 
     },
 

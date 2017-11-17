@@ -187,11 +187,6 @@ class Main extends Phaser.State {
   }
 
   preload () {
-    //  We need this because the assets are on Amazon S3
-    //  Remove the next 2 lines if running locally
-    // this.load.baseURL = 'http://files.phaser.io.s3.amazonaws.com/codingtips/issue007/';
-    // this.load.crossOrigin = 'anonymous';
-
     this.load.image('background', 'assets/back2.png')
     this.load.image('player', 'assets/ship2.png')
     this.load.bitmapFont('shmupfont', 'assets/shmupfont.png', 'assets/shmupfont.xml')
@@ -211,8 +206,6 @@ class Main extends Phaser.State {
     this.load.image('player-blue' , 'assets/ship2-blue.png' )
     this.load.image('player-green', 'assets/ship2-green.png')
 
-    //  Note: Graphics are not for use in any commercial project
-
     this.load.image('weaponLV0', 'assets/weaponLV0.png')
     this.load.image('weaponLV1', 'assets/weaponLV1.png')
     this.load.image('weaponLV2', 'assets/weaponLV2.png')
@@ -226,8 +219,6 @@ class Main extends Phaser.State {
 
     this.load.image('hpBar', 'assets/hpBar.png');
     this.load.image('hpBarOutline', 'assets/hpBarOutline.png');
-
-
   }
 
   create() {
@@ -252,9 +243,8 @@ class Main extends Phaser.State {
       this.enemies.push(enemy)
     }
 
-    for (var i = 1; i < this.weapons.length; i++)
-    {
-        this.weapons[i].visible = false;
+    for (var i = 1; i < this.weapons.length; i++) {
+      this.weapons[i].visible = false;
     }
 
     this.player = this.add.sprite(800, 450, 'player')
@@ -419,11 +409,8 @@ class Main extends Phaser.State {
 class Game extends Phaser.Game {
 
   constructor() {
-
     super(window.innerWidth, window.innerHeight, Phaser.AUTO)
-
     this.state.add('Main', Main, false)
-
     this.state.start('Main')
   }
 

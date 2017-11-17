@@ -396,6 +396,9 @@ PhaserGame.prototype = {
         this.load.image('player', 'assets/ship2.png');
         this.load.bitmapFont('shmupfont', 'assets/shmupfont.png', 'assets/shmupfont.xml');
 
+
+        this.load.image('enemy', 'assets/avi.png');
+
         for (var i = 1; i <= 11; i++)
         {
             this.load.image('bullet' + i, 'assets/bullet' + i + '.png');
@@ -406,7 +409,7 @@ PhaserGame.prototype = {
         this.load.image('bullet-blue' , 'assets/newBullet-blue.png' );
         this.load.image('bullet-green', 'assets/newBullet-green.png');
 
-        this.load.image('player-red'  , 'assets/ship2-red.png'  );
+        this.load.image('player-red'  , 'assets/ship2-red.png'  )
         this.load.image('player-blue' , 'assets/ship2-blue.png' );
         this.load.image('player-green', 'assets/ship2-green.png');
 
@@ -436,6 +439,12 @@ PhaserGame.prototype = {
         // this.weapons.push(new Weapon.SplitShot(this.game));
 
         this.currentWeapon = 0;
+
+        this.enemy = game.add.sprite(250, 250, 'enemy');
+        this.enemy.scale.setTo(0.25, 0.25)
+        this.enemy.name = 'enemy';
+        game.physics.enable(this.enemy, Phaser.Physics.ARCADE);
+        this.enemy.body.collideWorldBounds = true;
 
 
         for (var i = 1; i < this.weapons.length; i++)
@@ -474,7 +483,7 @@ PhaserGame.prototype = {
     },
 
     onNewGameState: function(gameState) {
-      this.weaponLVactive = gameState.weaponLevel
+      this.weaponLVactive = 3 || gameState.weaponLevel
       this.updateLV()
     },
 
@@ -519,6 +528,28 @@ PhaserGame.prototype = {
 
     },
 
+    nextColor: function () {
+
+        this.player.currentColor = (this.player.currentColor+1)%4;
+
+        if (this.player.currentColor === 0)
+        {
+            this.player.loadTexture('player', 0);
+        }
+        else if (this.player.currentColor === 1)
+        {
+            this.player.loadTexture('player-red', 0);
+        }
+        else if (this.player.currentColor === 2)
+        {
+            this.player.loadTexture('player-green', 0);
+        }
+        else if (this.player.currentColor === 3)
+        {
+            this.player.loadTexture('player-blue', 0);
+        }
+    },
+
     updateLV: function () {
 
         if (this.weaponLVactive === 0)
@@ -541,6 +572,19 @@ PhaserGame.prototype = {
     },
 
     update: function () {
+
+      for (var x=0; x<game.world.children.length; x++) {
+        if (game.world.children[x].destroy_in_next_tick)
+          game.world.children[x].kill()
+      }
+
+
+      const markEnemyAndBulletForDeletion = (enemy, bullet) => {
+        console.log(bullet)
+        enemy.destroy_in_next_tick = true
+        bullet.destroy_in_next_tick = true
+      }
+      this.physics.arcade.overlap(this.enemy, this.weapons[this.currentWeapon], markEnemyAndBulletForDeletion, null, this);
 
         this.player.body.velocity.set(0);
 

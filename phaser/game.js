@@ -1,5 +1,42 @@
 var game = new Phaser.Game(1600, 900, Phaser.AUTO, 'game');
 
+class GameServer {
+
+  constructor() {
+    this.pollFrequency = 250 // ms
+    this.pollTimeout = 1500 // ms
+    this.baseURL = (() =>
+      window.location.search.includes('local') ?
+      'http://localhost:9000' :
+      'https://ganglia-server.herokuapp.com'
+    )()
+    setInterval(this.onPollTimer.bind(this), this.pollFrequency)
+  }
+
+  onPollTimer() {
+    this.fetch('state')
+    .then(serverState => (typeof this.onNewGameState === 'function') && this.onNewGameState(serverState))
+  }
+
+  fetch(path) {
+    function timeout(ms, promise) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => reject(new Error('timeout')), ms)
+        promise.then(resolve, reject)
+      })
+    }
+    return timeout(this.pollTimeout, fetch(`${this.baseURL}/${path}`))
+    .then(response => response.json())
+    .catch(error => {
+      console.error(error)
+    })
+  }
+
+}
+
+const server = new GameServer()
+
+
 //  Our core Bullet class
 //  This is a simple Sprite object that we set a few properties on
 //  It is fired by all of the Weapon classes
@@ -434,6 +471,12 @@ PhaserGame.prototype = {
         var changeKey2 = this.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
         changeKey2.onDown.add(this.nextColor, this);
 
+        server.onNewGameState = this.onNewGameState.bind(this)
+    },
+
+    onNewGameState: function(gameState) {
+      this.weaponLVactive = gameState.weaponLevel
+      this.updateLV()
     },
 
     nextWeapon: function () {

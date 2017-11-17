@@ -41,21 +41,24 @@ const server = new GameServer()
 //  This is a simple Sprite object that we set a few properties on
 //  It is fired by all of the Weapon classes
 
-var Bullet = function (game, key) {
+class Bullet extends Phaser.Sprite {
 
-    Phaser.Sprite.call(this, game, 0, 0, key);
-    this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;
+  constructor(game, key) {
+    Phaser.Sprite.call(this, game, 0, 0, key)
+    this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST
 
-    this.anchor.set(.5,.5);
+    this.anchor.set(.5,.5)
 
-    this.checkWorldBounds = true;
-    this.outOfBoundsKill = true;
-    this.exists = false;
+    this.checkWorldBounds = true
+    this.outOfBoundsKill = true
+    this.exists = false
 
-    this.tracking = false;
-    this.scaleSpeed = 0;
+    this.tracking = false
+    this.scaleSpeed = 0
+  }
 
-};
+}
+
 
 Bullet.prototype = Object.create(Phaser.Sprite.prototype);
 Bullet.prototype.constructor = Bullet;
@@ -196,53 +199,6 @@ Weapon.ThreeWay.prototype.fire = function (source) {
 
 };
 
-////////////////////////////////////////////////////
-//  Bullets are fired out scattered on the y axis //
-////////////////////////////////////////////////////
-
-Weapon.ScatterShot = function (game) {
-
-    Phaser.Group.call(this, game, game.world, 'Scatter Shot', false, true, Phaser.Physics.ARCADE);
-
-    this.nextFire = 0;
-    this.bulletSpeed = 600;
-    this.fireRate = 40;
-
-    for (var i = 0; i < 32; i++)
-    {
-        this.add(new Bullet(game, 'bullet5'), true);
-    }
-
-    return this;
-
-};
-
-Weapon.ScatterShot.prototype = Object.create(Phaser.Group.prototype);
-Weapon.ScatterShot.prototype.constructor = Weapon.ScatterShot;
-
-Weapon.ScatterShot.prototype.fire = function (source) {
-
-    if (this.game.time.time < this.nextFire) { return; }
-
-    var y = source.y + this.game.rnd.between(-10, 10);
-
-    if (source.isRight === true)
-    {
-        var x = source.x + 90;
-        angle = 0;
-    }
-    else
-    {
-        var x = source.x - 90;
-        angle = 180;
-    }
-
-    this.getFirstExists(false).fire(x, y, angle, this.bulletSpeed, 0, 0);
-
-    this.nextFire = this.game.time.time + this.fireRate;
-
-};
-
 //////////////////////////////////////////////////////////////////////////
 //  Fires a streaming beam of lazers, very fast, in front of the player //
 //////////////////////////////////////////////////////////////////////////
@@ -289,56 +245,6 @@ Weapon.Beam.prototype.fire = function (source) {
     this.nextFire = this.game.time.time + this.fireRate;
 
 };
-
-///////////////////////////////////////////////////////////////////////
-//  A three-way fire where the top and bottom bullets bend on a path //
-///////////////////////////////////////////////////////////////////////
-
-Weapon.SplitShot = function (game) {
-
-    Phaser.Group.call(this, game, game.world, 'Split Shot', false, true, Phaser.Physics.ARCADE);
-
-    this.nextFire = 0;
-    this.bulletSpeed = 700;
-    this.fireRate = 40;
-
-    for (var i = 0; i < 64; i++)
-    {
-        this.add(new Bullet(game, 'bullet8'), true);
-    }
-
-    return this;
-
-};
-
-Weapon.SplitShot.prototype = Object.create(Phaser.Group.prototype);
-Weapon.SplitShot.prototype.constructor = Weapon.SplitShot;
-
-Weapon.SplitShot.prototype.fire = function (source) {
-
-    if (this.game.time.time < this.nextFire) { return; }
-
-    var y = source.y;
-
-    if (source.isRight === true)
-    {
-        var x = source.x + 90;
-        angle = 0;
-    }
-    else
-    {
-        var x = source.x - 90;
-        angle = 180;
-    }
-
-    this.getFirstExists(false).fire(x, y, angle, this.bulletSpeed, 0, -500);
-    this.getFirstExists(false).fire(x, y, angle, this.bulletSpeed, 0, 0);
-    this.getFirstExists(false).fire(x, y, angle, this.bulletSpeed, 0, 500);
-
-    this.nextFire = this.game.time.time + this.fireRate;
-
-};
-
 
 //  The core game loop
 
@@ -541,14 +447,14 @@ PhaserGame.prototype = {
     },
 
 
-    function checkPos (rat) {
+    checkPos: function (rat) {
 
-    if (rat.x > 800)
-    {
-        rat.x = -100;
-    }
+      if (rat.x > 800)
+      {
+          rat.x = -100;
+      }
 
-    }
+    },
 
     update: function () {
 

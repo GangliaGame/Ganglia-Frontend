@@ -421,6 +421,8 @@ PhaserGame.prototype = {
         this.load.image('cursor1', 'assets/cursor2.png');
         this.load.image('cursor2', 'assets/cursor3.png');
 
+        this.load.imgae('enemy', 'assets/enemy.png');
+
     },
 
     create: function () {
@@ -467,9 +469,6 @@ PhaserGame.prototype = {
 
         var changeKey = this.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         changeKey.onDown.add(this.nextWeapon, this);
-
-        var changeKey2 = this.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
-        changeKey2.onDown.add(this.nextColor, this);
 
         server.onNewGameState = this.onNewGameState.bind(this)
     },
@@ -519,29 +518,6 @@ PhaserGame.prototype = {
         // this.weaponName.text = this.weapons[this.currentWeapon].name;
 
     },
-
-    nextColor: function () {
-
-        this.player.currentColor = (this.player.currentColor+1)%4;
-
-        if (this.player.currentColor === 0)
-        {
-            this.player.loadTexture('player', 0);
-        }
-        else if (this.player.currentColor === 1)
-        {
-            this.player.loadTexture('player-red', 0);
-        }
-        else if (this.player.currentColor === 2)
-        {
-            this.player.loadTexture('player-green', 0);
-        }
-        else if (this.player.currentColor === 3)
-        {
-            this.player.loadTexture('player-blue', 0);
-        }
-    },
-
 
     updateLV: function () {
 

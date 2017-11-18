@@ -75,17 +75,22 @@ class Bullet extends Phaser.Sprite {
 
 class Enemy extends Phaser.Sprite {
 
-  constructor(game, x, y) {
+  constructor(game, x, y, isLeftSide = true) {
     super(game, x, y, 'enemy')
-    this.scale.x = -0.5
-    this.scale.y = 0.5
+    this.isLeftSide = isLeftSide
+    const scale = 0.5
+    this.scale.x = isLeftSide ? -scale : scale
+    this.scale.y = scale
     game.physics.enable(this, Phaser.Physics.ARCADE)
     this.body.collideWorldBounds = true
   }
 
   update() {
-    this.x += Math.random() * 0.4
-    this.y += (Math.random() * 0.2) - 0.1
+    const deltaX = Math.random() * 0.4
+    const deltaY = (Math.random() * 0.2) - 0.1
+
+    this.x += this.isLeftSide ? deltaX : -deltaX
+    this.y += this.isLeftSide ? deltaY : -deltaY
   }
 }
 
@@ -243,42 +248,28 @@ class Main extends Phaser.State {
     this.currentWeapon = 0;
 
     this.enemies = []
+
+    // Add left-side enemies
     for (let i = 0; i < 4; i++) {
       const x = 0
-      const y = Math.floor((window.innerHeight-150)*Math.random()+150)
+      const y = Math.floor((this.game.height-150) * Math.random()+150)
       let enemy = this.game.add.existing(new Enemy(this.game, x, y))
       this.enemies.push(enemy)
     }
 
+    // Add right-side enemies
     for (let i = 0; i < 4; i++) {
-      let enemy = this.game.add.sprite(250, 250, 'enemy')
-      enemy.name = 'enemy';
-      enemy.scale.x = 0.5
-      enemy.scale.y = 0.5
-      this.game.physics.enable(enemy, Phaser.Physics.ARCADE)
-      enemy.body.collideWorldBounds = true
-      enemy.x = window.innerWidth
-      enemy.y = Math.floor((window.innerHeight-150)*Math.random()+150)
-      enemy.update = () => {
-        enemy.x -= Math.random()*0.4
-        enemy.y += Math.random()*0.2-0.1
-      }
+      const x = this.game.width
+      const y = Math.floor((this.game.height-150) * Math.random()+150)
+      let enemy = this.game.add.existing(new Enemy(this.game, x, y, false))
       this.enemies.push(enemy)
     }
-
-    // this.enemies.update = () => {
-
-    // this.enemies = []
-    // for (let i = 0; i < 4; i++) {
-    //   this.enemies.push(new Enemy(this.game, 'enemy', 100, Math.floor(window.innerHeight * Math.random()), true))
-    //   this.enemies.push(new Enemy(this.game, 'enemy', window.innerWidth-100, Math.floor(window.innerHeight * Math.random()), false))
-    // }
 
     for (var i = 1; i < this.weapons.length; i++) {
       this.weapons[i].visible = false;
     }
 
-    this.player = this.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'player')
+    this.player = this.add.sprite(this.game.width / 2, this.game.height / 2, 'player')
     this.player.currentColor = 0;
     this.player.anchor.setTo(.5,.5)
     this.physics.arcade.enable(this.player)
@@ -303,7 +294,7 @@ class Main extends Phaser.State {
         this.player.hitPointsBar.scale.x = this.player.health/this.player.maxHealth
     }
 
-    // this.weaponName = this.add.bitmapText(8, 364, 'shmupfont', "ENTER = Next Weapon", 24)
+    // this.weaponName = this.add.bitmapText(8, 2, 'shmupfont', "ENTER = Next Weapon", 24)
 
     this.weaponLVactive = 3;
     this.weaponLV = this.add.sprite(0, 20, 'weaponLV3')

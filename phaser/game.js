@@ -175,8 +175,8 @@ class BeamWeapon extends Phaser.Group {
     super(game, game.world, 'BeamWeapon', false, true, Phaser.Physics.ARCADE)
 
     this.nextFire = 0
-    this.bulletSpeed = 1000
-    this.fireRate = 45
+    this.bulletSpeed = 2000
+    this.fireRate = 1
 
     for (var i = 0; i < 64; i++) {
       this.add(new Bullet(game, 'bullet11'), true)
@@ -302,7 +302,7 @@ class Main extends Phaser.State {
       this.weapons[i].visible = false;
     }
 
-    this.player = this.add.sprite(800, 450, 'player')
+    this.player = this.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'player')
     this.player.currentColor = 0;
     this.player.anchor.setTo(.5,.5)
     this.physics.arcade.enable(this.player)
@@ -350,7 +350,7 @@ class Main extends Phaser.State {
   }
 
   onNewGameState (gameState) {
-    this.weaponLVactive = gameState.weaponLevel || 0
+    this.weaponLVactive = 3 || gameState.weaponLevel || 0
     this.updateLV()
   }
 
@@ -448,7 +448,7 @@ class Main extends Phaser.State {
 
 class Game extends Phaser.Game {
   constructor() {
-    super(window.innerWidth, window.innerHeight, Phaser.AUTO)
+    super(window.innerWidth, window.innerHeight, Phaser.CANVAS)
     this.state.add('Main', Main, false)
     this.state.start('Main')
   }

@@ -73,36 +73,21 @@ class Bullet extends Phaser.Sprite {
   }
 }
 
-// class Enemy extends Phaser.Sprite {
-//
-//   constructor(game, key, x, y, towardRight) {
-//     super(game, x, y, 'player-red')
-//     this.anchor.set(0.5,0.5)
-//     //this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST
-//     //this.collideWorldBounds = true
-//     this.name = 'enemy'
-//
-//     // this.checkWorldBounds = true
-//     // this.outOfBoundsKill = true
-//     // this.exists = true
-//
-//     this.towardRight = towardRight
-//     this.speed       = 10
-//     console.log('making enemy at', x, y)
-//     console.log(this)
-//   }
-//
-//   update() {
-//     if (this.tracking) {
-//       this.rotation = Math.atan2(this.body.velocity.y, this.body.velocity.x)
-//     }
-//
-//     if (this.towardRight === true) {
-//       this.scale.x += this.speed
-//     }
-//     else { this.scale.x -= this.speed }
-//   }
-// }
+class Enemy extends Phaser.Sprite {
+
+  constructor(game, x, y) {
+    super(game, x, y, 'enemy')
+    this.scale.x = -0.5
+    this.scale.y = 0.5
+    game.physics.enable(this, Phaser.Physics.ARCADE)
+    this.body.collideWorldBounds = true
+  }
+
+  update() {
+    this.x += Math.random() * 0.4
+    this.y += (Math.random() * 0.2) - 0.1
+  }
+}
 
 class SingleBulletWeapon extends Phaser.Group {
 
@@ -259,18 +244,9 @@ class Main extends Phaser.State {
 
     this.enemies = []
     for (let i = 0; i < 4; i++) {
-      let enemy = this.game.add.sprite(250, 250, 'enemy')
-      enemy.name = 'enemy';
-      enemy.scale.x = -0.5
-      enemy.scale.y = 0.5
-      this.game.physics.enable(enemy, Phaser.Physics.ARCADE)
-      enemy.body.collideWorldBounds = true
-      enemy.x = 0
-      enemy.y = Math.floor((window.innerHeight-150)*Math.random()+150)
-      enemy.update = () => {
-        enemy.x += Math.random()*0.4
-        enemy.y += Math.random()*0.2-0.1
-      }
+      const x = 0
+      const y = Math.floor((window.innerHeight-150)*Math.random()+150)
+      let enemy = this.game.add.existing(new Enemy(this.game, x, y))
       this.enemies.push(enemy)
     }
 

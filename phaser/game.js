@@ -238,10 +238,10 @@ class Main extends Phaser.State {
     this.load.bitmapFont('shmupfont', 'assets/shmupfont.png', 'assets/shmupfont.xml')
 
     for (let i = 1; i <= 11; i++) {
-      this.load.image(`bullet${i}`, `assets/bullet/${i}.png`)
+      this.load.image(`bullet${i}`, `assets/bullet${i}.png`)
     }
     //
-    // this.load.image('bullet-white', 'assets/newBullet-white.png')
+    this.load.image('bullet-white', 'assets/newBullet-white.png')
     // this.load.image('bullet-red', 'assets/newBullet-red.png'  )
     // this.load.image('bullet-blue', 'assets/newBullet-blue.png' )
     // this.load.image('bullet-green', 'assets/newBullet-green.png')

@@ -176,17 +176,15 @@ class BeamWeapon extends Phaser.Group {
 class PlayerShip extends Phaser.Sprite {
   constructor(game) {
     super(game, game.width / 2, game.height / 2, 'player')
+    this.game = game
     game.physics.enable(this, Phaser.Physics.ARCADE)
-    this.currentColor = 0
     this.anchor.setTo(0.5, 0.5)
     this.body.collideWorldBounds = true
 
     this.isRight = true
-    this.game = game
+    this.movementSpeed = 100
 
-    this.speed = 100
-    this.cursors = game.input.keyboard.createCursorKeys()
-
+    // Heallth
     this.maxHealth = 100
     this.health = 100
     this.hitPointsBarOutline = game.add.sprite(this.x + 3, this.y - 119, 'hpBarOutline')
@@ -200,141 +198,46 @@ class PlayerShip extends Phaser.Sprite {
       this.hitPointsBar.y = this.y - 132
       this.hitPointsBar.scale.x = this.health / this.maxHealth
     }
-  }
 
-  update() {
-    this.body.velocity.set(0)
-
-    if (this.cursors.left.isDown) {
-      if (this.isRight === true) {
-        this.isRight = false
-        this.scale.x = -1.0
-      }
-    } else if (this.cursors.right.isDown) {
-      if (this.isRight === false) {
-        this.isRight = true
-        this.scale.x = 1.0
-      }
-      this.isRight = true
-    }
-
-    if (this.cursors.up.isDown) {
-      this.body.velocity.y = -this.speed
-    } else if (this.cursors.down.isDown) {
-      this.body.velocity.y = this.speed
-    }
-  }
-}
-
-class Main extends Phaser.State {
-  init() {
-    this.game.renderer.renderSession.roundPixels = true
-    this.physics.startSystem(Phaser.Physics.ARCADE)
-  }
-
-  preload() {
-    this.load.image('background', 'assets/back2.png')
-    this.load.image('player', 'assets/ship2.png')
-    this.load.bitmapFont('shmupfont', 'assets/shmupfont.png', 'assets/shmupfont.xml')
-
-    for (let i = 1; i <= 11; i++) {
-      this.load.image(`bullet${i}`, `assets/bullet${i}.png`)
-    }
-    //
-    this.load.image('bullet-white', 'assets/newBullet-white.png')
-    // this.load.image('bullet-red', 'assets/newBullet-red.png'  )
-    // this.load.image('bullet-blue', 'assets/newBullet-blue.png' )
-    // this.load.image('bullet-green', 'assets/newBullet-green.png')
-
-    // this.load.image('player-red'  , 'assets/ship2-red.png'  )
-    // this.load.image('player-blue' , 'assets/ship2-blue.png' )
-    // this.load.image('player-green', 'assets/ship2-green.png')
-
-    this.load.image('weaponLV0', 'assets/weaponLV0.png')
-    this.load.image('weaponLV1', 'assets/weaponLV1.png')
-    this.load.image('weaponLV2', 'assets/weaponLV2.png')
-    this.load.image('weaponLV3', 'assets/weaponLV3.png')
-
-    this.load.image('cursor0', 'assets/cursor1.png')
-    this.load.image('cursor1', 'assets/cursor2.png')
-    this.load.image('cursor2', 'assets/cursor3.png')
-
-    this.load.image('enemy', 'assets/enemy.png')
-
-    this.load.image('hpBar', 'assets/hpBar.png')
-    this.load.image('hpBarOutline', 'assets/hpBarOutline.png')
-
-    this.background = null
-
-    this.player = null
-    this.cursors = null
-
+    // Weapons
     this.weapons = []
     this.currentWeapon = 0
-    // this.weaponName = null
-    // this.speed = 100
-  }
 
-  create() {
-    this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'background')
-    this.background.autoScroll(0, -50)
+    this.weaponLVactive = 3
+    this.weaponLV = this.game.add.sprite(0, 20, 'weaponLV3')
+    this.weaponLV.scale.x = 0.5
+    this.weaponLV.scale.y = 0.5
+
+    this.weaponCursor = this.game.add.sprite(400, 20, 'cursor0')
+    this.weaponCursor.scale.x = 0.5
+    this.weaponCursor.scale.y = 0.5
 
     this.weapons.push(
       new SingleBulletWeapon(this.game),
       new TripleBulletWeapon(this.game),
       new BeamWeapon(this.game),
     )
-
-    this.enemies = []
-
-    // Add left-side enemies
-    for (let i = 0; i < 4; i++) {
-      const x = 0
-      const y = Math.floor((this.game.height - 150) * Math.random() + 150)
-      const enemy = this.game.add.existing(new Enemy(this.game, x, y))
-      this.enemies.push(enemy)
-    }
-
-    // Add right-side enemies
-    for (let i = 0; i < 4; i++) {
-      const x = this.game.width
-      const y = Math.floor((this.game.height - 150) * Math.random() + 150)
-      const enemy = this.game.add.existing(new Enemy(this.game, x, y, false))
-      this.enemies.push(enemy)
-    }
-
     for (let i = 1; i < this.weapons.length; i++) {
       this.weapons[i].visible = false
     }
 
-    this.player = this.game.add.existing(new PlayerShip(this.game))
-    this.isRight = true
+    this.game.debug.spriteInfo(this, 32, 32)
 
-    // this.weaponName = this.add.bitmapText(8, 2, 'shmupfont', "ENTER = Next Weapon", 24)
+    // Input
+    this.cursors = game.input.keyboard.createCursorKeys()
+    game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR])
 
-    this.weaponLVactive = 3
-    this.weaponLV = this.add.sprite(0, 20, 'weaponLV3')
-    this.weaponLV.scale.x = 0.5
-    this.weaponLV.scale.y = 0.5
-
-    this.weaponCursor = this.add.sprite(400, 20, 'cursor0')
-    this.weaponCursor.scale.x = 0.5
-    this.weaponCursor.scale.y = 0.5
-
-    //  Cursor keys to fly + space to fire
-    this.cursors = this.input.keyboard.createCursorKeys()
-
-    this.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR])
-
-    const changeKey = this.input.keyboard.addKey(Phaser.Keyboard.ENTER)
+    const changeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER)
     changeKey.onDown.add(this.nextWeapon, this)
-
-    server.onNewGameState = this.onNewGameState.bind(this)
   }
 
-  onNewGameState(gameState) {
-    this.weaponLVactive = 3 || gameState.weaponLevel
+  setActiveWeapon(weaponNumber) {
+    this.weaponLVactive = weaponNumber
     this.updateLV()
+  }
+
+  getCurrentWeapon() {
+    return this.weapons[this.currentWeapon]
   }
 
   nextWeapon() {
@@ -362,7 +265,6 @@ class Main extends Phaser.State {
     this.weapons[this.currentWeapon].visible = true
   }
 
-
   updateLV() {
     if (this.weaponLVactive === 0) {
       this.weaponLV.loadTexture('weaponLV0', 0)
@@ -373,6 +275,103 @@ class Main extends Phaser.State {
     } else if (this.weaponLVactive === 3) {
       this.weaponLV.loadTexture('weaponLV3', 0)
     }
+  }
+
+  update() {
+    this.body.velocity.set(0)
+
+    // if (this.input.right.isDown) {
+    //   console.log('r')
+    // }
+
+    if (this.cursors.left.isDown) {
+      if (this.isRight === true) {
+        this.isRight = false
+        this.scale.x = -1.0
+      }
+    } else if (this.cursors.right.isDown) {
+      if (this.isRight === false) {
+        this.isRight = true
+        this.scale.x = 1.0
+      }
+      this.isRight = true
+    }
+
+    if (this.cursors.up.isDown) {
+      this.body.velocity.y = -this.movementSpeed
+    } else if (this.cursors.down.isDown) {
+      this.body.velocity.y = this.movementSpeed
+    }
+
+    if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+      if (this.weaponLVactive > this.currentWeapon) {
+        this.weapons[this.currentWeapon].fire(this)
+      }
+    }
+  }
+}
+
+class Main extends Phaser.State {
+  init() {
+    this.game.renderer.renderSession.roundPixels = true
+    this.physics.startSystem(Phaser.Physics.ARCADE)
+  }
+
+  preload() {
+    this.load.image('background', 'assets/back2.png')
+    this.load.bitmapFont('shmupfont', 'assets/shmupfont.png', 'assets/shmupfont.xml')
+
+    this.load.image('player', 'assets/ship2.png')
+    this.load.image('hpBar', 'assets/hpBar.png')
+    this.load.image('hpBarOutline', 'assets/hpBarOutline.png')
+    this.load.image('weaponLV0', 'assets/weaponLV0.png')
+    this.load.image('weaponLV1', 'assets/weaponLV1.png')
+    this.load.image('weaponLV2', 'assets/weaponLV2.png')
+    this.load.image('weaponLV3', 'assets/weaponLV3.png')
+    this.load.image('cursor0', 'assets/cursor1.png')
+    this.load.image('cursor1', 'assets/cursor2.png')
+    this.load.image('cursor2', 'assets/cursor3.png')
+
+    this.load.image('bullet-white', 'assets/newBullet-white.png')
+    this.load.image('enemy', 'assets/enemy.png')
+
+    for (let i = 1; i <= 11; i++) {
+      this.load.image(`bullet${i}`, `assets/bullet${i}.png`)
+    }
+  }
+
+  create() {
+    // Background
+    this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'background')
+    this.background.autoScroll(0, -50)
+
+    // Enemies
+    this.enemies = []
+
+    // Add left-side enemies
+    for (let i = 0; i < 4; i++) {
+      const x = 0
+      const y = Math.floor((this.game.height - 150) * Math.random() + 150)
+      const enemy = this.game.add.existing(new Enemy(this.game, x, y))
+      this.enemies.push(enemy)
+    }
+
+    // Add right-side enemies
+    for (let i = 0; i < 4; i++) {
+      const x = this.game.width
+      const y = Math.floor((this.game.height - 150) * Math.random() + 150)
+      const enemy = this.game.add.existing(new Enemy(this.game, x, y, false))
+      this.enemies.push(enemy)
+    }
+
+    // Playground
+    this.player = this.game.add.existing(new PlayerShip(this.game))
+
+    server.onNewGameState = this.onNewGameState.bind(this)
+  }
+
+  onNewGameState(gameState) {
+    this.player.setActiveWeapon(3 || gameState.weaponLevel)
   }
 
   update() {
@@ -387,17 +386,11 @@ class Main extends Phaser.State {
 
     this.enemies.map(enemy => this.physics.arcade.overlap(
       enemy,
-      this.weapons[this.currentWeapon],
+      this.player.getCurrentWeapon(),
       markEnemyAndBulletForDeletion,
       null,
       this,
     ))
-
-    if (this.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-      if (this.weaponLVactive > this.currentWeapon) {
-        this.weapons[this.currentWeapon].fire(this.player)
-      }
-    }
   }
 }
 

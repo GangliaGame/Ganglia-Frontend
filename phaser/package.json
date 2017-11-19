@@ -1,0 +1,12 @@
+{
+  "name": "ganglia-frontend",
+  "version": "1.0.0",
+  "main": "game.js",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "eslint": "^4.11.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0"
+  }
+}

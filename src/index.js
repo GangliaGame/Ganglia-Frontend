@@ -1,4 +1,9 @@
-/* global Phaser, PIXI */
+/* eslint-disable */
+import PIXI from 'pixi'
+import 'p2'
+import Phaser from 'phaser'
+/* eslint-enable */
+
 class GameServer {
   constructor() {
     this.pollFrequency = 250 // ms

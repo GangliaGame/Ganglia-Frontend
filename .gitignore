@@ -1,2 +1,16 @@
-*.DS_Store
+# System and IDE files
+Thumbs.db
+.DS_Store
+.idea
+.tscache
+*.suo
+*.sublime-project
+*.sublime-workspace
+
+# Vendors
 node_modules/
+
+# Build
+dist/
+/npm-debug.log
+out/

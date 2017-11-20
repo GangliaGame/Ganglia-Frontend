@@ -1,7 +1,9 @@
-## How to run
+## Getting set up
 
-1. In terminal, go to this directory.
+1. Install Node.JS and [yarn](https://yarnpkg.com/en/): `brew install yarn`
 
-2. Run `python -m SimpleHTTPServer 8000`
+2. `yarn install`
 
-3. Then, go to http://localhost:8000 in Chrome.
+## Hacking
+
+1. `yarn start`

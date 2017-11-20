@@ -55,9 +55,9 @@ export class SingleBulletWeapon extends Phaser.Group {
   fire(source) {
     if (this.game.time.time < this.nextFire) return
 
-    const y = source.y
-    const x = source.x + (source.isRight ? 70 : -70)
-    const angle = source.isRight ? 315 : 225
+    const x = source.crosshair.x
+    const y = source.crosshair.y
+    const angle = -source.firingAngle
 
     this.getFirstExists(false).fire(x, y, angle, this.bulletSpeed, 0, 600)
     this.nextFire = this.game.time.time + this.fireRate
@@ -80,9 +80,9 @@ export class TripleBulletWeapon extends Phaser.Group {
   fire(source) {
     if (this.game.time.time < this.nextFire) return
 
-    const y = source.y
-    const x = source.x + (source.isRight ? 70 : -70)
-    const angle = source.isRight ? 315 : 225
+    const x = source.crosshair.x
+    const y = source.crosshair.y
+    const angle = -source.firingAngle
 
     this.getFirstExists(false).fire(x, y, angle + 10, this.bulletSpeed, 0, 600)
     this.getFirstExists(false).fire(x, y, angle, this.bulletSpeed, 0, 600)
@@ -108,9 +108,9 @@ export class BeamWeapon extends Phaser.Group {
   fire(source) {
     if (this.game.time.time < this.nextFire) return
 
-    const y = source.y
-    const x = source.x + (source.isRight ? 90 : -90)
-    const angle = source.isRight ? 0 : 180
+    const x = source.crosshair.x
+    const y = source.crosshair.y
+    const angle = -source.firingAngle
 
     this.getFirstExists(false).fire(x, y, angle, this.bulletSpeed, 0, 0)
 

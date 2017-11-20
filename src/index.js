@@ -5,6 +5,14 @@ import Phaser from 'phaser'
 /* eslint-enable */
 import { SingleBulletWeapon, TripleBulletWeapon, BeamWeapon } from './weapons'
 
+function toDegrees(angle) {
+  return angle * (180 / Math.PI)
+}
+
+function toRadians(angle) {
+  return angle * (Math.PI / 180)
+}
+
 class GameServer {
   constructor() {
     this.pollFrequency = 250 // ms
@@ -66,7 +74,11 @@ class PlayerShip extends Phaser.Sprite {
     this.anchor.setTo(0.5, 0.5)
     this.body.collideWorldBounds = true
 
-    this.isRight = true
+    // Firing
+    this.firingAngleDelta = 5
+    this.crosshairRadius = 100
+    this.firingAngle = 0
+
     this.movementSpeed = 100
 
     // Health
@@ -96,6 +108,9 @@ class PlayerShip extends Phaser.Sprite {
     this.weaponCursor = this.game.add.sprite(400, 20, 'cursor0')
     this.weaponCursor.scale.x = 0.5
     this.weaponCursor.scale.y = 0.5
+
+    this.crosshair = this.game.add.sprite(this.x, this.y, 'crosshair')
+    this.crosshair.anchor.set(0.5)
 
     this.weapons.push(
       new SingleBulletWeapon(this.game),
@@ -165,21 +180,17 @@ class PlayerShip extends Phaser.Sprite {
   update() {
     this.body.velocity.set(0)
 
+    this.crosshair.x = this.x + this.crosshairRadius * Math.cos(toRadians(this.firingAngle))
+    this.crosshair.y = this.y - this.crosshairRadius * Math.sin(toRadians(this.firingAngle))
+
     // if (this.input.right.isDown) {
     //   console.log('r')
     // }
 
     if (this.cursors.left.isDown) {
-      if (this.isRight === true) {
-        this.isRight = false
-        this.scale.x = -1.0
-      }
+      this.firingAngle += this.firingAngleDelta
     } else if (this.cursors.right.isDown) {
-      if (this.isRight === false) {
-        this.isRight = true
-        this.scale.x = 1.0
-      }
-      this.isRight = true
+      this.firingAngle -= this.firingAngleDelta
     }
 
     if (this.cursors.up.isDown) {
@@ -206,7 +217,8 @@ class Main extends Phaser.State {
     this.load.image('background', 'assets/back2.png')
     this.load.bitmapFont('shmupfont', 'assets/shmupfont.png', 'assets/shmupfont.xml')
 
-    this.load.image('player', 'assets/ship2.png')
+    this.load.image('player', 'assets/player-ship.png')
+    this.load.image('crosshair', 'assets/crosshair.png')
     this.load.image('hpBar', 'assets/hpBar.png')
     this.load.image('hpBarOutline', 'assets/hpBarOutline.png')
     this.load.image('weaponLV0', 'assets/weaponLV0.png')

@@ -21,7 +21,7 @@ module.exports = {
 
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'vendor.bundle.js' }),
-    new HtmlWebpackPlugin({ title: 'ganglia' }),
+    new HtmlWebpackPlugin({ template: 'index.html' }),
   ],
 
   module: {

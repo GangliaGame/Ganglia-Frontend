@@ -12,5 +12,10 @@
       "no-mixed-operators": 0,
       "prefer-destructuring": 0,
       "no-param-reassign": 0
+    },
+    "globals": {
+      "PIXI": false,
+      "p2": false,
+      "Phaser": false
     }
 }

@@ -14,7 +14,8 @@
     "webpack-dev-server": "^2.9.4"
   },
   "dependencies": {
-    "phaser-ce": "^2.9.2"
+    "phaser-ce": "^2.9.2",
+    "stats.js": "^0.17.0"
   },
   "scripts": {
     "start": "webpack-dev-server"

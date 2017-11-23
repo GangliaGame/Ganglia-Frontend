@@ -1,3 +1,4 @@
+import Stats from 'stats.js'
 /* eslint-disable */
 import PIXI from 'pixi'
 import 'p2'
@@ -121,14 +122,14 @@ class PlayerShip extends Phaser.Sprite {
       this.weapons[i].visible = false
     }
 
-    this.game.debug.spriteInfo(this, 32, 32)
-
     // Input
     this.cursors = game.input.keyboard.createCursorKeys()
     game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR])
 
     const changeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER)
     changeKey.onDown.add(this.nextWeapon, this)
+
+    this.game.debug.spriteInfo(this, 500, 500)
   }
 
   setActiveWeapon(weaponNumber) {
@@ -182,10 +183,6 @@ class PlayerShip extends Phaser.Sprite {
 
     this.crosshair.x = this.x + this.crosshairRadius * Math.cos(toRadians(this.firingAngle))
     this.crosshair.y = this.y - this.crosshairRadius * Math.sin(toRadians(this.firingAngle))
-
-    // if (this.input.right.isDown) {
-    //   console.log('r')
-    // }
 
     if (this.cursors.left.isDown) {
       this.firingAngle += this.firingAngleDelta
@@ -289,6 +286,10 @@ class Main extends Phaser.State {
       this,
     ))
   }
+
+  render() {
+    this.game.debug.spriteInfo(this.player, 0, this.game.height - 75)
+  }
 }
 
 class Game extends Phaser.Game {
@@ -296,6 +297,26 @@ class Game extends Phaser.Game {
     super(window.innerWidth, window.innerHeight, Phaser.CANVAS)
     this.state.add('Main', Main, false)
     this.state.start('Main')
+
+    this.setupStats()
+  }
+
+
+  /**
+   * Display the FPS and MS using Stats.js.
+   */
+  setupStats() {
+    // Setup the new stats panel.
+    const stats = new Stats()
+    document.body.appendChild(stats.dom)
+
+    // Monkey-patch the update loop so we can track the timing.
+    const updateLoop = this.update
+    this.update = (...args) => {
+      stats.begin()
+      updateLoop.apply(this, args)
+      stats.end()
+    }
   }
 }
 

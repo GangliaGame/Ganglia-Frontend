@@ -60,11 +60,11 @@ class Enemy extends Phaser.Sprite {
   }
 
   update() {
-    const deltaX = Math.random() * 0.4
-    const deltaY = (Math.random() * 0.2) - 0.1
+    const deltaX = 0.4
+    // const deltaY = (Math.random() * 0.2) - 0.1
 
     this.x += this.isLeftSide ? deltaX : -deltaX
-    this.y += this.isLeftSide ? deltaY : -deltaY
+    // this.y += this.isLeftSide ? deltaY : -deltaY
   }
 }
 
@@ -243,7 +243,7 @@ class Main extends Phaser.State {
     this.enemies = []
 
     // Add left-side enemies
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 10; i++) {
       const x = 0
       const y = Math.floor((this.game.height - 150) * Math.random() + 150)
       const enemy = this.game.add.existing(new Enemy(this.game, x, y))
@@ -251,7 +251,7 @@ class Main extends Phaser.State {
     }
 
     // Add right-side enemies
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 10; i++) {
       const x = this.game.width
       const y = Math.floor((this.game.height - 150) * Math.random() + 150)
       const enemy = this.game.add.existing(new Enemy(this.game, x, y, false))
@@ -269,19 +269,34 @@ class Main extends Phaser.State {
   }
 
   update() {
+    // this.game.world.children
+    //   .filter(child => child.destroy_in_next_tick)
+    //   .map(child => child.destroy())
+    //
+    // this.enemies.map(enemy => this.physics.arcade.overlap(
+    //   enemy,
+    //   this.player.getCurrentWeapon(),
+    //   (e, b) => () => { e.kill(); b.kill() },
+    //   null,
+    //   this,
+    // ))
+
     this.game.world.children
       .filter(child => child.destroy_in_next_tick)
       .map(child => child.kill())
 
-    const markEnemyAndBulletForDeletion = (enemy, bullet) => {
-      enemy.destroy_in_next_tick = true
-      bullet.destroy()
-    }
-
     this.enemies.map(enemy => this.physics.arcade.overlap(
       enemy,
       this.player.getCurrentWeapon(),
-      markEnemyAndBulletForDeletion,
+      (e, b) => { e.destroy_in_next_tick = true; b.destroy() },
+      null,
+      this,
+    ))
+
+    this.enemies.map(enemy => this.physics.arcade.overlap(
+      enemy,
+      this.player,
+      (e, p) => () => { e.destroy(); p.damage(10) },
       null,
       this,
     ))

@@ -19,6 +19,8 @@ module.exports = {
     filename: 'bundle.js',
   },
 
+  devtool: 'eval-source-map',
+
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'vendor.bundle.js' }),
     new HtmlWebpackPlugin({ template: 'index.html' }),

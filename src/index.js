@@ -73,14 +73,22 @@ class PlayerShip extends Phaser.Sprite {
     super(game, game.width / 2, game.height / 2, 'player')
     game.physics.enable(this, Phaser.Physics.ARCADE)
     this.anchor.setTo(0.5, 0.5)
-    this.body.collideWorldBounds = true
 
     // Firing
     this.firingAngleDelta = 5
     this.crosshairRadius = 100
     this.firingAngle = 0
 
+    // Movement
     this.movementSpeed = 100
+    this.body.collideWorldBounds = true
+
+    // Shields
+    this.isShieldEnabled = false
+    this.shield = game.add.sprite(this.x, this.y, 'shield')
+    this.shield.anchor.setTo(0.5, 0.5)
+    game.physics.enable(this.shield, Phaser.Physics.ARCADE)
+    this.shield.maxHealth = 100
 
     // Health
     this.maxHealth = 100
@@ -110,9 +118,6 @@ class PlayerShip extends Phaser.Sprite {
     this.weaponCursor.scale.x = 0.5
     this.weaponCursor.scale.y = 0.5
 
-    this.crosshair = this.game.add.sprite(this.x, this.y, 'crosshair')
-    this.crosshair.anchor.set(0.5)
-
     this.weapons.push(
       new SingleBulletWeapon(this.game),
       new TripleBulletWeapon(this.game),
@@ -122,12 +127,26 @@ class PlayerShip extends Phaser.Sprite {
       this.weapons[i].visible = false
     }
 
-    // Input
-    this.cursors = game.input.keyboard.createCursorKeys()
-    game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR])
+    // Weapon crosshair
+    this.crosshair = this.game.add.sprite(this.x, this.y, 'crosshair')
+    this.crosshair.anchor.set(0.5)
 
-    const changeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER)
-    changeKey.onDown.add(this.nextWeapon, this)
+    // Input (controls)
+    this.cursors = game.input.keyboard.createCursorKeys()
+    game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR, Phaser.Keyboard.S])
+
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.ENTER)
+      .onDown.add(this.nextWeapon, this)
+
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.S)
+      .onDown.add(this.toggleShield, this)
+  }
+
+  toggleShield() {
+    this.isShieldEnabled = !this.isShieldEnabled
+    this.shield.health = 100
   }
 
   setActiveWeapon(weaponNumber) {
@@ -153,6 +172,9 @@ class PlayerShip extends Phaser.Sprite {
     this.currentWeapon += 1
     if (this.currentWeapon > 2) { this.currentWeapon = 0 }
 
+    // XXX: This is a hack to only use one cursor.
+    // Couldn't find a reliable way to calculate this without
+    // magic numbers.
     this.weaponCursor.y = 20 + 37 * this.currentWeapon
 
     this.weapons[this.currentWeapon].visible = true
@@ -194,8 +216,16 @@ class PlayerShip extends Phaser.Sprite {
       }
     }
 
+    // Shield
+    this.shield.exists = this.isShieldEnabled
+    this.shield.x = this.x
+    this.shield.y = this.y
+    if (this.shield.health === 0) {
+      this.isShieldEnabled = false
+    }
+
+    // Prevent moving down over planet
     this.body.y = Math.min(this.body.y, this.game.maxY - (this.body.height / 2))
-    // this.body.y = Math.min(this.body.y, this.game.maxY)
   }
 }
 
@@ -211,8 +241,7 @@ class Main extends Phaser.State {
 
   preload() {
     this.load.image('background', 'assets/back2.png')
-    this.load.bitmapFont('shmupfont', 'assets/shmupfont.png', 'assets/shmupfont.xml')
-
+    this.load.image('shield', 'assets/shield.png')
     this.load.image('planet-moon', 'assets/planets/moon.png')
     this.load.image('player', 'assets/player-ship.png')
     this.load.image('crosshair', 'assets/crosshair.png')
@@ -270,7 +299,7 @@ class Main extends Phaser.State {
 
     // Add left-side enemies
     for (let i = 0; i < 10; i++) {
-      const x = 0
+      const x = 250 * Math.random()
       const y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
       const enemy = this.game.add.existing(new Enemy(this.game, x, y))
       this.enemies.push(enemy)
@@ -278,7 +307,7 @@ class Main extends Phaser.State {
 
     // Add right-side enemies
     for (let i = 0; i < 10; i++) {
-      const x = this.game.width
+      const x = this.game.width - 250 * Math.random()
       const y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
       const enemy = this.game.add.existing(new Enemy(this.game, x, y, false))
       this.enemies.push(enemy)
@@ -300,32 +329,46 @@ class Main extends Phaser.State {
     this.distanceRemaining = Math.max(0, this.distanceToPlanet - distanceTravelled).toFixed(0)
     this.distanceText.text = `DISTANCE TO PLANET: ${this.distanceRemaining}`
 
-    const onEnemyPlayerOverlap = (enemy, player) => {
-      enemy.destroy_in_next_tick = true
-      player.damage(10)
-    }
-
-    const onEnemyBulletOverlap = (enemy, bullet) => {
-      enemy.destroy_in_next_tick = true
-      bullet.destroy()
-    }
-
+    // Destroy sprites marked for killing
     this.game.world.children
-      .filter(child => child.destroy_in_next_tick)
+      .filter(child => child.kill_in_next_tick)
       .map(child => child.kill())
 
+    const enemyCollisionDamage = 10
+
+    // Enemy <-> bullet collision
     this.enemies.map(enemy => this.physics.arcade.overlap(
       enemy,
       this.player.getCurrentWeapon(),
-      onEnemyBulletOverlap,
+      (e, bullet) => {
+        enemy.kill_in_next_tick = true
+        bullet.destroy()
+      },
       null,
       this,
     ))
 
+    // Enemy <-> player ship (no shield) collision
     this.enemies.map(enemy => this.physics.arcade.overlap(
       enemy,
       this.player,
-      onEnemyPlayerOverlap,
+      (e, player) => {
+        enemy.kill_in_next_tick = true
+        player.damage(enemyCollisionDamage)
+      },
+      null,
+      this,
+    ))
+
+    // Enemy <-> player shield collision
+    this.enemies.map(enemy => this.physics.arcade.overlap(
+      enemy,
+      this.player.shield,
+      (e, shield) => {
+        shield.damage(enemyCollisionDamage)
+        console.log(shield.health)
+        e.kill_in_next_tick = true
+      },
       null,
       this,
     ))

@@ -106,7 +106,7 @@ class PlayerShip extends Phaser.Sprite {
     this.weaponLV.scale.x = 0.5
     this.weaponLV.scale.y = 0.5
 
-    this.weaponCursor = this.game.add.sprite(400, 20, 'cursor0')
+    this.weaponCursor = this.game.add.sprite(400, 20, 'cursor')
     this.weaponCursor.scale.x = 0.5
     this.weaponCursor.scale.y = 0.5
 
@@ -153,13 +153,7 @@ class PlayerShip extends Phaser.Sprite {
     this.currentWeapon += 1
     if (this.currentWeapon > 2) { this.currentWeapon = 0 }
 
-    if (this.currentWeapon === 0) {
-      this.weaponCursor.loadTexture('cursor0', 0)
-    } else if (this.currentWeapon === 1) {
-      this.weaponCursor.loadTexture('cursor1', 0)
-    } else if (this.currentWeapon === 2) {
-      this.weaponCursor.loadTexture('cursor2', 0)
-    }
+    this.weaponCursor.y = 20 + 37 * this.currentWeapon
 
     this.weapons[this.currentWeapon].visible = true
   }
@@ -228,9 +222,7 @@ class Main extends Phaser.State {
     this.load.image('weaponLV1', 'assets/weaponLV1.png')
     this.load.image('weaponLV2', 'assets/weaponLV2.png')
     this.load.image('weaponLV3', 'assets/weaponLV3.png')
-    this.load.image('cursor0', 'assets/cursor1.png')
-    this.load.image('cursor1', 'assets/cursor2.png')
-    this.load.image('cursor2', 'assets/cursor3.png')
+    this.load.image('cursor', 'assets/cursor.png')
 
     this.load.image('bullet-white', 'assets/newBullet-white.png')
     this.load.image('enemy', 'assets/enemy.png')

@@ -6,7 +6,7 @@ class Bullet extends Phaser.Sprite {
 
     this.anchor.set(0.5)
 
-    this.checkWorldBounds = true
+    // this.checkWorldBounds = true
     this.outOfBoundsKill = true
     this.exists = false
 

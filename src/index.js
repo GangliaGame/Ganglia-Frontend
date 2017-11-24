@@ -1,4 +1,7 @@
+import React from 'react'
+import ReactDOM from 'react-dom'
 import Stats from 'stats.js'
+import _ from 'lodash'
 /* eslint-disable */
 import PIXI from 'pixi'
 import 'p2'
@@ -306,7 +309,7 @@ class Main extends Phaser.State {
     this.enemies = []
 
     // Add left-side enemies
-    for (let i = 0; i < 0; i++) {
+    for (let i = 0; i < 10; i++) {
       const x = 250 * Math.random()
       const y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
       const enemy = this.game.add.existing(new Enemy(this.game, x, y))
@@ -314,7 +317,7 @@ class Main extends Phaser.State {
     }
 
     // Add right-side enemies
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 10; i++) {
       const x = this.game.width - 250 * Math.random()
       const y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
       const enemy = this.game.add.existing(new Enemy(this.game, x, y, false))
@@ -329,6 +332,18 @@ class Main extends Phaser.State {
 
   onNewGameState(gameState) {
     this.player.setActiveWeapon(3 || gameState.weaponLevel)
+  }
+
+  checkGameOver() {
+    let isGameOver = false
+    if (this.player.health === 0) {
+      isGameOver = true
+    }
+
+    // If game is actually over, notify react
+    if (isGameOver) {
+      this.game.onGameOver()
+    }
   }
 
   update() {
@@ -380,6 +395,9 @@ class Main extends Phaser.State {
       null,
       this,
     ))
+
+    // Check game over
+    this.checkGameOver()
   }
 
   render() {
@@ -388,12 +406,21 @@ class Main extends Phaser.State {
 }
 
 class Game extends Phaser.Game {
-  constructor() {
-    super(window.innerWidth, window.innerHeight, Phaser.CANVAS)
+  constructor({ onGameOver }) {
+    super(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'game')
+    this.onGameOver = onGameOver
     this.state.add('Main', Main, false)
     this.state.start('Main')
+    window.game = this
 
     this.setupStats()
+    // window.addEventListener('resize', _.throttle(this.resize.bind(this), 50), false)
+  }
+
+  resize() {
+    const width = window.innerWidth
+    const height = window.innerHeight
+    this.scale.setGameSize(width, height)
   }
 
   /**
@@ -414,4 +441,40 @@ class Game extends Phaser.Game {
   }
 }
 
-new Game()
+class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      isGameOver: false,
+    }
+  }
+
+  componentDidMount() {
+    this.game = new Game({ onGameOver: this.onGameOver.bind(this) })
+  }
+
+  onGameOver() {
+    this.setState({ isGameOver: true })
+    console.log('ongo')
+  }
+
+  render() {
+    return (
+      <div className="App">
+        {
+          this.state.isGameOver
+          ?
+          <div className="GameOver">
+            Game Over! You lose.
+            <button onClick={() => window.game.state.reset()}>Again?</button>
+            </div>
+          :
+
+          <div id="game"/>
+        }
+      </div>
+    )
+  }
+}
+
+ReactDOM.render(<App/>, document.getElementById('root'))

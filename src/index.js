@@ -52,18 +52,26 @@ class Enemy extends Phaser.Sprite {
   constructor(game, x, y, isLeftSide = true) {
     super(game, x, y, 'enemy')
     this.isLeftSide = isLeftSide
-    const scale = 0.5
-    this.scale.x = isLeftSide ? -scale : scale
-    this.scale.y = scale
+    this.scaleFactor = 0.5
+    this.scale.y = this.scaleFactor
     game.physics.enable(this, Phaser.Physics.ARCADE)
     this.body.collideWorldBounds = true
   }
 
   update() {
-    const deltaX = 1
+    const deltaX = 4
     // const deltaY = (Math.random() * 0.2) - 0.1
 
-    this.x += this.isLeftSide ? deltaX : -deltaX
+    if (this.isLeftSide) {
+      this.x += deltaX
+      this.scale.x = -this.scaleFactor
+    } else {
+      this.x -= deltaX
+      this.scale.x = this.scaleFactor
+    }
+    if (this.x < 0 || this.x > this.game.width) {
+      this.isLeftSide = !this.isLeftSide
+    }
     // this.y += this.isLeftSide ? deltaY : -deltaY
   }
 }
@@ -88,7 +96,7 @@ class PlayerShip extends Phaser.Sprite {
     this.shield = game.add.sprite(this.x, this.y, 'shield')
     this.shield.anchor.setTo(0.5, 0.5)
     game.physics.enable(this.shield, Phaser.Physics.ARCADE)
-    this.shield.maxHealth = 100
+    this.shield.maxHealth = 50
 
     // Health
     this.maxHealth = 100
@@ -298,7 +306,7 @@ class Main extends Phaser.State {
     this.enemies = []
 
     // Add left-side enemies
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 0; i++) {
       const x = 250 * Math.random()
       const y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
       const enemy = this.game.add.existing(new Enemy(this.game, x, y))
@@ -306,7 +314,7 @@ class Main extends Phaser.State {
     }
 
     // Add right-side enemies
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 1; i++) {
       const x = this.game.width - 250 * Math.random()
       const y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
       const enemy = this.game.add.existing(new Enemy(this.game, x, y, false))

@@ -60,7 +60,7 @@ class Enemy extends Phaser.Sprite {
   }
 
   update() {
-    const deltaX = 0.4
+    const deltaX = 1
     // const deltaY = (Math.random() * 0.2) - 0.1
 
     this.x += this.isLeftSide ? deltaX : -deltaX
@@ -128,8 +128,6 @@ class PlayerShip extends Phaser.Sprite {
 
     const changeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER)
     changeKey.onDown.add(this.nextWeapon, this)
-
-    this.game.debug.spriteInfo(this, 500, 500)
   }
 
   setActiveWeapon(weaponNumber) {
@@ -201,6 +199,9 @@ class PlayerShip extends Phaser.Sprite {
         this.weapons[this.currentWeapon].fire(this)
       }
     }
+
+    this.body.y = Math.min(this.body.y, this.game.maxY - (this.body.height / 2))
+    // this.body.y = Math.min(this.body.y, this.game.maxY)
   }
 }
 
@@ -208,12 +209,17 @@ class Main extends Phaser.State {
   init() {
     this.game.renderer.renderSession.roundPixels = true
     this.physics.startSystem(Phaser.Physics.ARCADE)
+    this.distanceToPlanet = 1000
+    this.minutesToPlanet = 1
+    this.distanceRemaining = this.distanceToPlanet
+    this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.distanceToPlanet
   }
 
   preload() {
     this.load.image('background', 'assets/back2.png')
     this.load.bitmapFont('shmupfont', 'assets/shmupfont.png', 'assets/shmupfont.xml')
 
+    this.load.image('planet-moon', 'assets/planets/moon.png')
     this.load.image('player', 'assets/player-ship.png')
     this.load.image('crosshair', 'assets/crosshair.png')
     this.load.image('hpBar', 'assets/hpBar.png')
@@ -239,13 +245,41 @@ class Main extends Phaser.State {
     this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'background')
     this.background.autoScroll(0, -50)
 
+    // Planet
+    const planetPeek = 150
+    this.planet = this.add.sprite(this.game.world.centerX, this.game.height - planetPeek, 'planet-moon')
+    this.planet.anchor.setTo(0.5, 0.5)
+    this.planet.scale.set(1.25, 1.25)
+    this.planet.y = this.game.height - planetPeek + (this.planet.height / 2)
+    this.planet.update = () => { this.planet.angle += 0.01 }
+
+    // Distance to planet text
+    const rectWidth = 440
+    const rectHeight = 40
+    const rectOffset = 8
+    const graphics = this.game.add.graphics(
+      this.game.world.centerX - (rectWidth / 2),
+      this.game.height - rectHeight - rectOffset,
+    )
+    graphics.lineStyle(2, 0xffffff, 1)
+    graphics.beginFill(0x000000, 0.65)
+    graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 10)
+    this.distanceText = this.game.add.text(
+      this.game.world.centerX - 205,
+      this.game.height - 45, '',
+      { font: '26px Orbitron', fill: 'white' },
+    )
+
+    // Calculate a maximum y-coordinate, which other sprites can
+    // use to avoid creating themselves over the planet area
+    this.game.maxY = this.game.height - planetPeek
     // Enemies
     this.enemies = []
 
     // Add left-side enemies
     for (let i = 0; i < 10; i++) {
       const x = 0
-      const y = Math.floor((this.game.height - 150) * Math.random() + 150)
+      const y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
       const enemy = this.game.add.existing(new Enemy(this.game, x, y))
       this.enemies.push(enemy)
     }
@@ -253,7 +287,7 @@ class Main extends Phaser.State {
     // Add right-side enemies
     for (let i = 0; i < 10; i++) {
       const x = this.game.width
-      const y = Math.floor((this.game.height - 150) * Math.random() + 150)
+      const y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
       const enemy = this.game.add.existing(new Enemy(this.game, x, y, false))
       this.enemies.push(enemy)
     }
@@ -269,17 +303,20 @@ class Main extends Phaser.State {
   }
 
   update() {
-    // this.game.world.children
-    //   .filter(child => child.destroy_in_next_tick)
-    //   .map(child => child.destroy())
-    //
-    // this.enemies.map(enemy => this.physics.arcade.overlap(
-    //   enemy,
-    //   this.player.getCurrentWeapon(),
-    //   (e, b) => () => { e.kill(); b.kill() },
-    //   null,
-    //   this,
-    // ))
+    this.game.playTimeMS = this.game.time.now - this.game.time.pauseDuration
+    const distanceTravelled = this.game.playTimeMS / this.msPerDistanceUnit
+    this.distanceRemaining = Math.max(0, this.distanceToPlanet - distanceTravelled).toFixed(0)
+    this.distanceText.text = `DISTANCE TO PLANET: ${this.distanceRemaining}`
+
+    const onEnemyPlayerOverlap = (enemy, player) => {
+      enemy.destroy_in_next_tick = true
+      player.damage(10)
+    }
+
+    const onEnemyBulletOverlap = (enemy, bullet) => {
+      enemy.destroy_in_next_tick = true
+      bullet.destroy()
+    }
 
     this.game.world.children
       .filter(child => child.destroy_in_next_tick)
@@ -288,7 +325,7 @@ class Main extends Phaser.State {
     this.enemies.map(enemy => this.physics.arcade.overlap(
       enemy,
       this.player.getCurrentWeapon(),
-      (e, b) => { e.destroy_in_next_tick = true; b.destroy() },
+      onEnemyBulletOverlap,
       null,
       this,
     ))
@@ -296,14 +333,14 @@ class Main extends Phaser.State {
     this.enemies.map(enemy => this.physics.arcade.overlap(
       enemy,
       this.player,
-      (e, p) => () => { e.destroy(); p.damage(10) },
+      onEnemyPlayerOverlap,
       null,
       this,
     ))
   }
 
   render() {
-    this.game.debug.spriteInfo(this.player, 0, this.game.height - 75)
+    // this.game.debug.spriteInfo(this.player, 0, this.game.height - 75)
   }
 }
 
@@ -315,7 +352,6 @@ class Game extends Phaser.Game {
 
     this.setupStats()
   }
-
 
   /**
    * Display the FPS and MS using Stats.js.

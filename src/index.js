@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import Stats from 'stats.js'
 /* eslint-disable */
 import PIXI from 'pixi'
@@ -31,6 +32,11 @@ class GameServer {
       .then(serverState => (typeof this.onNewGameState === 'function') && this.onNewGameState(serverState))
   }
 
+  notifyGameLost() {
+    this.fetch('game/lost')
+      .then(serverState => (typeof this.onNewGameState === 'function') && this.onNewGameState(serverState))
+  }
+
   fetch(path) {
     function timeout(ms, promise) {
       return new Promise((resolve, reject) => {
@@ -45,8 +51,6 @@ class GameServer {
       })
   }
 }
-
-const server = new GameServer()
 
 class Enemy extends Phaser.Sprite {
   constructor(game, x, y, isLeftSide = true) {
@@ -243,6 +247,7 @@ class Main extends Phaser.State {
     this.physics.startSystem(Phaser.Physics.ARCADE)
     this.distanceToPlanet = 1000
     this.minutesToPlanet = 1
+    this.isGameOver = false
     this.distanceRemaining = this.distanceToPlanet
     this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.distanceToPlanet
   }
@@ -302,29 +307,33 @@ class Main extends Phaser.State {
     // Calculate a maximum y-coordinate, which other sprites can
     // use to avoid creating themselves over the planet area
     this.game.maxY = this.game.height - planetPeek
-    // Enemies
+
+    // Add left and right enemies
     this.enemies = []
+    _.times(5, () => this.addEnemy(true))
+    _.times(5, () => this.addEnemy(false))
 
-    // Add left-side enemies
-    for (let i = 0; i < 0; i++) {
-      const x = 250 * Math.random()
-      const y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
-      const enemy = this.game.add.existing(new Enemy(this.game, x, y))
-      this.enemies.push(enemy)
-    }
-
-    // Add right-side enemies
-    for (let i = 0; i < 1; i++) {
-      const x = this.game.width - 250 * Math.random()
-      const y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
-      const enemy = this.game.add.existing(new Enemy(this.game, x, y, false))
-      this.enemies.push(enemy)
-    }
-
-    // Playground
+    // Player ship
     this.player = this.game.add.existing(new PlayerShip(this.game))
 
-    server.onNewGameState = this.onNewGameState.bind(this)
+    // Server events
+    this.game.server.onNewGameState = this.onNewGameState.bind(this)
+
+    // Input
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.E)
+      .onDown.add(this.addEnemy, this)
+  }
+
+  addEnemy(isLeft = true) {
+    let x = this.game.width - 250 * Math.random()
+    let y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
+    if (isLeft) {
+      x = 250 * Math.random()
+      y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
+    }
+    const enemy = this.game.add.existing(new Enemy(this.game, x, y, false))
+    this.enemies.push(enemy)
   }
 
   onNewGameState(gameState) {
@@ -332,7 +341,10 @@ class Main extends Phaser.State {
   }
 
   update() {
+    // Update game play time
     this.game.playTimeMS = this.game.time.now - this.game.time.pauseDuration
+
+    // Update distance travelled
     const distanceTravelled = this.game.playTimeMS / this.msPerDistanceUnit
     this.distanceRemaining = Math.max(0, this.distanceToPlanet - distanceTravelled).toFixed(0)
     this.distanceText.text = `DISTANCE TO PLANET: ${this.distanceRemaining}`
@@ -380,6 +392,25 @@ class Main extends Phaser.State {
       null,
       this,
     ))
+
+    // Check if game ended and notify server if needed
+    this.checkAndNotifyIfGameEnded()
+  }
+
+  checkAndNotifyIfGameEnded() {
+    let isGameEnding = false
+    if (this.player.health === 0) {
+      isGameEnding = true
+    }
+    if (this.distanceRemaining === 0) {
+      isGameEnding = true
+    }
+
+    // Did the game just end now (i.e. it was previously not ended)?
+    if (isGameEnding && this.isGameOver === false) {
+      this.game.server.notifyGameLost()
+      this.isGameOver = true
+    }
   }
 
   render() {
@@ -392,6 +423,7 @@ class Game extends Phaser.Game {
     super(window.innerWidth, window.innerHeight, Phaser.CANVAS)
     this.state.add('Main', Main, false)
     this.state.start('Main')
+    this.server = new GameServer()
 
     this.setupStats()
   }

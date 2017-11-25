@@ -45,7 +45,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.weapons = []
     this.currentWeapon = 0
 
-    this.weaponLVactive = 3
+    this.enabledWeaponLevel = 3
     this.weaponLV = this.game.add.sprite(0, 20, 'weaponLV3')
     this.weaponLV.scale.x = 0.5
     this.weaponLV.scale.y = 0.5
@@ -74,8 +74,6 @@ export default class PlayerShip extends Phaser.Sprite {
     const hotkeys = {
       ENTER: this.nextWeapon.bind(this),
       S: this.toggleShield.bind(this),
-      UP: this.moveDown.bind(this),
-      DOWN: this.moveUp.bind(this),
     }
     Object.entries(hotkeys).forEach(([key, handler]) => {
       this.game.input.keyboard
@@ -86,12 +84,13 @@ export default class PlayerShip extends Phaser.Sprite {
 
   toggleShield() {
     this.isShieldEnabled = !this.isShieldEnabled
+    this.shield.exists = this.isShieldEnabled
     this.shield.health = 100
   }
 
   setActiveWeapon(weaponNumber) {
-    this.weaponLVactive = weaponNumber
-    this.weaponLV.loadTexture(`weaponLV${this.weaponLVactive}`, 0)
+    this.enabledWeaponLevel = weaponNumber
+    this.weaponLV.loadTexture(`weaponLV${this.enabledWeaponLevel}`, 0)
   }
 
   getCurrentWeapon() {
@@ -120,6 +119,12 @@ export default class PlayerShip extends Phaser.Sprite {
     this.weapons[this.currentWeapon].visible = true
   }
 
+  fireWeapon() {
+    if (this.enabledWeaponLevel > this.currentWeapon) {
+      this.weapons[this.currentWeapon].fire(this)
+    }
+  }
+
   moveDown() {
     this.body.velocity.y = this.movementSpeed
   }
@@ -128,26 +133,33 @@ export default class PlayerShip extends Phaser.Sprite {
     this.body.velocity.y = -this.movementSpeed
   }
 
+  increaseWeaponAngle() {
+    this.firingAngle += this.firingAngleDelta
+  }
+
+  decreaseWeaponAngle() {
+    this.firingAngle -= this.firingAngleDelta
+  }
+
   update() {
     this.body.velocity.set(0)
 
+    // Update crosshair location
     this.crosshair.x = this.x + this.crosshairRadius * Math.cos(toRadians(this.firingAngle))
     this.crosshair.y = this.y - this.crosshairRadius * Math.sin(toRadians(this.firingAngle))
 
-    if (this.cursors.left.isDown) {
-      this.firingAngle += this.firingAngleDelta
-    } else if (this.cursors.right.isDown) {
-      this.firingAngle -= this.firingAngleDelta
-    }
+    // Weapon angle
+    if (this.cursors.left.isDown) this.increaseWeaponAngle()
+    else if (this.cursors.right.isDown) this.decreaseWeaponAngle()
 
-    if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-      if (this.weaponLVactive > this.currentWeapon) {
-        this.weapons[this.currentWeapon].fire(this)
-      }
-    }
+    // Weapon firing
+    if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) this.fireWeapon()
+
+    // Movement
+    if (this.cursors.down.isDown) this.moveDown()
+    else if (this.cursors.up.isDown) this.moveUp()
 
     // Shield
-    this.shield.exists = this.isShieldEnabled
     this.shield.x = this.x
     this.shield.y = this.y
     if (this.shield.health === 0) {

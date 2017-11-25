@@ -1,3 +1,5 @@
+import io from 'socket.io-client'
+
 export default class GameServer {
   constructor() {
     this.pollFrequency = 250 // ms
@@ -7,7 +9,10 @@ export default class GameServer {
         'http://localhost:9000' :
         'https://ganglia-server.herokuapp.com'
     }())
+    this.socket = io(this.baseURL)
     setInterval(this.onPollTimer.bind(this), this.pollFrequency)
+    this.socket.on('move:up', () => this.onMove('up'))
+    this.socket.on('move:down', () => this.onMove('down'))
   }
 
   onPollTimer() {

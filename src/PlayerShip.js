@@ -69,15 +69,19 @@ export default class PlayerShip extends Phaser.Sprite {
 
     // Input (controls)
     this.cursors = game.input.keyboard.createCursorKeys()
-    game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR, Phaser.Keyboard.S])
 
-    this.game.input.keyboard
-      .addKey(Phaser.Keyboard.ENTER)
-      .onDown.add(this.nextWeapon, this)
-
-    this.game.input.keyboard
-      .addKey(Phaser.Keyboard.S)
-      .onDown.add(this.toggleShield, this)
+    // Bind hotkeys (kinda hacky)
+    const hotkeys = {
+      ENTER: this.nextWeapon.bind(this),
+      S: this.toggleShield.bind(this),
+      UP: this.moveDown.bind(this),
+      DOWN: this.moveUp.bind(this),
+    }
+    Object.entries(hotkeys).forEach(([key, handler]) => {
+      this.game.input.keyboard
+        .addKey(Phaser.Keyboard[key])
+        .onDown.add(handler)
+    })
   }
 
   toggleShield() {
@@ -87,7 +91,7 @@ export default class PlayerShip extends Phaser.Sprite {
 
   setActiveWeapon(weaponNumber) {
     this.weaponLVactive = weaponNumber
-    this.updateLV()
+    this.weaponLV.loadTexture(`weaponLV${this.weaponLVactive}`, 0)
   }
 
   getCurrentWeapon() {
@@ -116,16 +120,12 @@ export default class PlayerShip extends Phaser.Sprite {
     this.weapons[this.currentWeapon].visible = true
   }
 
-  updateLV() {
-    if (this.weaponLVactive === 0) {
-      this.weaponLV.loadTexture('weaponLV0', 0)
-    } else if (this.weaponLVactive === 1) {
-      this.weaponLV.loadTexture('weaponLV1', 0)
-    } else if (this.weaponLVactive === 2) {
-      this.weaponLV.loadTexture('weaponLV2', 0)
-    } else if (this.weaponLVactive === 3) {
-      this.weaponLV.loadTexture('weaponLV3', 0)
-    }
+  moveDown() {
+    this.body.velocity.y = this.movementSpeed
+  }
+
+  moveUp() {
+    this.body.velocity.y = -this.movementSpeed
   }
 
   update() {
@@ -138,12 +138,6 @@ export default class PlayerShip extends Phaser.Sprite {
       this.firingAngle += this.firingAngleDelta
     } else if (this.cursors.right.isDown) {
       this.firingAngle -= this.firingAngleDelta
-    }
-
-    if (this.cursors.up.isDown) {
-      this.body.velocity.y = -this.movementSpeed
-    } else if (this.cursors.down.isDown) {
-      this.body.velocity.y = this.movementSpeed
     }
 
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {

@@ -18,6 +18,7 @@ class Main extends Phaser.State {
     this.isGameOver = false
     this.distanceRemaining = this.maxDistance
     this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.maxDistance
+    this.game.stage.disableVisibilityChange = true
   }
 
   preload() {
@@ -86,6 +87,7 @@ class Main extends Phaser.State {
 
     // Server events
     this.game.server.onNewGameState = this.onNewGameState.bind(this)
+    this.game.server.onMove = this.onMove.bind(this)
 
     // Input
     this.game.input.keyboard
@@ -102,6 +104,11 @@ class Main extends Phaser.State {
     }
     const enemy = this.game.add.existing(new Enemy(this.game, x, y, false))
     this.enemies.push(enemy)
+  }
+
+  onMove(direction) {
+    if (direction === 'up') this.player.moveUp()
+    else if (direction === 'down') this.player.moveDown()
   }
 
   onNewGameState(gameState) {
@@ -191,9 +198,6 @@ class Game extends Phaser.Game {
     this.setupStats()
   }
 
-  /**
-   * Display the FPS and MS using Stats.js.
-   */
   setupStats() {
     // Setup the new stats panel.
     const stats = new Stats()

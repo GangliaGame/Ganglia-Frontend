@@ -1,8 +1,6 @@
 import { SingleBulletWeapon, TripleBulletWeapon, BeamWeapon } from './weapons'
 
-function toRadians(angle) {
-  return angle * (Math.PI / 180)
-}
+const toRadians = angle => angle * (Math.PI / 180)
 
 export default class PlayerShip extends Phaser.Sprite {
   constructor(game) {
@@ -11,7 +9,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.anchor.setTo(0.5, 0.5)
 
     // Firing
-    this.firingAngleDelta = 5
+    this.firingAngleDelta = 3
     this.crosshairRadius = 100
     this.firingAngle = 0
 

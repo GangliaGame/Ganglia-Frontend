@@ -18,7 +18,7 @@ class Main extends Phaser.State {
     this.isGameOver = false
     this.distanceRemaining = this.maxDistance
     this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.maxDistance
-    this.game.stage.disableVisibilityChange = true
+    // this.game.stage.disableVisibilityChange = true
   }
 
   preload() {
@@ -77,13 +77,14 @@ class Main extends Phaser.State {
     // use to avoid creating themselves over the planet area
     this.game.maxY = this.game.height - planetPeek
 
-    // Add left and right enemies
-    this.enemies = []
-    _.times(5, () => this.addEnemy(true))
-    _.times(5, () => this.addEnemy(false))
-
     // Player ship
     this.player = this.game.add.existing(new PlayerShip(this.game))
+    this.game.player = this.player
+
+    // Add left and right enemies
+    this.enemies = []
+    _.times(10, () => this.addEnemy(true))
+    _.times(10, () => this.addEnemy(false))
 
     // Server events
     this.game.server.onNewGameState = this.onNewGameState.bind(this)
@@ -95,14 +96,18 @@ class Main extends Phaser.State {
       .onDown.add(this.addEnemy, this)
   }
 
-  addEnemy(isLeft = true) {
+  addEnemy(isLeftSide) {
+    if (typeof isLeftSide === 'undefined') {
+      isLeftSide = Boolean(_.random(0, 1))
+    }
     let x = this.game.width - 250 * Math.random()
     let y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
-    if (isLeft) {
+    // let y = 300
+    if (isLeftSide) {
       x = 250 * Math.random()
       y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
     }
-    const enemy = this.game.add.existing(new Enemy(this.game, x, y, false))
+    const enemy = this.game.add.existing(new Enemy(this.game, x, y, isLeftSide))
     this.enemies.push(enemy)
   }
 
@@ -137,7 +142,7 @@ class Main extends Phaser.State {
       this.player.getCurrentWeapon(),
       (e, bullet) => {
         enemy.kill_in_next_tick = true
-        bullet.destroy()
+        bullet.kill()
       },
       null,
       this,

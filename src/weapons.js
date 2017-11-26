@@ -6,7 +6,7 @@ class Bullet extends Phaser.Sprite {
 
     this.anchor.set(0.5)
 
-    // this.checkWorldBounds = true
+    this.checkWorldBounds = true
     this.outOfBoundsKill = true
     this.exists = false
 
@@ -100,8 +100,12 @@ export class BeamWeapon extends Phaser.Group {
     this.bulletSpeed = 2000
     this.fireRate = 1
 
-    for (let i = 0; i < 64; i++) {
-      this.add(new Bullet(game, 'bullet11'), true)
+    this.addBulletsToPool(128)
+  }
+
+  addBulletsToPool(count) {
+    for (let i = 0; i < count; i++) {
+      this.add(new Bullet(this.game, 'bullet11'), true)
     }
   }
 
@@ -113,7 +117,6 @@ export class BeamWeapon extends Phaser.Group {
     const angle = -source.firingAngle
 
     this.getFirstExists(false).fire(x, y, angle, this.bulletSpeed, 0, 0)
-
     this.nextFire = this.game.time.time + this.fireRate
   }
 }

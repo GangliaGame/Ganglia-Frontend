@@ -18,7 +18,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.body.collideWorldBounds = true
 
     // Shields
-    this.isShieldEnabled = false
+    this.isShieldActive = false
     this.shield = game.add.sprite(this.x, this.y, 'shield')
     this.shield.anchor.setTo(0.5, 0.5)
     game.physics.enable(this.shield, Phaser.Physics.ARCADE)
@@ -81,9 +81,19 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   toggleShield() {
-    this.isShieldEnabled = !this.isShieldEnabled
-    this.shield.exists = this.isShieldEnabled
+    if (this.isShieldActive) this.deactivateShield()
+    else this.activateShield()
+  }
+
+  activateShield() {
+    this.isShieldActive = true
+    this.shield.exists = true
     this.shield.health = 100
+  }
+
+  deactivateShield() {
+    this.isShieldActive = false
+    this.shield.exists = false
   }
 
   setActiveWeapon(weaponNumber) {
@@ -161,7 +171,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.shield.x = this.x
     this.shield.y = this.y
     if (this.shield.health === 0) {
-      this.isShieldEnabled = false
+      this.isShieldActive = false
     }
 
     // Prevent moving down over planet

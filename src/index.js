@@ -18,7 +18,7 @@ class Main extends Phaser.State {
     this.isGameOver = false
     this.distanceRemaining = this.maxDistance
     this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.maxDistance
-    // this.game.stage.disableVisibilityChange = true
+    this.game.stage.disableVisibilityChange = true
   }
 
   preload() {
@@ -91,18 +91,15 @@ class Main extends Phaser.State {
     this.game.server.onMove = this.onMove.bind(this)
 
     // Input
+    // Add enemy to left or right side (randomly)
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.E)
-      .onDown.add(this.addEnemy, this)
+      .onDown.add(() => this.addEnemy(Boolean(_.random(0, 1))), this)
   }
 
   addEnemy(isLeftSide) {
-    if (typeof isLeftSide === 'undefined') {
-      isLeftSide = Boolean(_.random(0, 1))
-    }
     let x = this.game.width - 250 * Math.random()
     let y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
-    // let y = 300
     if (isLeftSide) {
       x = 250 * Math.random()
       y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
@@ -118,6 +115,12 @@ class Main extends Phaser.State {
 
   onNewGameState(gameState) {
     this.player.setActiveWeapon(3 || gameState.weaponLevel)
+    if (this.player.isShieldActive && !gameState.isShieldActive) {
+      this.player.deactivateShield()
+    }
+    else if (!this.player.isShieldActive && gameState.isShieldActive) {
+      this.player.activateShield()
+    }
   }
 
   update() {

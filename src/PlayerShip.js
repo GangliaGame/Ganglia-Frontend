@@ -22,7 +22,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.shield = game.add.sprite(this.x, this.y, 'shield')
     this.shield.anchor.setTo(0.5, 0.5)
     game.physics.enable(this.shield, Phaser.Physics.ARCADE)
-    this.shield.maxHealth = 50
+    this.deactivateShield()
 
     // Health
     this.maxHealth = 100

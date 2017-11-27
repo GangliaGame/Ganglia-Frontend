@@ -98,10 +98,10 @@ class Main extends Phaser.State {
   }
 
   addEnemy(isLeftSide) {
-    let x = this.game.width - 250 * Math.random()
+    let x = this.game.width - 100 * Math.random()
     let y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
     if (isLeftSide) {
-      x = 250 * Math.random()
+      x = 100 * Math.random()
       y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
     }
     const enemy = this.game.add.existing(new Enemy(this.game, x, y, isLeftSide))
@@ -114,11 +114,10 @@ class Main extends Phaser.State {
   }
 
   onNewGameState(gameState) {
-    this.player.setActiveWeapon(3 || gameState.weaponLevel)
+    this.player.setActiveWeapon(gameState.weaponLevel)
     if (this.player.isShieldActive && !gameState.isShieldActive) {
       this.player.deactivateShield()
-    }
-    else if (!this.player.isShieldActive && gameState.isShieldActive) {
+    } else if (!this.player.isShieldActive && gameState.isShieldActive) {
       this.player.activateShield()
     }
   }

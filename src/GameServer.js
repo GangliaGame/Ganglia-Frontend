@@ -13,6 +13,7 @@ export default class GameServer {
     setInterval(this.onPollTimer.bind(this), this.pollFrequency)
     this.socket.on('move:up', () => this.onMove('up'))
     this.socket.on('move:down', () => this.onMove('down'))
+    this.socket.on('move:stop', () => this.onMove('stop'))
   }
 
   onPollTimer() {

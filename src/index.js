@@ -1,9 +1,9 @@
 import _ from 'lodash'
 import Stats from 'stats.js'
 /* eslint-disable */
-import PIXI from 'pixi'
-import 'p2'
-import Phaser from 'phaser'
+// import PIXI from 'pixi'
+// import 'p2'
+// import Phaser from 'phaser'
 /* eslint-enable */
 import PlayerShip from './PlayerShip'
 import Enemy from './Enemy'
@@ -109,8 +109,14 @@ class Main extends Phaser.State {
   }
 
   onMove(direction) {
-    if (direction === 'up') this.player.moveUp()
-    else if (direction === 'down') this.player.moveDown()
+    if (this.moveTimer) {
+      window.clearTimeout(this.moveTimer)
+    }
+    if (direction === 'up') {
+      this.moveTimer = window.setInterval(() => this.player.moveUp(), 10)
+    } else if (direction === 'down') {
+      this.moveTimer = window.setInterval(() => this.player.moveDown(), 10)
+    }
   }
 
   onNewGameState(gameState) {

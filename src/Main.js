@@ -7,7 +7,7 @@ export default class Main extends Phaser.State {
   init() {
     this.game.renderer.renderSession.roundPixels = true
     this.physics.startSystem(Phaser.Physics.ARCADE)
-    this.maxDistance = 1000
+    this.maxDistance = 5000
     this.minutesToPlanet = 2
     this.isGameOver = false
     this.distanceRemaining = this.maxDistance
@@ -18,7 +18,7 @@ export default class Main extends Phaser.State {
   preload() {
     this.load.image('background', 'assets/background.png')
     this.load.image('shield', 'assets/shield.png')
-    // this.load.image('planet-moon', 'assets/planets/moon.png')
+    this.load.image('planet-moon', 'assets/planets/moon.png')
     this.load.image('player', 'assets/player-ship.png')
     this.load.image('bullet', 'assets/bullet.png')
     this.load.image('enemy', 'assets/enemy.png')
@@ -28,37 +28,33 @@ export default class Main extends Phaser.State {
     // Background
     this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'background')
     this.background.autoScroll(-25, 0)
-    //
-    // // Planet
-    // const planetPeek = 150
-    // this.planet = this.add.sprite(this.game.world.centerX, this.game.height - planetPeek, 'planet-moon')
-    // this.planet.anchor.setTo(0.5, 0.5)
-    // this.planet.scale.set(1.25, 1.25)
-    // this.planet.y = this.game.height - planetPeek + (this.planet.height / 2)
-    // this.planet.update = () => { this.planet.angle += 0.01 }
-    //
-    // // Distance to planet text
-    // const rectWidth = 440
-    // const rectHeight = 40
-    // const rectOffset = 8
-    // const graphics = this.game.add.graphics(
-    //   this.game.world.centerX - (rectWidth / 2),
-    //   this.game.height - rectHeight - rectOffset,
-    // )
-    // graphics.lineStyle(2, 0xffffff, 1)
-    // graphics.beginFill(0x000000, 0.65)
-    // graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 10)
-    // this.distanceText = this.game.add.text(
-    //   this.game.world.centerX - 205,
-    //   this.game.height - 45, '',
-    //   { font: '26px Orbitron', fill: 'white' },
-    // )
 
-    // Calculate a maximum y-coordinate, which other sprites can
-    // use to avoid creating themselves over the planet area
-    // this.game.maxY = this.game.height - planetPeek
+    // Planet
+    this.planet = this.add.sprite(this.game.world.centerX, this.game.height, 'planet-moon')
+    this.planet.anchor.setTo(0.5, 0.5)
+    this.planet.scale.set(0.16, 0.16)
+    this.planet.x = this.game.width
+    this.planet.y = this.game.height / 2
+    this.planet.update = () => { this.planet.angle += 0.1 }
 
-    this.game.maxY = this.game.height
+    // Distance to planet text
+    const rectWidth = 150
+    const rectHeight = 40
+    const rectOffsetFromEdge = 40
+    const rectInnerOffset = 10
+    const graphics = this.game.add.graphics(
+      this.game.width - rectWidth - rectOffsetFromEdge,
+      this.game.height / 2,
+    )
+    graphics.lineStyle(2, 0x000000, 1)
+    graphics.beginFill(0xffffff)
+    graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 25)
+    this.distanceText = this.game.add.text(
+      this.game.width - rectWidth - rectOffsetFromEdge + rectInnerOffset,
+      this.game.height / 2,
+      '',
+      { font: '30px DDC Hardware', fill: 'black' },
+    )
 
     // Player ship
     this.player = this.game.add.existing(new PlayerShip(this.game))
@@ -84,10 +80,10 @@ export default class Main extends Phaser.State {
 
   addEnemy(isLeftSide) {
     let x = this.game.width - 100 * Math.random()
-    let y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
+    let y = (this.game.height - 150) * Math.random() + 150
     if (isLeftSide) {
       x = 100 * Math.random()
-      y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
+      y = (this.game.height - 150) * Math.random() + 150
     }
     const enemy = this.game.add.existing(new Enemy(this.game, x, y, isLeftSide))
     this.enemies.push(enemy)
@@ -95,10 +91,10 @@ export default class Main extends Phaser.State {
 
   addPatrolEnemy(isLeftSide) {
     let x = this.game.width - 100 * Math.random()
-    let y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
+    let y = (this.game.height - 150) * Math.random() + 150
     if (isLeftSide) {
       x = 100 * Math.random()
-      y = Math.min(this.game.maxY, (this.game.height - 150) * Math.random() + 150)
+      y = (this.game.height - 150) * Math.random() + 150
     }
     const enemy = this.game.add.existing(new PatrolEnemy(this.game, x, y, isLeftSide))
     this.enemies.push(enemy)
@@ -132,9 +128,9 @@ export default class Main extends Phaser.State {
     this.game.playTimeMS = this.game.time.now - this.game.time.pauseDuration
 
     // Update distance travelled
-    // const distanceTravelled = this.game.playTimeMS / this.msPerDistanceUnit
-    // this.distanceRemaining = _.round(Math.max(0, this.maxDistance - distanceTravelled))
-    // this.distanceText.text = `DISTANCE TO PLANET: ${this.distanceRemaining}`
+    const distanceTravelled = this.game.playTimeMS / this.msPerDistanceUnit
+    this.distanceRemaining = _.round(Math.max(0, this.maxDistance - distanceTravelled))
+    this.distanceText.text = `${this.distanceRemaining} KM`
 
     // Destroy sprites marked for killing
     this.game.world.children

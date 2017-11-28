@@ -106,8 +106,5 @@ export default class PlayerShip extends Phaser.Sprite {
     if (this.shield.health === 0) {
       this.isShieldActive = false
     }
-
-    // Prevent moving down over planet
-    this.body.y = Math.min(this.body.y, this.game.maxY - (this.body.height / 2))
   }
 }

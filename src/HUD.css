@@ -9,16 +9,16 @@
 }
 
 .HUD-inner {
+  margin-top: 4vh;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 95vw;
 }
 
 .Card {
-  height: 40vh;
-  width: 16vw;
+  height: 44vh;
+  width: 17vw;
   background-color: black;
   border: 2px solid white;
   border-radius: 7.5px;

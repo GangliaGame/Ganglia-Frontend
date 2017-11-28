@@ -39,21 +39,22 @@ export default class Main extends Phaser.State {
 
     // Distance to planet text
     const rectWidth = 150
-    const rectHeight = 40
+    const rectHeight = 46
     const rectOffsetFromEdge = 40
-    const rectInnerOffset = 10
+    const offsetLeft = 14
+    const offsetTop = 5
     const graphics = this.game.add.graphics(
       this.game.width - rectWidth - rectOffsetFromEdge,
-      this.game.height / 2,
+      this.game.height / 2 - (rectHeight / 2),
     )
     graphics.lineStyle(2, 0x000000, 1)
     graphics.beginFill(0xffffff)
     graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 25)
     this.distanceText = this.game.add.text(
-      this.game.width - rectWidth - rectOffsetFromEdge + rectInnerOffset,
-      this.game.height / 2,
+      this.game.width - rectWidth - rectOffsetFromEdge + offsetLeft,
+      this.game.height / 2 - (rectHeight / 2) + offsetTop,
       '',
-      { font: '30px DDC Hardware', fill: 'black' },
+      { font: '31px DDC Hardware', fill: 'black' },
     )
 
     // Player ship
@@ -62,7 +63,7 @@ export default class Main extends Phaser.State {
 
     // Add left and right enemies
     this.enemies = []
-    _.times(10, () => this.addPatrolEnemy(false))
+    // _.times(10, () => this.addPatrolEnemy(false))
     _.times(10, () => this.addEnemy(false))
 
     // Server events
@@ -78,27 +79,19 @@ export default class Main extends Phaser.State {
       .onDown.add(() => this.addEnemy(Boolean(_.random(0, 1))), this)
   }
 
-  addEnemy(isLeftSide) {
-    let x = this.game.width - 100 * Math.random()
-    let y = (this.game.height - 150) * Math.random() + 150
-    if (isLeftSide) {
-      x = 100 * Math.random()
-      y = (this.game.height - 150) * Math.random() + 150
-    }
-    const enemy = this.game.add.existing(new Enemy(this.game, x, y, isLeftSide))
+  addEnemy() {
+    const x = this.game.width - this.planet.width / 2
+    const y = this.game.height * Math.random()
+    const enemy = this.game.add.existing(new Enemy(this.game, x, y))
     this.enemies.push(enemy)
   }
 
-  addPatrolEnemy(isLeftSide) {
-    let x = this.game.width - 100 * Math.random()
-    let y = (this.game.height - 150) * Math.random() + 150
-    if (isLeftSide) {
-      x = 100 * Math.random()
-      y = (this.game.height - 150) * Math.random() + 150
-    }
-    const enemy = this.game.add.existing(new PatrolEnemy(this.game, x, y, isLeftSide))
-    this.enemies.push(enemy)
-  }
+  // addPatrolEnemy() {
+  //   const x = this.game.width - this.planet.width / 2
+  //   const y = (this.game.height - 150) * Math.random() + 150
+  //   const enemy = this.game.add.existing(new PatrolEnemy(this.game, x, y))
+  //   this.enemies.push(enemy)
+  // }
 
   onShield({ condition }) {
     if (condition === 'on') {

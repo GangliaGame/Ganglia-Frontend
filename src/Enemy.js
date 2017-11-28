@@ -1,7 +1,7 @@
 const toDegrees = radians => radians * 180 /  Math.PI
 const toRadians = angle => angle * (Math.PI / 180)
 
-export class Enemy extends Phaser.Sprite {
+export class PatrolEnemy extends Phaser.Sprite {
   constructor(game, x, y) {
     super(game, x, y, 'enemy')
     this.scaleFactor = 0.5
@@ -26,7 +26,7 @@ export class Enemy extends Phaser.Sprite {
 }
 
 
-export class PatrolEnemy extends Phaser.Sprite {
+export class Enemy extends Phaser.Sprite {
   constructor(game, x, y) {
     super(game, x, y, 'enemy')
     this.scaleFactor = 0.5
@@ -35,7 +35,7 @@ export class PatrolEnemy extends Phaser.Sprite {
     this.scale.x = this.scaleFactor
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
     this.body.collideWorldBounds = true
-    this.movementSpeed = 5
+    this.movementSpeed = 2
   }
 
   update() {

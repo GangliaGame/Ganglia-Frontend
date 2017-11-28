@@ -1,4 +1,5 @@
 import { SingleBulletWeapon, TripleBulletWeapon, BeamWeapon } from './weapons'
+import HealthBar from './HealthBar'
 
 const toRadians = angle => angle * (Math.PI / 180)
 
@@ -25,34 +26,21 @@ export default class PlayerShip extends Phaser.Sprite {
     // Health
     this.maxHealth = 100
     this.health = 100
+
+    // Sight
     this.sight = this.game.add.graphics()
     this.sight.beginFill(0xffffff, 0.25)
-    this.sight.drawRoundedRect(0, 0, this.game.width * 0.8, 5, 10)
+    this.sight.drawRoundedRect(0, 0, this.game.width * 0.7, 5, 10)
 
-    const hpBarWidth = this.width * 0.6
-    const hpBarHeight = 10
-    this.hpBarOutline = this.game.add.graphics()
-    this.hpBar = this.game.add.graphics()
-    this.hpBarOutline.beginFill(0xffffff, 1)
-    this.hpBarOutline.drawRoundedRect(0, 0, hpBarWidth, hpBarHeight, 50)
-    this.hpBar.beginFill(0x30ee02, 1)
-    this.hpBar.drawRoundedRect(0, 0, hpBarWidth, hpBarHeight, 50)
-    this.hpBar.update = () => {
-      const x = this.centerX - hpBarWidth * 0.4
-      const y = this.y - this.height * 0.65
-      this.hpBar.x = x
-      this.hpBar.y = y
-      this.hpBarOutline.x = x
-      this.hpBarOutline.y = y
-      this.hpBar.scale.x = this.health / this.maxHealth
-    }
+    // HP bar
+    this.healthBar = new HealthBar(this)
 
     // Weapons
     this.weapons = []
     this.currentWeapon = 0
 
     this.weapons.push(
-      new SingleBulletWeapon(this.game),
+      new SingleBulletWeapon(this),
       new TripleBulletWeapon(this.game),
       new BeamWeapon(this.game),
     )

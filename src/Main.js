@@ -12,7 +12,7 @@ export default class Main extends Phaser.State {
     this.isGameOver = false
     this.distanceRemaining = this.maxDistance
     this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.maxDistance
-    // this.game.stage.disableVisibilityChange = true
+    this.game.stage.disableVisibilityChange = true
   }
 
   preload() {
@@ -38,9 +38,9 @@ export default class Main extends Phaser.State {
     this.planet.update = () => { this.planet.angle += 0.1 }
 
     // Distance to planet text
-    const rectWidth = 150
+    const rectWidth = 160
     const rectHeight = 46
-    const rectOffsetFromEdge = 40
+    const rectOffsetFromEdge = 30
     const offsetLeft = 14
     const offsetTop = 5
     const graphics = this.game.add.graphics(
@@ -56,6 +56,7 @@ export default class Main extends Phaser.State {
       '',
       { font: '31px DDC Hardware', fill: 'black' },
     )
+    this.maxX = this.game.width - this.planet.width / 2 - rectOffsetFromEdge
 
     // Player ship
     this.player = this.game.add.existing(new PlayerShip(this.game))
@@ -64,7 +65,7 @@ export default class Main extends Phaser.State {
     // Add left and right enemies
     this.enemies = []
     // _.times(10, () => this.addPatrolEnemy(false))
-    _.times(10, () => this.addEnemy(false))
+    _.times(3, i => this.addEnemy(100 + 100 * i))
 
     // Server events
     this.game.server.socket.on('move', data => this.onMove(data))
@@ -79,9 +80,8 @@ export default class Main extends Phaser.State {
       .onDown.add(() => this.addEnemy(Boolean(_.random(0, 1))), this)
   }
 
-  addEnemy() {
-    const x = this.game.width - this.planet.width / 2
-    const y = this.game.height * Math.random()
+  addEnemy(y) {
+    const x = this.maxX
     const enemy = this.game.add.existing(new Enemy(this.game, x, y))
     this.enemies.push(enemy)
   }
@@ -132,7 +132,19 @@ export default class Main extends Phaser.State {
 
     const enemyCollisionDamage = 10
 
-    // Enemy <-> bullet collision
+    // Player <-> enemy bullet collision
+    this.enemies.map(enemy => this.physics.arcade.overlap(
+      enemy.weapon,
+      this.player,
+      (player, bullet) => {
+        player.damage(enemy.bulletDamage)
+        bullet.kill()
+      },
+      null,
+      this,
+    ))
+
+    // Enemy <-> player bullet collision
     this.enemies.map(enemy => this.physics.arcade.overlap(
       enemy,
       this.player.getCurrentWeapon(),

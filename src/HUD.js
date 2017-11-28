@@ -23,7 +23,7 @@ const Card = ({ name, description, children }) => {
 export default class HUD extends React.Component {
 
   render() {
-    console.log(this.foo)
+    1 === 2 && console.log(this.foo)
     const maxHullStrength = 100
     const hullStrength = 78
     return (

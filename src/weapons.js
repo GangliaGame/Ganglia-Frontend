@@ -34,11 +34,12 @@ class Bullet extends Phaser.Sprite {
 }
 
 export class SingleBulletWeapon extends Phaser.Group {
-  constructor(game) {
-    super(game, game.world, 'Single Bullet', false, true, Phaser.Physics.ARCADE)
+  constructor(ship) {
+    super(ship.game, ship.game.world, 'Single Bullet', false, true, Phaser.Physics.ARCADE)
+    this.ship = ship
 
     this.nextFire = 0
-    this.bulletSpeed = 600
+    this.bulletVelocity = ship.key === 'player' ? 600 : -600
     this.fireRate = 500
 
     this.pattern = Phaser.ArrayUtils.numberArrayStep(-800, 800, 200)
@@ -47,17 +48,17 @@ export class SingleBulletWeapon extends Phaser.Group {
     this.patternIndex = 0
 
     for (let i = 0; i < 64; i++) {
-      this.add(new Bullet(game, 'bullet'), true)
+      this.add(new Bullet(this.game, 'bullet'), true)
     }
   }
 
-  fire(source) {
+  fire() {
     if (this.game.time.time < this.nextFire) return
 
-    const x = source.crosshair.x
-    const y = source.crosshair.y
+    const x = this.ship.x
+    const y = this.ship.y
 
-    this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 600)
+    this.getFirstExists(false).fire(x, y, 0, this.bulletVelocity, 0, 600)
     this.nextFire = this.game.time.time + this.fireRate
   }
 }
@@ -67,7 +68,7 @@ export class TripleBulletWeapon extends Phaser.Group {
     super(game, game.world, 'Triple Bullet', false, true, Phaser.Physics.ARCADE)
 
     this.nextFire = 0
-    this.bulletSpeed = 600
+    this.bulletVelocity = 600
     this.fireRate = 1000
 
     for (let i = 0; i < 128; i++) {
@@ -82,9 +83,9 @@ export class TripleBulletWeapon extends Phaser.Group {
     const y = source.crosshair.y
     const angle = -source.firingAngle
 
-    this.getFirstExists(false).fire(x, y, angle + 10, this.bulletSpeed, 0, 600)
-    this.getFirstExists(false).fire(x, y, angle, this.bulletSpeed, 0, 600)
-    this.getFirstExists(false).fire(x, y, angle - 10, this.bulletSpeed, 0, 600)
+    this.getFirstExists(false).fire(x, y, angle + 10, this.bulletVelocity, 0, 600)
+    this.getFirstExists(false).fire(x, y, angle, this.bulletVelocity, 0, 600)
+    this.getFirstExists(false).fire(x, y, angle - 10, this.bulletVelocity, 0, 600)
 
     this.nextFire = this.game.time.time + this.fireRate
   }
@@ -95,7 +96,7 @@ export class BeamWeapon extends Phaser.Group {
     super(game, game.world, 'BeamWeapon', false, true, Phaser.Physics.ARCADE)
 
     this.nextFire = 0
-    this.bulletSpeed = 2000
+    this.bulletVelocity = 2000
     this.fireRate = 1
 
     this.addBulletsToPool(128)
@@ -114,7 +115,7 @@ export class BeamWeapon extends Phaser.Group {
     const y = source.crosshair.y
     const angle = -source.firingAngle
 
-    this.getFirstExists(false).fire(x, y, angle, this.bulletSpeed, 0, 0)
+    this.getFirstExists(false).fire(x, y, angle, this.bulletVelocity, 0, 0)
     this.nextFire = this.game.time.time + this.fireRate
   }
 }

@@ -19,7 +19,6 @@ class Bullet extends Phaser.Sprite {
     this.scale.set(1)
     this.game.physics.arcade.velocityFromAngle(angle, speed, this.body.velocity)
     this.angle = angle
-    this.body.gravity.set(gx, gy)
   }
 
   update() {
@@ -48,7 +47,7 @@ export class SingleBulletWeapon extends Phaser.Group {
     this.patternIndex = 0
 
     for (let i = 0; i < 64; i++) {
-      this.add(new Bullet(game, 'bullet-white'), true)
+      this.add(new Bullet(game, 'bullet'), true)
     }
   }
 
@@ -57,9 +56,8 @@ export class SingleBulletWeapon extends Phaser.Group {
 
     const x = source.crosshair.x
     const y = source.crosshair.y
-    const angle = -source.firingAngle
 
-    this.getFirstExists(false).fire(x, y, angle, this.bulletSpeed, 0, 600)
+    this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 600)
     this.nextFire = this.game.time.time + this.fireRate
   }
 }
@@ -73,7 +71,7 @@ export class TripleBulletWeapon extends Phaser.Group {
     this.fireRate = 1000
 
     for (let i = 0; i < 128; i++) {
-      this.add(new Bullet(game, 'bullet-white'), true)
+      this.add(new Bullet(game, 'bullet'), true)
     }
   }
 
@@ -105,7 +103,7 @@ export class BeamWeapon extends Phaser.Group {
 
   addBulletsToPool(count) {
     for (let i = 0; i < count; i++) {
-      this.add(new Bullet(this.game, 'bullet11'), true)
+      this.add(new Bullet(this.game, 'bullet'), true)
     }
   }
 

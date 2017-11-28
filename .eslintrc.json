@@ -3,6 +3,14 @@
     "env": {
       "browser": true
     },
+    "plugins": [
+      "react"
+    ],
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
     "rules": {
       "semi": ["error", "never"],
       "no-console": ["error", { "allow": ["warn", "error"] }],

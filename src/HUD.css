@@ -1,0 +1,138 @@
+.HUD {
+  height: 45%;
+  border-top: 2px solid white;
+  margin-top: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.HUD-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 95vw;
+}
+
+.Card {
+  height: 40vh;
+  width: 16vw;
+  background-color: black;
+  border: 2px solid white;
+  border-radius: 7.5px;
+  display: flex;
+  margin: 2px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  /*box-shadow: 0 0 10px 5px rgba(0,0,0,0.7);*/
+  /*position: absolute;*/
+}
+
+.Card::before {
+  height: 2vh;
+  margin-bottom: -1.5vh;
+  width: 2px;
+  background-color: white;
+  content: '';
+}
+
+.Card::after {
+  height: 2vh;
+  margin-bottom: -1.5vh;
+  width: 2px;
+  background-color: white;
+  content: '';
+  position: absolute;
+  bottom: 10px;
+}
+
+.Card:nth-child(2) {
+}
+
+.Card-title {
+  color: black;
+  background-color: white;
+  margin-top: 2.5vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 5.25vh;
+  width: 100%;
+  text-transform: uppercase;
+  font-size: 2.75vw;
+}
+
+.Card-description {
+  text-align: center;
+  font-size: 1.25vw;
+  max-width: 90%;
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+
+
+.Card-Communication {
+  width: 24vw;
+  z-index: 100;
+}
+
+.Card-Communication > .Card-content > img {
+  max-width: 100%;
+  padding-top: 5%;
+  padding-bottom: 5%;
+
+}
+
+.Card-Communication > .Card-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.HullStrength-label {
+  background-color: white;
+  font-size: 2.3vw;
+  width: 95%;
+  text-align: center;
+  padding-bottom: 0.25vw;
+  margin-bottom: -0.25vw;
+  color: black;
+  border-top-left-radius: 1vw;
+  border-top-right-radius: 1vw;
+  font-family: 'DDC Hardware';
+}
+
+.HullStrength-bar {
+  color: black;
+  background-color: white;
+  font-size: 2vw;
+  height: 2.5vw;
+  border-radius: 1.5vw;
+  border: 0.35vw solid black;
+  width: 115%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.HullStrength-bar-label {
+  font-family: 'DDC Hardware';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 115%;
+  z-index: 10000;
+}
+
+.HullStrength-bar-inner {
+  background-color: #30ee02;
+  border-top-left-radius: 1.5vw;
+  border-bottom-left-radius: 1.5vw;
+  height: 2.6vw;
+  position: absolute;
+}

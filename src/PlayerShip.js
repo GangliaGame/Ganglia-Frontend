@@ -4,14 +4,12 @@ const toRadians = angle => angle * (Math.PI / 180)
 
 export default class PlayerShip extends Phaser.Sprite {
   constructor(game) {
-    super(game, game.width / 2, game.height / 2, 'player')
+    super(game, 50, game.height / 2, 'player')
     game.physics.enable(this, Phaser.Physics.ARCADE)
     this.anchor.setTo(0.5, 0.5)
 
     // Firing
-    this.firingAngleDelta = 3
     this.crosshairRadius = 100
-    this.firingAngle = 0
 
     // Movement
     this.movementSpeed = 100
@@ -27,12 +25,12 @@ export default class PlayerShip extends Phaser.Sprite {
     // Health
     this.maxHealth = 100
     this.health = 100
-    this.hitPointsBarOutline = game.add.sprite(this.x + 3, this.y - 119, 'hpBarOutline')
+    this.hitPointsBarOutline = game.add.sprite(this.x, this.y - 119, 'hpBarOutline')
     this.hitPointsBarOutline.anchor.setTo(0.5, 0.5)
-    this.hitPointsBar = game.add.sprite(this.x - 125, this.y - 132, 'hpBar')
+    this.hitPointsBar = game.add.sprite(this.x, this.y - 132, 'hpBar')
     this.hitPointsBar.anchor.setTo(0, 0)
     this.hitPointsBar.update = () => {
-      this.hitPointsBarOutline.x = this.x + 3
+      this.hitPointsBarOutline.x = this.x
       this.hitPointsBarOutline.y = this.y - 119
       this.hitPointsBar.x = this.x - 125
       this.hitPointsBar.y = this.y - 132
@@ -42,15 +40,6 @@ export default class PlayerShip extends Phaser.Sprite {
     // Weapons
     this.weapons = []
     this.currentWeapon = 0
-
-    this.enabledWeaponLevel = 3
-    this.weaponLV = this.game.add.sprite(0, 20, 'weaponLV3')
-    this.weaponLV.scale.x = 0.5
-    this.weaponLV.scale.y = 0.5
-
-    this.weaponCursor = this.game.add.sprite(400, 20, 'cursor')
-    this.weaponCursor.scale.x = 0.5
-    this.weaponCursor.scale.y = 0.5
 
     this.weapons.push(
       new SingleBulletWeapon(this.game),
@@ -64,20 +53,6 @@ export default class PlayerShip extends Phaser.Sprite {
     // Weapon crosshair
     this.crosshair = this.game.add.sprite(this.x, this.y, 'crosshair')
     this.crosshair.anchor.set(0.5)
-
-    // Input (controls)
-    this.cursors = game.input.keyboard.createCursorKeys()
-
-    // Bind hotkeys (kinda hacky)
-    const hotkeys = {
-      ENTER: this.nextWeapon.bind(this),
-      S: this.toggleShield.bind(this),
-    }
-    Object.entries(hotkeys).forEach(([key, handler]) => {
-      this.game.input.keyboard
-        .addKey(Phaser.Keyboard[key])
-        .onDown.add(handler)
-    })
   }
 
   toggleShield() {
@@ -96,41 +71,12 @@ export default class PlayerShip extends Phaser.Sprite {
     this.shield.exists = false
   }
 
-  setActiveWeapon(weaponNumber) {
-    this.enabledWeaponLevel = weaponNumber
-    this.weaponLV.loadTexture(`weaponLV${this.enabledWeaponLevel}`, 0)
-  }
-
   getCurrentWeapon() {
     return this.weapons[this.currentWeapon]
   }
 
-  nextWeapon() {
-    //  Tidy-up the current weapon
-    if (this.currentWeapon > 2) {
-      this.weapons[this.currentWeapon].reset()
-    } else {
-      this.weapons[this.currentWeapon].visible = false
-      this.weapons[this.currentWeapon].callAll('reset', null, 0, 0)
-      this.weapons[this.currentWeapon].setAll('exists', false)
-    }
-
-    //  Activate the new one
-    this.currentWeapon += 1
-    if (this.currentWeapon > 2) { this.currentWeapon = 0 }
-
-    // XXX: This is a hack to only use one cursor.
-    // Couldn't find a reliable way to calculate this without
-    // magic numbers.
-    this.weaponCursor.y = 20 + 37 * this.currentWeapon
-
-    this.weapons[this.currentWeapon].visible = true
-  }
-
   fireWeapon() {
-    if (this.enabledWeaponLevel > this.currentWeapon) {
-      this.weapons[this.currentWeapon].fire(this)
-    }
+    this.weapons[0].fire(this)
   }
 
   moveDown() {
@@ -141,31 +87,12 @@ export default class PlayerShip extends Phaser.Sprite {
     this.body.velocity.y = -this.movementSpeed
   }
 
-  increaseWeaponAngle() {
-    this.firingAngle += this.firingAngleDelta
-  }
-
-  decreaseWeaponAngle() {
-    this.firingAngle -= this.firingAngleDelta
-  }
-
   update() {
     this.body.velocity.set(0)
 
     // Update crosshair location
-    this.crosshair.x = this.x + this.crosshairRadius * Math.cos(toRadians(this.firingAngle))
-    this.crosshair.y = this.y - this.crosshairRadius * Math.sin(toRadians(this.firingAngle))
-
-    // Weapon angle
-    if (this.cursors.left.isDown) this.increaseWeaponAngle()
-    else if (this.cursors.right.isDown) this.decreaseWeaponAngle()
-
-    // Weapon firing
-    if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) this.fireWeapon()
-
-    // Movement
-    if (this.cursors.down.isDown) this.moveDown()
-    else if (this.cursors.up.isDown) this.moveUp()
+    this.crosshair.x = this.x + this.crosshairRadius * Math.cos(toRadians(0))
+    this.crosshair.y = this.y - this.crosshairRadius * Math.sin(toRadians(0))
 
     // Shield
     this.shield.x = this.x

@@ -1,0 +1,32 @@
+@font-face {
+  font-family: 'DDC Hardware';
+  src: url('fonts/ddc-regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DDC Hardware Condensed';
+  src: url('fonts/ddc-condensed.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  background-color: black;
+  font-family: 'DDC Hardware Condensed';
+  color: white;
+}
+
+html, body, #root, .App {
+  height: 100%;
+}
+
+#game, canvas {
+  height: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}

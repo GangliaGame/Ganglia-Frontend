@@ -20,10 +20,6 @@ export default class Main extends Phaser.State {
     this.load.image('shield', 'assets/shield.png')
     // this.load.image('planet-moon', 'assets/planets/moon.png')
     this.load.image('player', 'assets/player-ship.png')
-    this.load.image('crosshair', 'assets/crosshair.png')
-    this.load.image('hpBar', 'assets/hpBar.png')
-    this.load.image('hpBarOutline', 'assets/hpBarOutline.png')
-
     this.load.image('bullet', 'assets/bullet.png')
     this.load.image('enemy', 'assets/enemy.png')
   }

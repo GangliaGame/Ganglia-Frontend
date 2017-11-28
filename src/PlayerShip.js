@@ -9,7 +9,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.anchor.setTo(0.5, 0.5)
 
     // Firing
-    this.crosshairRadius = 100
+    this.sightOffset = 100
 
     // Movement
     this.movementSpeed = 100
@@ -25,16 +25,26 @@ export default class PlayerShip extends Phaser.Sprite {
     // Health
     this.maxHealth = 100
     this.health = 100
-    this.hitPointsBarOutline = game.add.sprite(this.x, this.y - 119, 'hpBarOutline')
-    this.hitPointsBarOutline.anchor.setTo(0.5, 0.5)
-    this.hitPointsBar = game.add.sprite(this.x, this.y - 132, 'hpBar')
-    this.hitPointsBar.anchor.setTo(0, 0)
-    this.hitPointsBar.update = () => {
-      this.hitPointsBarOutline.x = this.x
-      this.hitPointsBarOutline.y = this.y - 119
-      this.hitPointsBar.x = this.x - 125
-      this.hitPointsBar.y = this.y - 132
-      this.hitPointsBar.scale.x = this.health / this.maxHealth
+    this.sight = this.game.add.graphics()
+    this.sight.beginFill(0xffffff, 0.25)
+    this.sight.drawRoundedRect(0, 0, this.game.width * 0.8, 5, 10)
+
+    const hpBarWidth = this.width * 0.6
+    const hpBarHeight = 10
+    this.hpBarOutline = this.game.add.graphics()
+    this.hpBar = this.game.add.graphics()
+    this.hpBarOutline.beginFill(0xffffff, 1)
+    this.hpBarOutline.drawRoundedRect(0, 0, hpBarWidth, hpBarHeight, 50)
+    this.hpBar.beginFill(0x30ee02, 1)
+    this.hpBar.drawRoundedRect(0, 0, hpBarWidth, hpBarHeight, 50)
+    this.hpBar.update = () => {
+      const x = this.centerX - hpBarWidth * 0.4
+      const y = this.y - this.height * 0.65
+      this.hpBar.x = x
+      this.hpBar.y = y
+      this.hpBarOutline.x = x
+      this.hpBarOutline.y = y
+      this.hpBar.scale.x = this.health / this.maxHealth
     }
 
     // Weapons
@@ -49,10 +59,6 @@ export default class PlayerShip extends Phaser.Sprite {
     for (let i = 1; i < this.weapons.length; i++) {
       this.weapons[i].visible = false
     }
-
-    // Weapon crosshair
-    this.crosshair = this.game.add.sprite(this.x, this.y, 'crosshair')
-    this.crosshair.anchor.set(0.5)
   }
 
   toggleShield() {
@@ -91,8 +97,8 @@ export default class PlayerShip extends Phaser.Sprite {
     this.body.velocity.set(0)
 
     // Update crosshair location
-    this.crosshair.x = this.x + this.crosshairRadius * Math.cos(toRadians(0))
-    this.crosshair.y = this.y - this.crosshairRadius * Math.sin(toRadians(0))
+    this.sight.x = this.x + this.sightOffset * Math.cos(toRadians(0))
+    this.sight.y = this.y - this.sightOffset * Math.sin(toRadians(0))
 
     // Shield
     this.shield.x = this.x

@@ -40,7 +40,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.currentWeapon = 0
 
     this.weapons.push(
-      new SingleBulletWeapon(this),
+      new SingleBulletWeapon(this, 10),
       new TripleBulletWeapon(this.game),
       new BeamWeapon(this.game),
     )
@@ -82,6 +82,11 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   update() {
+    if (this.health !== this.prevHealth) {
+      this.game.onHullStrengthChanged(this.health)
+      this.prevHealth = this.health
+    }
+
     this.body.velocity.set(0)
 
     // Update crosshair location

@@ -23,9 +23,9 @@ const Card = ({ name, description, children }) => {
 export default class HUD extends React.Component {
 
   render() {
-    1 === 2 && console.log(this.foo)
+    const hullBarWidth = 115
     const maxHullStrength = 100
-    const hullStrength = 78
+    const hullStrength = this.props.hullStrength
     return (
       <div className="HUD">
         <div className="HUD-inner">
@@ -40,7 +40,7 @@ export default class HUD extends React.Component {
               <div className="HullStrength-bar-label">
                 {`${hullStrength}/${maxHullStrength}`}
               </div>
-              <div className="HullStrength-bar-inner" style={{ width: `${hullStrength / maxHullStrength * 100}%` }}/>
+              <div className="HullStrength-bar-inner" style={{ width: `${hullStrength / maxHullStrength * hullBarWidth}%` }}/>
             </div>
 
           </Card>

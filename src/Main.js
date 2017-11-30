@@ -15,18 +15,29 @@ export default class Main extends Phaser.State {
   }
 
   preload() {
-    this.load.image('background', 'assets/background.png')
+    this.load.image('background', 'assets/1128/background.png')
     this.load.image('shield', 'assets/shield.png')
     this.load.image('planet', 'assets/planet.png')
     this.load.image('player', 'assets/player-ship.png')
-    this.load.image('bullet', 'assets/bullet.png')
-    this.load.image('enemy', 'assets/enemy.png')
+    this.load.image('bullet', 'assets/1128/beam_Y.png')
+    this.load.image('enemy',  'assets/enemy.png')
+
+    // Giada's Edition: Enemy's Color(R/Y/B) + Its Weapon's Color(R/Y/B)
+    this.load.spritesheet('enemy_RR', 'assets/1130/enemy_RR.png', 150, 65)
+    this.load.spritesheet('enemy_RY', 'assets/1130/enemy_RY.png', 150, 65)
+    this.load.spritesheet('enemy_RB', 'assets/1130/enemy_RB.png', 150, 65)
+    this.load.spritesheet('enemy_YR', 'assets/1130/enemy_YR.png', 150, 65)
+    this.load.spritesheet('enemy_YY', 'assets/1130/enemy_YY.png', 150, 65)
+    this.load.spritesheet('enemy_YB', 'assets/1130/enemy_YB.png', 150, 65)
+    this.load.spritesheet('enemy_BR', 'assets/1130/enemy_BR.png', 150, 65)
+    this.load.spritesheet('enemy_BY', 'assets/1130/enemy_BY.png', 150, 65)
+    this.load.spritesheet('enemy_BB', 'assets/1130/enemy_BB.png', 150, 65)
   }
 
   create() {
     // Background
-    this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'background')
-    this.background.autoScroll(-25, 0)
+    this.background = this.add.tileSprite(0, 0, this.game.height*7.1, this.game.height, 'background')
+    this.background.autoScroll(-10, 0)
 
     // Planet
     this.planet = this.add.sprite(this.game.world.centerX, this.game.height, 'planet')

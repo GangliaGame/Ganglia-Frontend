@@ -7,6 +7,8 @@ const toDegrees = radians => radians * 180 / Math.PI
 export class PatrolEnemy extends Phaser.Sprite {
   constructor(game, x, y) {
     super(game, x, y, 'enemy')
+
+
     this.scaleFactor = 0.5
     this.anchor.setTo(0.5, 0.5)
     this.scale.y = this.scaleFactor
@@ -30,10 +32,33 @@ export class PatrolEnemy extends Phaser.Sprite {
 
 
 export class Enemy extends Phaser.Sprite {
-  constructor(game, x, y, color = 0xff0000) {
-    super(game, x, y, 'enemy')
+  constructor(game, x, y, type = 'R', weaponType = 'R') {
+
+    // Giada's Edition
+
+    if (type == 'R') {
+      if      (weaponType == 'R') { super(game, x, y, 'enemy_RR') }
+      else if (weaponType == 'Y') { super(game, x, y, 'enemy_RY') }
+      else if (weaponType == 'B') { super(game, x, y, 'enemy_RB') }
+    }
+    else if (type == 'Y') {
+      if      (weaponType == 'R') { super(game, x, y, 'enemy_YR') }
+      else if (weaponType == 'Y') { super(game, x, y, 'enemy_YY') }
+      else if (weaponType == 'B') { super(game, x, y, 'enemy_YB') }
+    }
+    else if (type == 'B') {
+      if      (weaponType == 'R') { super(game, x, y, 'enemy_BR') }
+      else if (weaponType == 'Y') { super(game, x, y, 'enemy_BY') }
+      else if (weaponType == 'B') { super(game, x, y, 'enemy_BB') }
+    }
+    this.animations.add('move')
+    this.animations.play('move', 15, true)
+
+    this.type = type
+    this.weaponType = weaponType
+
     // Size and anchoring
-    this.scaleFactor = 0.8
+    this.scaleFactor = 0.75
     this.anchor.setTo(0.5, 0.5)
     this.scale.y = this.scaleFactor
     this.scale.x = this.scaleFactor
@@ -47,18 +72,18 @@ export class Enemy extends Phaser.Sprite {
     this.healthBar = new HealthBar(this)
 
     // Weapon
-    const baseFiringRate = 5000
+    const baseFiringRate = 7000
     this.weapon = new SingleBulletWeapon(this, 10)
     this.fireTimer = window.setInterval(
       this.fire.bind(this),
-      baseFiringRate + (baseFiringRate / 10 * Math.random()),
+      baseFiringRate + (baseFiringRate / 100 * Math.random()),
     )
     this.bulletDamage = 10
 
     // Physics and movement
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
     this.body.collideWorldBounds = true
-    this.movementSpeed = 10
+    this.movementSpeed = 2
     this.body.velocity.x = -this.movementSpeed
   }
 

@@ -33,13 +33,13 @@ export class Enemy extends Phaser.Sprite {
   constructor(game, x, y, color = 0xff0000) {
     super(game, x, y, 'enemy')
     // Size and anchoring
-    this.scaleFactor = 0.5
+    this.scaleFactor = 0.8
     this.anchor.setTo(0.5, 0.5)
     this.scale.y = this.scaleFactor
     this.scale.x = this.scaleFactor
 
     // Color
-    this.tint = color
+    // this.tint = color
 
     // Health
     this.health = 25
@@ -48,7 +48,7 @@ export class Enemy extends Phaser.Sprite {
 
     // Weapon
     const baseFiringRate = 5000
-    this.weapon = new SingleBulletWeapon(this, 'forward')
+    this.weapon = new SingleBulletWeapon(this, 10)
     this.fireTimer = window.setInterval(
       this.fire.bind(this),
       baseFiringRate + (baseFiringRate / 10 * Math.random()),

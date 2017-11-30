@@ -1,14 +1,13 @@
-import PlayerShip from './PlayerShip'
-import { Enemy, PatrolEnemy } from './Enemy'
 import _ from 'lodash'
-
+import PlayerShip from './PlayerShip'
+import { Enemy } from './Enemy'
 
 export default class Main extends Phaser.State {
   init() {
     this.game.renderer.renderSession.roundPixels = true
     this.physics.startSystem(Phaser.Physics.ARCADE)
     this.maxDistance = 5000
-    this.minutesToPlanet = 2
+    this.minutesToPlanet = 5
     this.isGameOver = false
     this.distanceRemaining = this.maxDistance
     this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.maxDistance
@@ -18,7 +17,7 @@ export default class Main extends Phaser.State {
   preload() {
     this.load.image('background', 'assets/background.png')
     this.load.image('shield', 'assets/shield.png')
-    this.load.image('planet-moon', 'assets/planets/moon.png')
+    this.load.image('planet', 'assets/planet.png')
     this.load.image('player', 'assets/player-ship.png')
     this.load.image('bullet', 'assets/bullet.png')
     this.load.image('enemy', 'assets/enemy.png')
@@ -30,12 +29,12 @@ export default class Main extends Phaser.State {
     this.background.autoScroll(-25, 0)
 
     // Planet
-    this.planet = this.add.sprite(this.game.world.centerX, this.game.height, 'planet-moon')
+    this.planet = this.add.sprite(this.game.world.centerX, this.game.height, 'planet')
     this.planet.anchor.setTo(0.5, 0.5)
-    this.planet.scale.set(0.16, 0.16)
+    this.planet.scale.set(0.70, 0.70)
     this.planet.x = this.game.width
     this.planet.y = this.game.height / 2
-    this.planet.update = () => { this.planet.angle += 0.1 }
+    this.planet.update = () => { this.planet.angle -= 0.05 }
 
     // Distance to planet text
     const rectWidth = 160
@@ -68,7 +67,8 @@ export default class Main extends Phaser.State {
     _.times(3, i => this.addEnemy(100 + 100 * i))
 
     // Server events
-    this.game.server.socket.on('move', data => this.onMove(data))
+    this.game.server.socket.on('move-up', data => this.onMoveUp(data))
+    this.game.server.socket.on('move-down', data => this.onMoveDown(data))
     this.game.server.socket.on('fire', () => this.player.fireWeapon())
     // this.server.socket.on('shield', data => this.onShield(data))
     // this.server.socket.on('weapon', data => this.onNewWeaponColors(data))
@@ -105,15 +105,14 @@ export default class Main extends Phaser.State {
     this.player.setActiveWeapon(level)
   }
 
-  onMove({ direction }) {
-    if (this.moveTimer) {
-      window.clearTimeout(this.moveTimer)
-    }
-    if (direction === 'up') {
-      this.moveTimer = window.setInterval(() => this.player.moveUp(), 10)
-    } else if (direction === 'down') {
-      this.moveTimer = window.setInterval(() => this.player.moveDown(), 10)
-    }
+  onMoveUp(data) {
+    if (data === 'stop') window.clearTimeout(this.moveTimer)
+    else this.moveTimer = window.setInterval(() => this.player.moveUp(), 10)
+  }
+
+  onMoveDown(data) {
+    if (data === 'stop') window.clearTimeout(this.moveTimer)
+    else this.moveTimer = window.setInterval(() => this.player.moveDown(), 10)
   }
 
   update() {
@@ -125,7 +124,7 @@ export default class Main extends Phaser.State {
     this.distanceRemaining = _.round(Math.max(0, this.maxDistance - distanceTravelled))
     this.distanceText.text = `${this.distanceRemaining} KM`
 
-    // Destroy sprites marked for killing
+    // Kill sprites marked for killing
     this.game.world.children
       .filter(child => child.kill_in_next_tick)
       .map(child => child.kill())
@@ -137,7 +136,7 @@ export default class Main extends Phaser.State {
       enemy.weapon,
       this.player,
       (player, bullet) => {
-        player.damage(enemy.bulletDamage)
+        player.damage(enemy.weapon.bulletDamage)
         bullet.kill()
       },
       null,
@@ -149,7 +148,7 @@ export default class Main extends Phaser.State {
       enemy,
       this.player.getCurrentWeapon(),
       (e, bullet) => {
-        enemy.kill_in_next_tick = true
+        enemy.damage(this.player.getCurrentWeapon().bulletDamage)
         bullet.kill()
       },
       null,

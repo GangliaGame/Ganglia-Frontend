@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Provider, connect } from 'react-redux'
-import { createStore } from 'redux'
+import _ from 'lodash'
 
 import Stats from 'stats.js'
 
@@ -10,45 +9,38 @@ import Main from './Main'
 import './index.css'
 import GameServer from './GameServer'
 
-// Reducer
-function hullHealth(state = 100, action) {
-  switch (action.type) {
-    case 'HEAL':
-      return state + action.amount
-    case 'DAMAGE':
-      return state - action.amount
-    default:
-      return state
-  }
-}
-
-// Store
-let store = createStore(hullHealth)
-
-// Map Redux state to component props
-function mapStateToProps(state) {
-  return {
-    hull: {
-      health: state,
-      regen: 0,
-    },
-  }
-}
-
 class App extends React.Component {
-  initializeGame(element) {
+  constructor(props) {
+    super(props)
+    this.state = {
+      stats: {
+        hullStrength: 100,
+      }
+    }
+    this.initializeGameOnSurface()
+  }
+
+  initializeGameOnSurface() {
     const UI_HEIGHT_PX = window.innerHeight * 0.5
     this.game = new Phaser.Game(
       window.innerWidth,
       window.innerHeight - UI_HEIGHT_PX,
       Phaser.CANVAS,
-      element,
+      'surface',
     )
     this.game.state.add('Main', Main, false)
     this.game.state.start('Main')
     this.game.server = new GameServer()
 
+    this.game.onHullStrengthChanged = this.onHullStrengthChanged.bind(this)
+
     this.setupStats()
+  }
+
+  onHullStrengthChanged(hullStrength) {
+    const stats = _.cloneDeep(this.state.stats)
+    stats.hullStrength = hullStrength
+    this.setState({ stats })
   }
 
   setupStats() {
@@ -68,16 +60,17 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <div ref={this.initializeGame.bind(this)}/>
-        <HUD {...this.props}/>
+        <HUD {...this.state.stats}/>
       </div>
     )
   }
 }
 
-ReactDOM.render(
-  <Provider store={store}>
-    {React.createElement(connect(mapStateToProps)(App))}
-  </Provider>,
-  document.getElementById('root'),
-)
+ReactDOM.render(<App/>, document.getElementById('UI'))
+
+// ReactDOM.render(
+//   <Provider store={store}>
+//     {React.createElement(connect(mapStateToProps)(App))}
+//   </Provider>,
+//   document.getElementById('root'),
+// )

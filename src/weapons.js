@@ -34,11 +34,12 @@ class Bullet extends Phaser.Sprite {
 }
 
 export class SingleBulletWeapon extends Phaser.Group {
-  constructor(ship) {
+  constructor(ship, bulletDamage = 10) {
     super(ship.game, ship.game.world, 'Single Bullet', false, true, Phaser.Physics.ARCADE)
     this.ship = ship
 
     this.nextFire = 0
+    this.bulletDamage = bulletDamage
     this.bulletVelocity = ship.key === 'player' ? 600 : -600
     this.fireRate = 500
 

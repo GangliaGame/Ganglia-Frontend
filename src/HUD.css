@@ -74,7 +74,6 @@
   margin-bottom: 5%;
 }
 
-
 .Card-Communication {
   width: 24vw;
   z-index: 100;
@@ -131,8 +130,7 @@
 
 .HullStrength-bar-inner {
   background-color: #30ee02;
-  border-top-left-radius: 1.5vw;
-  border-bottom-left-radius: 1.5vw;
+  border-radius: 1.5vw;
   height: 2.6vw;
   position: absolute;
 }

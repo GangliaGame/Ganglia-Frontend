@@ -115,18 +115,6 @@ export default class Main extends Phaser.State {
     this.enemies.push(enemy)
   }
 
-  onShield({ condition }) {
-    if (condition === 'on') {
-      this.player.activateShield()
-    } else if (condition === 'off') {
-      this.player.deactivateShield()
-    }
-  }
-
-  onWeapon({ level }) {
-    this.player.setActiveWeapon(level)
-  }
-
   onMoveUp(data) {
     if (data === 'stop') window.clearTimeout(this.moveTimer)
     else this.moveTimer = window.setInterval(() => this.player.moveUp(), 10)
@@ -182,10 +170,17 @@ export default class Main extends Phaser.State {
       enemy.weapon,
       this.player,
       (player, bullet) => {
-
-        player.damage(enemy.weapon.bulletDamage)
-        player.getHurtTint()
-        bullet.kill()
+        const playerHasMatchingShield = player.shieldColors
+          .some(color => color[0].toUpperCase() === enemy.weaponType)
+        // Bullet hits
+        if (player.shieldColors.length === 0 || !playerHasMatchingShield) {
+          player.damage(enemy.weapon.bulletDamage)
+          player.getHurtTint()
+          bullet.kill()
+        // Shield blocks bullet
+        } else {
+          bullet.kill()
+        }
       },
       null,
       this,

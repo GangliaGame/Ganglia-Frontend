@@ -71,6 +71,8 @@ class App extends React.Component {
       gameMainState.onCommunicationsChanged(data)
     })
 
+    this.game.server.socket.emit('frontend-connected', {})
+
     this.game.onHullStrengthChanged = this.onHullStrengthChanged.bind(this)
 
     this.setupPerformanceStatistics()

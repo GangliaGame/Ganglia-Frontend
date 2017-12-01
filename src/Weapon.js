@@ -26,15 +26,13 @@ export default class Weapon extends Phaser.Group {
     this.nextFire = 0
     this.bulletDamage = bulletDamage
     this.isPlayerWeapon = ship.key === 'player'
-    this.bulletVelocity = this.isPlayerWeapon ? 400 : 100
+    this.bulletVelocity = this.isPlayerWeapon ? 400 : 50
     this.bulletVelocity = this.isPlayerWeapon ? this.bulletVelocity : -this.bulletVelocity
-    this.fireRate = 1000
+    this.fireRate = 250
     this.yOffset = yOffset
 
     this.pattern = Phaser.ArrayUtils.numberArrayStep(-800, 800, 200)
     this.pattern = this.pattern.concat(Phaser.ArrayUtils.numberArrayStep(800, -800, -200))
-
-    this.patternIndex = 0
 
     for (let i = 0; i < 64; i++) {
       const bullet = new Bullet(this.game, `bullet_${bulletColor}`, this.isPlayerWeapon)

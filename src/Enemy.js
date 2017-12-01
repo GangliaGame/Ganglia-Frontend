@@ -33,24 +33,7 @@ export class PatrolEnemy extends Phaser.Sprite {
 
 export class Enemy extends Phaser.Sprite {
   constructor(game, x, y, type = 'R', weaponType = 'R') {
-
-    // Giada's Edition
-
-    if (type == 'R') {
-      if      (weaponType == 'R') { super(game, x, y, 'enemy_RR') }
-      else if (weaponType == 'Y') { super(game, x, y, 'enemy_RY') }
-      else if (weaponType == 'B') { super(game, x, y, 'enemy_RB') }
-    }
-    else if (type == 'Y') {
-      if      (weaponType == 'R') { super(game, x, y, 'enemy_YR') }
-      else if (weaponType == 'Y') { super(game, x, y, 'enemy_YY') }
-      else if (weaponType == 'B') { super(game, x, y, 'enemy_YB') }
-    }
-    else if (type == 'B') {
-      if      (weaponType == 'R') { super(game, x, y, 'enemy_BR') }
-      else if (weaponType == 'Y') { super(game, x, y, 'enemy_BY') }
-      else if (weaponType == 'B') { super(game, x, y, 'enemy_BB') }
-    }
+    super(game, x, y, `enemy_${type}${weaponType}`)
     this.animations.add('move')
     this.animations.play('move', 15, true)
 
@@ -62,9 +45,6 @@ export class Enemy extends Phaser.Sprite {
     this.anchor.setTo(0.5, 0.5)
     this.scale.y = this.scaleFactor
     this.scale.x = this.scaleFactor
-
-    // Color
-    // this.tint = color
 
     // Health
     this.health = 25

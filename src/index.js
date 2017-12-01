@@ -15,7 +15,12 @@ class App extends React.Component {
     this.state = {
       stats: {
         hullStrength: 100,
-      }
+        weapons: [],
+        shields: [],
+        propulsion: 0,
+        repairs: 0,
+        communications: false,
+      },
     }
     this.initializeGameOnSurface()
   }
@@ -32,9 +37,39 @@ class App extends React.Component {
     this.game.state.start('Main')
     this.game.server = new GameServer()
 
+    const gameMainState = this.game.state.states.Main
+
+    // Server events
+    this.game.server.socket.on('move-up', data => gameMainState.onMoveUp(data))
+    this.game.server.socket.on('move-down', data => gameMainState.onMoveDown(data))
+    this.game.server.socket.on('fire', data => gameMainState.onFire(data))
+
+    // Two callbacks for each server event.
+    // The first is for react, and second for phaser.
+    this.game.server.socket.on('weapons', (data) => {
+      this.onWeaponsChanged(data)
+      gameMainState.onWeaponsChanged(data)
+    })
+    this.game.server.socket.on('shields', (data) => {
+      this.onShieldsChanged(data)
+      gameMainState.onShieldsChanged(data)
+    })
+    this.game.server.socket.on('propulsion', (data) => {
+      this.onPropulsionChanged(data)
+      gameMainState.onPropulsionChanged(data)
+    })
+    this.game.server.socket.on('repairs', (data) => {
+      this.onRepairsChanged(data)
+      gameMainState.onRepairsChanged(data)
+    })
+    this.game.server.socket.on('communications', (data) => {
+      this.onCommunicationsChanged(data)
+      gameMainState.onCommunicationsChanged(data)
+    })
+
     this.game.onHullStrengthChanged = this.onHullStrengthChanged.bind(this)
 
-    this.setupStats()
+    this.setupPerformanceStatistics()
   }
 
   onHullStrengthChanged(hullStrength) {
@@ -43,7 +78,37 @@ class App extends React.Component {
     this.setState({ stats })
   }
 
-  setupStats() {
+  onWeaponsChanged(weapons) {
+    const stats = _.cloneDeep(this.state.stats)
+    stats.weapons = weapons
+    this.setState({ stats })
+  }
+
+  onShieldsChanged(shields) {
+    const stats = _.cloneDeep(this.state.stats)
+    stats.shields = shields
+    this.setState({ stats })
+  }
+
+  onPropulsionChanged(propulsion) {
+    const stats = _.cloneDeep(this.state.stats)
+    stats.propulsion = propulsion
+    this.setState({ stats })
+  }
+
+  onRepairsChanged(repairs) {
+    const stats = _.cloneDeep(this.state.stats)
+    stats.repairs = repairs
+    this.setState({ stats })
+  }
+
+  onCommunicationsChanged(communications) {
+    const stats = _.cloneDeep(this.state.stats)
+    stats.communications = communications
+    this.setState({ stats })
+  }
+
+  setupPerformanceStatistics() {
     // Setup the new stats panel.
     const stats = new Stats()
     document.body.appendChild(stats.dom)
@@ -67,10 +132,3 @@ class App extends React.Component {
 }
 
 ReactDOM.render(<App/>, document.getElementById('UI'))
-
-// ReactDOM.render(
-//   <Provider store={store}>
-//     {React.createElement(connect(mapStateToProps)(App))}
-//   </Provider>,
-//   document.getElementById('root'),
-// )

@@ -87,16 +87,6 @@ export default class Main extends Phaser.State {
     // _.times(10, () => this.addPatrolEnemy(false))
     _.times(3, i => this.addEnemy(100 + 100 * i))
 
-    // Server events
-    this.game.server.socket.on('move-up', data => this.onMoveUp(data))
-    this.game.server.socket.on('move-down', data => this.onMoveDown(data))
-    this.game.server.socket.on('fire', data => this.onFire(data))
-    this.game.server.socket.on('repairs', data => this.onWeaponsChanged(data))
-    this.game.server.socket.on('weapons', data => this.onWeaponsChanged(data))
-    this.game.server.socket.on('shields', data => this.onShieldsChanged(data))
-    this.game.server.socket.on('onRepairsChanged', data => this.onShieldsChanged(data))
-    this.game.server.socket.on('communications', data => this.onCommunicationsChanged(data))
-
     // Input
     // Add enemy to left or right side (randomly)
     this.game.input.keyboard
@@ -132,16 +122,20 @@ export default class Main extends Phaser.State {
     else this.moveTimer = window.setInterval(() => this.player.moveDown(), 10)
   }
 
-  onRepairsChanged(data) {
-    console.log('repairs', data)
+  onWeaponsChanged(data) {
+    console.log('weapons', data)
   }
 
   onShieldsChanged(data) {
     console.log('shields', data)
   }
 
-  onWeaponsChanged(data) {
-    console.log('weapons', data)
+  onPropulsionChanged(data) {
+    console.log('propulsion', data)
+  }
+
+  onRepairsChanged(data) {
+    console.log('repairs', data)
   }
 
   onCommunicationsChanged(data) {

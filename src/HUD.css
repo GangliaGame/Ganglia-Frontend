@@ -16,7 +16,7 @@
   justify-content: center;
 }
 
-.Card {
+.Panel {
   height: 44vh;
   width: 17vw;
   background-color: black;
@@ -32,7 +32,7 @@
   /*position: absolute;*/
 }
 
-.Card::before {
+.Panel::before {
   height: 2vh;
   margin-bottom: -1.5vh;
   width: 2px;
@@ -40,7 +40,7 @@
   content: '';
 }
 
-.Card::after {
+.Panel::after {
   height: 2vh;
   margin-bottom: -1.5vh;
   width: 2px;
@@ -50,10 +50,10 @@
   bottom: 10px;
 }
 
-.Card:nth-child(2) {
+.Panel:nth-child(2) {
 }
 
-.Card-title {
+.Panel-title {
   color: black;
   background-color: white;
   margin-top: 2.5vh;
@@ -66,7 +66,7 @@
   font-size: 2.75vw;
 }
 
-.Card-description {
+.Panel-description {
   text-align: center;
   font-size: 1.25vw;
   max-width: 90%;
@@ -74,19 +74,18 @@
   margin-bottom: 5%;
 }
 
-.Card-Communication {
+.Panel-Communication {
   width: 24vw;
   z-index: 100;
 }
 
-.Card-Communication > .Card-content > img {
+.Panel-Communication > .Panel-content > img {
   max-width: 100%;
   padding-top: 5%;
   padding-bottom: 5%;
-
 }
 
-.Card-Communication > .Card-content {
+.Panel-Communication > .Panel-content {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -134,3 +133,14 @@
   height: 2.6vw;
   position: absolute;
 }
+
+.ColorChart {
+  display: flex;
+  width: 100%;
+}
+
+.ColorChart > img {
+  height: 24vh;
+}
+
+/*.ColorChart*/

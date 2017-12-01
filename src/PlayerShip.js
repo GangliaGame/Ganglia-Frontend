@@ -29,6 +29,7 @@ export default class PlayerShip extends Phaser.Sprite {
 
     // Sight
     this.sight = game.add.sprite(this.x, this.y, 'weapon-sight')
+    this.sight.anchor.setTo(-0.25, 0.5)
 
     // HP bar
     this.healthBar = new HealthBar(this)
@@ -121,6 +122,8 @@ export default class PlayerShip extends Phaser.Sprite {
       this.game.onHullStrengthChanged(this.health)
       this.prevHealth = this.health
     }
+
+    this.sight.y = this.y
 
     this.body.velocity.set(0)
 

@@ -145,4 +145,13 @@
   height: 24vh;
 }
 
-/*.ColorChart*/
+.Panel-Propulsion > .Panel-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.Panel-Propulsion img {
+  height: 30vh;
+}

@@ -25,20 +25,22 @@ export default class Main extends Phaser.State {
     this.load.image('bullet_Y', 'assets/bullets/beam_Y.png')
     this.load.image('bullet_B', 'assets/bullets/beam_B.png')
 
-    this.load.image('shield_R', 'assets/shields/beam_R.png')
-    this.load.image('shield_Y', 'assets/shields/beam_Y.png')
-    this.load.image('shield_B', 'assets/shields/beam_B.png')
+    this.load.image('shield_R', 'assets/shields/shield_R.png')
+    this.load.image('shield_Y', 'assets/shields/shield_Y.png')
+    this.load.image('shield_B', 'assets/shields/shield_B.png')
 
     // Giada's Edition: Enemy's Color(R/Y/B) + Its Weapon's Color(R/Y/B)
-    this.load.spritesheet('enemy_RR', 'assets/enemies/enemy_RR.png', 150, 65)
-    this.load.spritesheet('enemy_RY', 'assets/enemies/enemy_RY.png', 150, 65)
-    this.load.spritesheet('enemy_RB', 'assets/enemies/enemy_RB.png', 150, 65)
-    this.load.spritesheet('enemy_YR', 'assets/enemies/enemy_YR.png', 150, 65)
-    this.load.spritesheet('enemy_YY', 'assets/enemies/enemy_YY.png', 150, 65)
-    this.load.spritesheet('enemy_YB', 'assets/enemies/enemy_YB.png', 150, 65)
-    this.load.spritesheet('enemy_BR', 'assets/enemies/enemy_BR.png', 150, 65)
-    this.load.spritesheet('enemy_BY', 'assets/enemies/enemy_BY.png', 150, 65)
-    this.load.spritesheet('enemy_BB', 'assets/enemies/enemy_BB.png', 150, 65)
+    const enemyWidth = 150
+    const enemyHeight = 65
+    this.load.spritesheet('enemy_RR', 'assets/enemies/enemy_RR.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_RY', 'assets/enemies/enemy_RY.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_RB', 'assets/enemies/enemy_RB.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_YR', 'assets/enemies/enemy_YR.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_YY', 'assets/enemies/enemy_YY.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_YB', 'assets/enemies/enemy_YB.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_BR', 'assets/enemies/enemy_BR.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_BY', 'assets/enemies/enemy_BY.png', enemyWidth, enemyHeight)
+    this.load.spritesheet('enemy_BB', 'assets/enemies/enemy_BB.png', enemyWidth, enemyHeight)
   }
 
   create() {
@@ -88,9 +90,12 @@ export default class Main extends Phaser.State {
     // Server events
     this.game.server.socket.on('move-up', data => this.onMoveUp(data))
     this.game.server.socket.on('move-down', data => this.onMoveDown(data))
-    this.game.server.socket.on('fire', () => this.player.fireWeapon())
-    // this.server.socket.on('shield', data => this.onShield(data))
-    // this.server.socket.on('weapon', data => this.onNewWeaponColors(data))
+    this.game.server.socket.on('fire', data => this.onFire(data))
+    this.game.server.socket.on('repairs', data => this.onWeaponsChanged(data))
+    this.game.server.socket.on('weapons', data => this.onWeaponsChanged(data))
+    this.game.server.socket.on('shields', data => this.onShieldsChanged(data))
+    this.game.server.socket.on('onRepairsChanged', data => this.onShieldsChanged(data))
+    this.game.server.socket.on('communications', data => this.onCommunicationsChanged(data))
 
     // Input
     // Add enemy to left or right side (randomly)
@@ -125,6 +130,26 @@ export default class Main extends Phaser.State {
   onMoveDown(data) {
     if (data === 'stop') window.clearTimeout(this.moveTimer)
     else this.moveTimer = window.setInterval(() => this.player.moveDown(), 10)
+  }
+
+  onRepairsChanged(data) {
+    console.log('repairs', data)
+  }
+
+  onShieldsChanged(data) {
+    console.log('shields', data)
+  }
+
+  onWeaponsChanged(data) {
+    console.log('weapons', data)
+  }
+
+  onCommunicationsChanged(data) {
+    console.log('communications', data)
+  }
+
+  onFire() {
+    this.player.fire()
   }
 
   update() {

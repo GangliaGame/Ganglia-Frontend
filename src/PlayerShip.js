@@ -69,7 +69,7 @@ export default class PlayerShip extends Phaser.Sprite {
     return this.weapons[this.currentWeapon]
   }
 
-  fireWeapon() {
+  fire() {
     this.weapons[0].fire(this)
   }
 

@@ -176,11 +176,8 @@ export default class Main extends Phaser.State {
         if (player.shieldColors.length === 0 || !playerHasMatchingShield) {
           player.damage(enemy.weapon.bulletDamage)
           player.getHurtTint()
-          bullet.kill()
-        // Shield blocks bullet
-        } else {
-          bullet.kill()
         }
+        bullet.kill()
       },
       null,
       this,
@@ -192,8 +189,13 @@ export default class Main extends Phaser.State {
         enemy,
         weapon,
         (e, bullet) => {
-          enemy.getHurtTint()
-          enemy.damage(weapon.bulletDamage)
+          const playerBulletCanHurtEnemy = this.player.weapons
+            .some(({ bulletColor }) => bulletColor === enemy.weaponType)
+          // Bullet hits
+          if (playerBulletCanHurtEnemy) {
+            enemy.getHurtTint()
+            enemy.damage(weapon.bulletDamage)
+          }
           bullet.kill()
         },
         null,
@@ -208,20 +210,6 @@ export default class Main extends Phaser.State {
         enemy.kill_in_next_tick = true
         player.getHurtTint()
         player.damage(enemyCollisionDamage)
-        // store.dispatch({ type: 'DAMAGE', amount: enemyCollisionDamage })
-      },
-      null,
-      this,
-    ))
-
-    // Enemy <-> player shield collision
-    this.enemies.forEach(enemy => this.physics.arcade.overlap(
-      enemy,
-      this.player.shield,
-      (e, shield) => {
-        player.getHurtTint()
-        shield.damage(enemyCollisionDamage)
-        e.kill_in_next_tick = true
       },
       null,
       this,

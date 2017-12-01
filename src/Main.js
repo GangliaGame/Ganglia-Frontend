@@ -89,13 +89,12 @@ export default class Main extends Phaser.State {
     // Add starting enemies
     const numStartingEnemies = 3
     this.enemies = []
-    // _.times(10, () => this.addPatrolEnemy(false))
     _.times(numStartingEnemies, i => {
       this.spawnEnemy(105 * this.game.scaleFactor + i * this.game.height / numStartingEnemies)
     })
 
     // Periodically spawn a new enemy
-    const enemySpawnIntervalSecs = 15
+    const enemySpawnIntervalSecs = 35
     setInterval(
       () => this.spawnEnemy(this.game.height * Math.random()),
       enemySpawnIntervalSecs * 1000,

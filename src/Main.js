@@ -15,28 +15,36 @@ export default class Main extends Phaser.State {
   }
 
   preload() {
-    this.load.image('background', 'assets/1128/background.png')
+    this.load.image('background', 'assets/background.png')
     this.load.image('shield', 'assets/shield.png')
     this.load.image('planet', 'assets/planet.png')
     this.load.image('player', 'assets/player-ship.png')
-    this.load.image('bullet', 'assets/1128/beam_Y.png')
-    this.load.image('enemy',  'assets/enemy.png')
+    this.load.image('bullet', 'assets/bullets/beam_Y.png')
+
+    this.load.image('bullet_R', 'assets/bullets/beam_R.png')
+    this.load.image('bullet_Y', 'assets/bullets/beam_Y.png')
+    this.load.image('bullet_B', 'assets/bullets/beam_B.png')
+
+    this.load.image('shield_R', 'assets/shields/beam_R.png')
+    this.load.image('shield_Y', 'assets/shields/beam_Y.png')
+    this.load.image('shield_B', 'assets/shields/beam_B.png')
 
     // Giada's Edition: Enemy's Color(R/Y/B) + Its Weapon's Color(R/Y/B)
-    this.load.spritesheet('enemy_RR', 'assets/1130/enemy_RR.png', 150, 65)
-    this.load.spritesheet('enemy_RY', 'assets/1130/enemy_RY.png', 150, 65)
-    this.load.spritesheet('enemy_RB', 'assets/1130/enemy_RB.png', 150, 65)
-    this.load.spritesheet('enemy_YR', 'assets/1130/enemy_YR.png', 150, 65)
-    this.load.spritesheet('enemy_YY', 'assets/1130/enemy_YY.png', 150, 65)
-    this.load.spritesheet('enemy_YB', 'assets/1130/enemy_YB.png', 150, 65)
-    this.load.spritesheet('enemy_BR', 'assets/1130/enemy_BR.png', 150, 65)
-    this.load.spritesheet('enemy_BY', 'assets/1130/enemy_BY.png', 150, 65)
-    this.load.spritesheet('enemy_BB', 'assets/1130/enemy_BB.png', 150, 65)
+    this.load.spritesheet('enemy_RR', 'assets/enemies/enemy_RR.png', 150, 65)
+    this.load.spritesheet('enemy_RY', 'assets/enemies/enemy_RY.png', 150, 65)
+    this.load.spritesheet('enemy_RB', 'assets/enemies/enemy_RB.png', 150, 65)
+    this.load.spritesheet('enemy_YR', 'assets/enemies/enemy_YR.png', 150, 65)
+    this.load.spritesheet('enemy_YY', 'assets/enemies/enemy_YY.png', 150, 65)
+    this.load.spritesheet('enemy_YB', 'assets/enemies/enemy_YB.png', 150, 65)
+    this.load.spritesheet('enemy_BR', 'assets/enemies/enemy_BR.png', 150, 65)
+    this.load.spritesheet('enemy_BY', 'assets/enemies/enemy_BY.png', 150, 65)
+    this.load.spritesheet('enemy_BB', 'assets/enemies/enemy_BB.png', 150, 65)
   }
 
   create() {
     // Background
-    this.background = this.add.tileSprite(0, 0, this.game.height*7.1, this.game.height, 'background')
+    const bgHeightTweak = 7.1
+    this.background = this.add.tileSprite(0, 0, this.game.height * bgHeightTweak, this.game.height, 'background')
     this.background.autoScroll(-10, 0)
 
     // Planet
@@ -96,13 +104,6 @@ export default class Main extends Phaser.State {
     const enemy = this.game.add.existing(new Enemy(this.game, x, y))
     this.enemies.push(enemy)
   }
-
-  // addPatrolEnemy() {
-  //   const x = this.game.width - this.planet.width / 2
-  //   const y = (this.game.height - 150) * Math.random() + 150
-  //   const enemy = this.game.add.existing(new PatrolEnemy(this.game, x, y))
-  //   this.enemies.push(enemy)
-  // }
 
   onShield({ condition }) {
     if (condition === 'on') {

@@ -95,7 +95,7 @@ export default class HUD extends React.Component {
           </Panel>
           <Panel wide name="Communication">
             <img src={waveform}/>
-            <div className="HullStrength-label">HULL STRENGTH</div>
+            <div className="HullStrength-label">HEALTH</div>
             <div className="HullStrength-bar">
               <div className="HullStrength-bar-label">
                 {`${hullStrength}/${maxHullStrength}`}
@@ -107,7 +107,7 @@ export default class HUD extends React.Component {
           <Panel name="Propulsion">
             <h2>{`level: ${this.props.propulsion}`}</h2>
           </Panel>
-          <Panel name="Hull Repairs">
+          <Panel name="Repairs">
             <h2>{`level: ${this.props.repairs}`}</h2>
           </Panel>
         </div>

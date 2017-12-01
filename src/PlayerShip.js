@@ -12,6 +12,8 @@ export default class PlayerShip extends Phaser.Sprite {
     game.physics.enable(this, Phaser.Physics.ARCADE)
     this.anchor.setTo(0.4, 0.4)
 
+    this.scale.set(this.game.scaleFactor, this.game.scaleFactor)
+
     // Firing
     this.sightOffset = 100
 

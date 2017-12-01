@@ -8,11 +8,11 @@ class Bullet extends Phaser.Sprite {
     this.exists = false
     this.tracking = false
     this.scaleSpeed = 0
+    this.scale.set(this.game.scaleFactor, this.game.scaleFactor)
   }
 
   fire(x, y, angle, speed) {
     this.reset(x, y)
-    this.scale.set(1)
     this.game.physics.arcade.velocityFromAngle(angle, speed, this.body.velocity)
     this.angle = angle
   }

@@ -16,9 +16,6 @@ export default class PlayerShip extends Phaser.Sprite {
     this.movementSpeed = 0
     this.body.collideWorldBounds = true
 
-    // this.tint = 0xff0000
-    // setInterval(() => this.tint = 0xffffff * Math.random(), 250)
-
     // Shields
     this.shieldColors = []
     this.shield = game.add.sprite(this.x, this.y, 'shield_R')
@@ -100,6 +97,13 @@ export default class PlayerShip extends Phaser.Sprite {
 
   moveUp() {
     this.body.velocity.y = -this.movementSpeed
+  }
+
+  getHurtTint() {
+    this.tint = 0xff0000
+    setTimeout(() => this.tint = 0xffffff, 150)
+    let h = setInterval(() => this.tint = 0xffffff, 100)
+    setTimeout(() => clearInterval(h), 500)
   }
 
   setPropulsionLevel(level) {

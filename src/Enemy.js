@@ -69,6 +69,11 @@ export class Enemy extends Phaser.Sprite {
     this.body.velocity.y = Math.random() > 0.5 ? this.verticalDriftSpeed : -this.verticalDriftSpeed
   }
 
+  getHurtTint() {
+    this.tint = 0xff0000
+    setTimeout(() => this.tint = 0xffffff, 150)
+  }
+
   update() {
     // Drift vertically
     if (this.y - this.height < 0) {

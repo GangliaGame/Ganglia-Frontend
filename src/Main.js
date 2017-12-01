@@ -174,7 +174,9 @@ export default class Main extends Phaser.State {
       enemy.weapon,
       this.player,
       (player, bullet) => {
+
         player.damage(enemy.weapon.bulletDamage)
+        player.getHurtTint()
         bullet.kill()
       },
       null,
@@ -187,6 +189,7 @@ export default class Main extends Phaser.State {
         enemy,
         weapon,
         (e, bullet) => {
+          enemy.getHurtTint()
           enemy.damage(weapon.bulletDamage)
           bullet.kill()
         },
@@ -200,6 +203,7 @@ export default class Main extends Phaser.State {
       this.player,
       (e, player) => {
         enemy.kill_in_next_tick = true
+        player.getHurtTint()
         player.damage(enemyCollisionDamage)
         // store.dispatch({ type: 'DAMAGE', amount: enemyCollisionDamage })
       },
@@ -212,6 +216,7 @@ export default class Main extends Phaser.State {
       enemy,
       this.player.shield,
       (e, shield) => {
+        player.getHurtTint()
         shield.damage(enemyCollisionDamage)
         e.kill_in_next_tick = true
       },

@@ -60,6 +60,8 @@ export class Enemy extends Phaser.Sprite {
     )
     this.bulletDamage = 1
 
+    this.collisionDamage = 35
+
     // Physics and movement
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
     this.body.collideWorldBounds = true

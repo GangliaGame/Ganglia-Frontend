@@ -21,6 +21,8 @@ export default class Weapon extends Phaser.Group {
     super(ship.game, ship.game.world, 'Single Bullet', false, true, Phaser.Physics.ARCADE)
     this.ship = ship
 
+    this.bulletColor = bulletColor
+
     this.nextFire = 0
     this.bulletDamage = bulletDamage
     this.bulletVelocity = 200

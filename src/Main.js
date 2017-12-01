@@ -163,8 +163,6 @@ export default class Main extends Phaser.State {
       .filter(child => child.kill_in_next_tick)
       .map(child => child.kill())
 
-    const enemyCollisionDamage = 10
-
     // Player <-> enemy bullet collision
     this.enemies.forEach(enemy => this.physics.arcade.overlap(
       enemy.weapon,
@@ -190,7 +188,7 @@ export default class Main extends Phaser.State {
         weapon,
         (e, bullet) => {
           const playerBulletCanHurtEnemy = this.player.weapons
-            .some(({ bulletColor }) => bulletColor === enemy.weaponType)
+            .some(({ bulletColor }) => bulletColor === enemy.type)
           // Bullet hits
           if (playerBulletCanHurtEnemy) {
             enemy.getHurtTint()
@@ -209,7 +207,7 @@ export default class Main extends Phaser.State {
       (e, player) => {
         enemy.kill_in_next_tick = true
         player.getHurtTint()
-        player.damage(enemyCollisionDamage)
+        player.damage(enemy.collisionDamage)
       },
       null,
       this,

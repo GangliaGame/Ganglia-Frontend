@@ -55,7 +55,6 @@ class App extends React.Component {
       gameMainState.onWeaponsChanged(data)
     })
     this.game.server.socket.on('shields', data => {
-      console.log('shields', data)
       this.onShieldsChanged(data)
       gameMainState.onShieldsChanged(data)
     })

@@ -21,7 +21,8 @@ export default class PlayerShip extends Phaser.Sprite {
 
     // Shields
     this.shieldColors = []
-    this.shield = game.add.sprite(this.x, this.y, 'shield_RYB')
+    this.shield = game.add.sprite(this.x, this.y, 'shield_R')
+    this.setShields(this.shieldColors)
     this.shield.anchor.setTo(0.5, 0.5)
     game.physics.enable(this.shield, Phaser.Physics.ARCADE)
 
@@ -56,9 +57,11 @@ export default class PlayerShip extends Phaser.Sprite {
       this.shield.visible = false
       return
     }
+    this.shield.visible = true
     const colorToWeaponType = color => color[0].toUpperCase()
     const shieldKey = `shield_${colors.map(colorToWeaponType).join('')}`
     this.shield.loadTexture(shieldKey)
+    this.shieldColors = []
   }
 
   setWeapons(colors) {

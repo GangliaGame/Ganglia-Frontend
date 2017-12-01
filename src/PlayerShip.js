@@ -1,8 +1,6 @@
 import Weapon from './Weapon'
 import HealthBar from './HealthBar'
 
-const toRadians = angle => angle * (Math.PI / 180)
-
 export default class PlayerShip extends Phaser.Sprite {
   constructor(game) {
     super(game, 50, game.height / 2, 'player')
@@ -59,14 +57,29 @@ export default class PlayerShip extends Phaser.Sprite {
 
   setWeapons(colors) {
     const colorToWeaponType = color => color[0].toUpperCase()
+    const bulletSpread = 10 * this.game.scaleFactor
+    const bulletAngle = 0
+    const spreadRange = [
+      [0],
+      [bulletSpread / 2, -bulletSpread / 2],
+      [0, bulletSpread, -bulletSpread],
+    ]
+    const angleRange = [
+      [0],
+      [bulletAngle / 2, -bulletAngle / 2],
+      [0, bulletAngle, -bulletAngle],
+    ]
+    colors.sort()
     this.weapons = colors.map((color, i) => (
-      new Weapon(this, this.weaponDamage, colorToWeaponType(color), 50 * i * (Math.exp(1, i)))
+      new Weapon(
+        this,
+        this.weaponDamage,
+        colorToWeaponType(color),
+        spreadRange[colors.length - 1][i],
+        angleRange[colors.length - 1][i],
+      )
     ))
-    // 0 => 50 * 0 => 0
-    // 1 => 50 * 1 => 50
-    // 2 => 50 * -1 => -50
   }
-
 
   fire() {
     this.weapons.forEach(weapon => weapon.fire(this))

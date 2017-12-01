@@ -32,6 +32,7 @@ export default class PlayerShip extends Phaser.Sprite {
 
     // Sight
     this.sight = game.add.sprite(this.x, this.y, 'weapon-sight')
+    this.sight.anchor.setTo(-0.25, 0.5)
 
     // HP bar
     this.healthBar = new HealthBar(this)
@@ -54,14 +55,14 @@ export default class PlayerShip extends Phaser.Sprite {
   setShields(colors) {
     colors.sort()
     if (colors.length === 0) {
-      this.shield.visible = false
+      this.shield.exists = colors.length > 0
       return
     }
-    this.shield.visible = true
+    this.shield.exists = true
     const colorToWeaponType = color => color[0].toUpperCase()
     const shieldKey = `shield_${colors.map(colorToWeaponType).join('')}`
     this.shield.loadTexture(shieldKey)
-    this.shieldColors = []
+    this.shieldColors = colors
   }
 
   setWeapons(colors) {
@@ -113,11 +114,16 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   update() {
+    // Health
     if (this.health !== this.prevHealth) {
       this.game.onHullStrengthChanged(this.health)
       this.prevHealth = this.health
     }
 
+    // Weapon sight
+    this.sight.y = this.y
+
+    // Movement
     this.body.velocity.set(0)
 
     // Shield

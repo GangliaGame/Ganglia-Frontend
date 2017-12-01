@@ -28,6 +28,10 @@ export default class Main extends Phaser.State {
     this.load.image('shield_R', 'assets/shields/shield_R.png')
     this.load.image('shield_Y', 'assets/shields/shield_Y.png')
     this.load.image('shield_B', 'assets/shields/shield_B.png')
+    this.load.image('shield_YB', 'assets/shields/shield_YB.png')
+    this.load.image('shield_RY', 'assets/shields/shield_RY.png')
+    this.load.image('shield_RB', 'assets/shields/shield_RB.png')
+    this.load.image('shield_RYB', 'assets/shields/shield_RYB.png')
 
     this.load.image('weapon-sight', 'assets/weapon-sight.png')
 

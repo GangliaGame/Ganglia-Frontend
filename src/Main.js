@@ -86,24 +86,33 @@ export default class Main extends Phaser.State {
     this.player = this.game.add.existing(new PlayerShip(this.game))
     this.game.player = this.player
 
-    // Add left and right enemies
-    const numEnemies = 4
+    // Add starting enemies
+    const numStartingEnemies = 3
     this.enemies = []
     // _.times(10, () => this.addPatrolEnemy(false))
-    _.times(numEnemies, i => {
-      this.addEnemy(105 * this.game.scaleFactor + i * this.game.height / numEnemies)
+    _.times(numStartingEnemies, i => {
+      this.spawnEnemy(105 * this.game.scaleFactor + i * this.game.height / numStartingEnemies)
     })
 
+    // Periodically spawn a new enemy
+    const enemySpawnIntervalSecs = 15
+    setInterval(
+      () => this.spawnEnemy(this.game.height * Math.random()),
+      enemySpawnIntervalSecs * 1000,
+    )
+
     // Input
-    // Add enemy to left or right side (randomly)
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.E)
-      .onDown.add(() => this.addEnemy(Boolean(_.random(0, 1))), this)
+      .onDown.add(() => this.spawnEnemy(this.game.height * Math.random()), this)
   }
 
-  addEnemy(y) {
+  spawnEnemy(yInitial) {
     const x = this.maxX
-    const enemy = this.game.add.existing(new Enemy(this.game, x, y))
+    const colors = 'RYB'.split('')
+    const allEnemyTypes = _.flatten(colors.map(a => colors.map(b => a + b)))
+    const randomEnemyType = _.sample(allEnemyTypes)
+    const enemy = this.game.add.existing(new Enemy(this.game, x, yInitial, ...randomEnemyType))
     this.enemies.push(enemy)
   }
 

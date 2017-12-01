@@ -62,13 +62,14 @@ export class Enemy extends Phaser.Sprite {
 
     // Death
     this.events.onKilled.add(() => this.createExplosion(), this)
+    this.collisionDamage = 35
 
     // Physics and movement
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
     this.body.collideWorldBounds = true
     this.movementSpeed = 5
     this.verticalDriftSpeed = this.movementSpeed / 2
-    this.body.velocity.x = -this.movementSpeed
+    this.body.velocity.x = -this.movementSpeed + (this.movementSpeed * Math.random())
     this.body.velocity.y = Math.random() > 0.5 ? this.verticalDriftSpeed : -this.verticalDriftSpeed
   }
 

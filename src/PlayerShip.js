@@ -50,15 +50,15 @@ export default class PlayerShip extends Phaser.Sprite {
 
   setShields(colors) {
     colors.sort()
+    this.shieldColors = colors
     if (colors.length === 0) {
-      this.shield.visible = false
+      this.shield.exists = false
       return
     }
     this.shield.visible = true
     const colorToWeaponType = color => color[0].toUpperCase()
     const shieldKey = `shield_${colors.map(colorToWeaponType).join('')}`
     this.shield.loadTexture(shieldKey)
-    this.shieldColors = []
   }
 
   setWeapons(colors) {
@@ -102,8 +102,8 @@ export default class PlayerShip extends Phaser.Sprite {
   getHurtTint() {
     this.tint = 0xff0000
     setTimeout(() => this.tint = 0xffffff, 150)
-    // let h = setInterval(() => this.tint = 0xffffff, 100)
-    // setTimeout(() => clearInterval(h), 500)
+    const h = setInterval(() => this.tint = 0xffffff, 100)
+    setTimeout(() => clearInterval(h), 500)
   }
 
   setPropulsionLevel(level) {
@@ -129,6 +129,8 @@ export default class PlayerShip extends Phaser.Sprite {
     this.shield.y = this.y
     if (this.shield.health === 0) {
       this.isShieldActive = false
+      this.shield.visible = false
+      this.sight.visible = false
     }
   }
 }

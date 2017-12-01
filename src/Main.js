@@ -117,18 +117,6 @@ export default class Main extends Phaser.State {
     this.enemies.push(enemy)
   }
 
-  onShield({ condition }) {
-    if (condition === 'on') {
-      this.player.activateShield()
-    } else if (condition === 'off') {
-      this.player.deactivateShield()
-    }
-  }
-
-  onWeapon({ level }) {
-    this.player.setActiveWeapon(level)
-  }
-
   onMoveUp(data) {
     if (data === 'stop') window.clearTimeout(this.moveTimer)
     else this.moveTimer = window.setInterval(() => this.player.moveUp(), 10)
@@ -177,16 +165,18 @@ export default class Main extends Phaser.State {
       .filter(child => child.kill_in_next_tick)
       .map(child => child.kill())
 
-    const enemyCollisionDamage = 10
-
     // Player <-> enemy bullet collision
     this.enemies.forEach(enemy => this.physics.arcade.overlap(
       enemy.weapon,
       this.player,
       (player, bullet) => {
-
-        player.damage(enemy.weapon.bulletDamage)
-        player.getHurtTint()
+        const playerHasMatchingShield = player.shieldColors
+          .some(color => color[0].toUpperCase() === enemy.weaponType)
+        // Bullet hits
+        if (player.shieldColors.length === 0 || !playerHasMatchingShield) {
+          player.damage(enemy.weapon.bulletDamage)
+          player.getHurtTint()
+        }
         bullet.kill()
       },
       null,
@@ -199,8 +189,13 @@ export default class Main extends Phaser.State {
         enemy,
         weapon,
         (e, bullet) => {
-          enemy.getHurtTint()
-          enemy.damage(weapon.bulletDamage)
+          const playerBulletCanHurtEnemy = this.player.weapons
+            .some(({ bulletColor }) => bulletColor === enemy.type)
+          // Bullet hits
+          if (playerBulletCanHurtEnemy) {
+            enemy.getHurtTint()
+            enemy.damage(weapon.bulletDamage)
+          }
           bullet.kill()
         },
         null,
@@ -214,21 +209,7 @@ export default class Main extends Phaser.State {
       (e, player) => {
         enemy.kill_in_next_tick = true
         player.getHurtTint()
-        player.damage(enemyCollisionDamage)
-        // store.dispatch({ type: 'DAMAGE', amount: enemyCollisionDamage })
-      },
-      null,
-      this,
-    ))
-
-    // Enemy <-> player shield collision
-    this.enemies.forEach(enemy => this.physics.arcade.overlap(
-      enemy,
-      this.player.shield,
-      (e, shield) => {
-        player.getHurtTint()
-        shield.damage(enemyCollisionDamage)
-        e.kill_in_next_tick = true
+        player.damage(enemy.collisionDamage)
       },
       null,
       this,

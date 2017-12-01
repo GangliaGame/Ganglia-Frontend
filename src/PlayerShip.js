@@ -50,13 +50,19 @@ export default class PlayerShip extends Phaser.Sprite {
     this.heal((this.repairPercentagePerSecond * this.maxHealth) * (this.repairIntervalMsec / 1000))
   }
 
-  setShieldColors(colors) {
+  setShields(colors) {
+    colors.sort()
+    if (colors.length === 0) {
+      this.shield.visible = false
+      return
+    }
     const colorToWeaponType = color => color[0].toUpperCase()
-    if (this.isShieldActive) this.deactivateShield()
-    else this.activateShield()
+    const shieldKey = `shield_${colors.map(colorToWeaponType).join('')}`
+    this.shield.loadTexture(shieldKey)
   }
 
   setWeapons(colors) {
+    colors.sort()
     const colorToWeaponType = color => color[0].toUpperCase()
     const bulletSpread = 10 * this.game.scaleFactor
     const bulletAngle = 0
@@ -70,7 +76,6 @@ export default class PlayerShip extends Phaser.Sprite {
       [bulletAngle / 2, -bulletAngle / 2],
       [0, bulletAngle, -bulletAngle],
     ]
-    colors.sort()
     this.weapons = colors.map((color, i) => (
       new Weapon(
         this,
@@ -80,10 +85,6 @@ export default class PlayerShip extends Phaser.Sprite {
         angleRange[colors.length - 1][i],
       )
     ))
-  }
-
-  setShields(colors) {
-    console.log(colors)
   }
 
   fire() {

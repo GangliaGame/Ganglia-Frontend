@@ -16,7 +16,6 @@ export default class Main extends Phaser.State {
 
   preload() {
     this.load.image('background', 'assets/background.png')
-    this.load.image('shield', 'assets/shield.png')
     this.load.image('planet', 'assets/planet.png')
     this.load.spritesheet('player', 'assets/player-ship.png', 200, 120)
     this.load.image('bullet', 'assets/bullets/beam_Y.png')
@@ -25,13 +24,13 @@ export default class Main extends Phaser.State {
     this.load.image('bullet_Y', 'assets/bullets/beam_Y.png')
     this.load.image('bullet_B', 'assets/bullets/beam_B.png')
 
-    this.load.image('shield_R', 'assets/shields/shield_R.png')
-    this.load.image('shield_Y', 'assets/shields/shield_Y.png')
     this.load.image('shield_B', 'assets/shields/shield_B.png')
-    this.load.image('shield_YB', 'assets/shields/shield_YB.png')
+    this.load.image('shield_BY', 'assets/shields/shield_YB.png')
+    this.load.image('shield_BR', 'assets/shields/shield_RB.png')
+    this.load.image('shield_BRY', 'assets/shields/shield_RYB.png')
+    this.load.image('shield_R', 'assets/shields/shield_R.png')
     this.load.image('shield_RY', 'assets/shields/shield_RY.png')
-    this.load.image('shield_RB', 'assets/shields/shield_RB.png')
-    this.load.image('shield_RYB', 'assets/shields/shield_RYB.png')
+    this.load.image('shield_Y', 'assets/shields/shield_Y.png')
 
     this.load.image('weapon-sight', 'assets/weapon-sight.png')
 

@@ -29,7 +29,8 @@ export default class Main extends Phaser.State {
     this.load.image('shield_Y', 'assets/shields/shield_Y.png')
     this.load.image('shield_B', 'assets/shields/shield_B.png')
 
-    // Giada's Edition: Enemy's Color(R/Y/B) + Its Weapon's Color(R/Y/B)
+    this.load.image('weapon-sight', 'assets/weapon-sight.png')
+
     const enemyWidth = 150
     const enemyHeight = 65
     this.load.spritesheet('enemy_RR', 'assets/enemies/enemy_RR.png', enemyWidth, enemyHeight)

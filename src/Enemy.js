@@ -60,6 +60,9 @@ export class Enemy extends Phaser.Sprite {
     )
     this.bulletDamage = 1
 
+    // Death
+    this.events.onKilled.add(() => this.createExplosion(), this)
+
     // Physics and movement
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
     this.body.collideWorldBounds = true
@@ -72,6 +75,13 @@ export class Enemy extends Phaser.Sprite {
   getHurtTint() {
     this.tint = 0xff0000
     setTimeout(() => this.tint = 0xffffff, 150)
+  }
+
+  createExplosion() {
+    this.exp = this.game.add.sprite(this.x, this.y, 'explosion')
+    this.exp.anchor.setTo(0.5, 0.5)
+    this.exp.animations.add('explosion')
+    this.exp.play('explosion', 30, false, true)
   }
 
   update() {

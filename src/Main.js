@@ -34,6 +34,8 @@ export default class Main extends Phaser.State {
 
     this.load.image('weapon-sight', 'assets/weapon-sight.png')
 
+    this.load.spritesheet('explosion', 'assets/explosion.png', 160, 160)
+
     const enemyWidth = 150
     const enemyHeight = 65
     this.load.spritesheet('enemy_RR', 'assets/enemies/enemy_RR.png', enemyWidth, enemyHeight)

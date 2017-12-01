@@ -6,8 +6,11 @@ const toRadians = angle => angle * (Math.PI / 180)
 export default class PlayerShip extends Phaser.Sprite {
   constructor(game) {
     super(game, 50, game.height / 2, 'player')
+    this.animations.add('move')
+    this.animations.play('move', 20, true)
+
     game.physics.enable(this, Phaser.Physics.ARCADE)
-    this.anchor.setTo(0.5, 0.5)
+    this.anchor.setTo(0.4, 0.4)
 
     // Firing
     this.sightOffset = 100

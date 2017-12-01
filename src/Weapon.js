@@ -26,7 +26,7 @@ export default class Weapon extends Phaser.Group {
     this.bulletVelocity = 200
     this.isPlayerWeapon = ship.key === 'player'
     this.bulletVelocity = this.isPlayerWeapon ? this.bulletVelocity : -this.bulletVelocity
-    this.fireRate = 500
+    this.fireRate = 1000
     this.yOffset = yOffset
 
     this.pattern = Phaser.ArrayUtils.numberArrayStep(-800, 800, 200)
@@ -44,7 +44,7 @@ export default class Weapon extends Phaser.Group {
   fire() {
     if (this.game.time.time < this.nextFire) return
 
-    const x = this.ship.x
+    const x = this.isPlayerWeapon ? this.ship.x + this.ship.width / 2 : this.ship.x
     const y = this.ship.y + this.yOffset
 
     this.getFirstExists(false).fire(x, y, 0, this.bulletVelocity, 0, 600)

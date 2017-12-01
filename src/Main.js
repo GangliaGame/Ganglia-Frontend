@@ -127,16 +127,15 @@ export default class Main extends Phaser.State {
   }
 
   onWeaponsChanged(colors) {
-    console.log('weapons', colors)
     this.player.setWeapons(colors)
   }
 
   onShieldsChanged(colors) {
-    console.log('shields', data)
+    this.player.setShields(colors)
   }
 
-  onPropulsionChanged(data) {
-    console.log('propulsion', data)
+  onPropulsionChanged(level) {
+    this.player.setPropulsionLevel(level)
   }
 
   onRepairsChanged(data) {

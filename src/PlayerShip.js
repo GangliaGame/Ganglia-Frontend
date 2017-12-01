@@ -13,7 +13,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.scale.set(this.game.scaleFactor, this.game.scaleFactor)
 
     // Movement
-    this.movementSpeed = 100
+    this.movementSpeed = 0
     this.body.collideWorldBounds = true
 
     // Shields
@@ -81,6 +81,10 @@ export default class PlayerShip extends Phaser.Sprite {
     ))
   }
 
+  setShields(colors) {
+    console.log(colors)
+  }
+
   fire() {
     this.weapons.forEach(weapon => weapon.fire(this))
   }
@@ -91,6 +95,11 @@ export default class PlayerShip extends Phaser.Sprite {
 
   moveUp() {
     this.body.velocity.y = -this.movementSpeed
+  }
+
+  setPropulsionLevel(level) {
+    const levelSpeedMap = [0, 25, 100]
+    this.movementSpeed = levelSpeedMap[level]
   }
 
   update() {

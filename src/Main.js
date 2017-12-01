@@ -101,9 +101,12 @@ export default class Main extends Phaser.State {
       .onDown.add(() => this.addEnemy(Boolean(_.random(0, 1))), this)
   }
 
-  addEnemy(y) {
+  addEnemy(yInitial) {
     const x = this.maxX
-    const enemy = this.game.add.existing(new Enemy(this.game, x, y))
+    const colors = 'RYB'.split('')
+    const allEnemyTypes = _.flatten(colors.map(a => colors.map(b => a + b)))
+    const randomEnemyType = _.sample(allEnemyTypes)
+    const enemy = this.game.add.existing(new Enemy(this.game, x, yInitial, ...randomEnemyType))
     this.enemies.push(enemy)
   }
 

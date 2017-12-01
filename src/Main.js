@@ -122,11 +122,12 @@ export default class Main extends Phaser.State {
     else this.moveTimer = window.setInterval(() => this.player.moveDown(), 10)
   }
 
-  onWeaponsChanged(data) {
-    console.log('weapons', data)
+  onWeaponsChanged(colors) {
+    console.log('weapons', colors)
+    this.player.setWeapons(colors)
   }
 
-  onShieldsChanged(data) {
+  onShieldsChanged(colors) {
     console.log('shields', data)
   }
 
@@ -163,7 +164,7 @@ export default class Main extends Phaser.State {
     const enemyCollisionDamage = 10
 
     // Player <-> enemy bullet collision
-    this.enemies.map(enemy => this.physics.arcade.overlap(
+    this.enemies.forEach(enemy => this.physics.arcade.overlap(
       enemy.weapon,
       this.player,
       (player, bullet) => {
@@ -174,20 +175,21 @@ export default class Main extends Phaser.State {
       this,
     ))
 
-    // Enemy <-> player bullet collision
-    this.enemies.map(enemy => this.physics.arcade.overlap(
-      enemy,
-      this.player.getCurrentWeapon(),
-      (e, bullet) => {
-        enemy.damage(this.player.getCurrentWeapon().bulletDamage)
-        bullet.kill()
-      },
-      null,
-      this,
-    ))
+    // Enemy <-> player bullet collision (player may have multiple weapons)
+    this.player.weapons.forEach(weapon =>
+      this.enemies.forEach(enemy => this.physics.arcade.overlap(
+        enemy,
+        weapon,
+        (e, bullet) => {
+          enemy.damage(weapon.bulletDamage)
+          bullet.kill()
+        },
+        null,
+        this,
+      )))
 
     // Enemy <-> player ship (no shield) collision
-    this.enemies.map(enemy => this.physics.arcade.overlap(
+    this.enemies.forEach(enemy => this.physics.arcade.overlap(
       enemy,
       this.player,
       (e, player) => {
@@ -200,7 +202,7 @@ export default class Main extends Phaser.State {
     ))
 
     // Enemy <-> player shield collision
-    this.enemies.map(enemy => this.physics.arcade.overlap(
+    this.enemies.forEach(enemy => this.physics.arcade.overlap(
       enemy,
       this.player.shield,
       (e, shield) => {

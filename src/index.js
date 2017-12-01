@@ -46,23 +46,23 @@ class App extends React.Component {
 
     // Two callbacks for each server event.
     // The first is for react, and second for phaser.
-    this.game.server.socket.on('weapons', (data) => {
+    this.game.server.socket.on('weapons', data => {
       this.onWeaponsChanged(data)
       gameMainState.onWeaponsChanged(data)
     })
-    this.game.server.socket.on('shields', (data) => {
+    this.game.server.socket.on('shields', data => {
       this.onShieldsChanged(data)
       gameMainState.onShieldsChanged(data)
     })
-    this.game.server.socket.on('propulsion', (data) => {
+    this.game.server.socket.on('propulsion', data => {
       this.onPropulsionChanged(data)
       gameMainState.onPropulsionChanged(data)
     })
-    this.game.server.socket.on('repairs', (data) => {
+    this.game.server.socket.on('repairs', data => {
       this.onRepairsChanged(data)
       gameMainState.onRepairsChanged(data)
     })
-    this.game.server.socket.on('communications', (data) => {
+    this.game.server.socket.on('communications', data => {
       this.onCommunicationsChanged(data)
       gameMainState.onCommunicationsChanged(data)
     })

@@ -40,12 +40,8 @@ export default class PlayerShip extends Phaser.Sprite {
 
     // Weapons
     this.weapons = []
+    this.weaponDamage = 10
     this.currentWeapon = 0
-
-    this.weapons.push(new Weapon(this, 10, 'R'))
-    for (let i = 1; i < this.weapons.length; i++) {
-      this.weapons[i].visible = false
-    }
   }
 
   toggleShield() {
@@ -64,12 +60,19 @@ export default class PlayerShip extends Phaser.Sprite {
     this.shield.exists = false
   }
 
-  getCurrentWeapon() {
-    return this.weapons[this.currentWeapon]
+  setWeapons(colors) {
+    const colorToWeaponType = color => color[0].toUpperCase()
+    this.weapons = colors.map((color, i) => (
+      new Weapon(this, this.weaponDamage, colorToWeaponType(color), 50 * i * (Math.exp(1, i)))
+    ))
+    // 0 => 50 * 0 => 0
+    // 1 => 50 * 1 => 50
+    // 2 => 50 * -1 => -50
   }
 
+
   fire() {
-    this.weapons[0].fire(this)
+    this.weapons.forEach(weapon => weapon.fire(this))
   }
 
   moveDown() {

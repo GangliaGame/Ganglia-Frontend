@@ -58,7 +58,7 @@ export class Enemy extends Phaser.Sprite {
       this.fire.bind(this),
       baseFiringRate + (baseFiringRate / 100 * Math.random()),
     )
-    this.bulletDamage = 10
+    this.bulletDamage = 1
 
     // Physics and movement
     this.game.physics.enable(this, Phaser.Physics.ARCADE)

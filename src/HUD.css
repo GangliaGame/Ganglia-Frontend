@@ -63,12 +63,13 @@
   height: 5.25vh;
   width: 100%;
   text-transform: uppercase;
-  font-size: 2.75vw;
+  font-size: 2.5vw;
+  font-family: 'DDC Hardware'
 }
 
 .Panel-description {
   text-align: center;
-  font-size: 1.25vw;
+  font-size: 1.7vw;
   max-width: 90%;
   margin-top: 5%;
   margin-bottom: 5%;

@@ -80,7 +80,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.weapons = colors.map((color, i) => (
       new Weapon(
         this,
-        this.weaponDamage / colors.length,
+        this.weaponDamage,
         colorToWeaponType(color),
         spreadRange[colors.length - 1][i],
         angleRange[colors.length - 1][i],

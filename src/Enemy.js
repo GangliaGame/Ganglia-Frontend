@@ -53,12 +53,12 @@ export class Enemy extends Phaser.Sprite {
 
     // Weapon
     const baseFiringRate = 7000
-    this.weapon = new Weapon(this, 10, weaponType)
+    this.bulletDamage = 7.5
+    this.weapon = new Weapon(this, this.bulletDamage, weaponType)
     this.fireTimer = window.setInterval(
       this.fire.bind(this),
       baseFiringRate + (baseFiringRate * Math.random()),
     )
-    this.bulletDamage = 1
 
     // Death
     this.events.onKilled.add(() => this.createExplosion(), this)

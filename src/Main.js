@@ -138,12 +138,12 @@ export default class Main extends Phaser.State {
     this.player.setPropulsionLevel(level)
   }
 
-  onRepairsChanged(data) {
-    console.log('repairs', data)
+  onRepairsChanged(level) {
+    this.player.setRepairLevel(level)
   }
 
-  onCommunicationsChanged(data) {
-    console.log('communications', data)
+  onCommunicationsChanged(isEnabled) {
+    console.log('communications', isEnabled)
   }
 
   onFire() {

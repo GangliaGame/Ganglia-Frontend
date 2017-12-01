@@ -38,7 +38,7 @@ export default class HUD extends React.Component {
   render() {
     const hullBarWidth = 115
     const maxHullStrength = 100
-    const hullStrength = this.props.hullStrength
+    const hullStrength = Math.max(0, this.props.hullStrength)
     return (
       <div className="HUD">
         <div className="HUD-inner">
@@ -53,7 +53,7 @@ export default class HUD extends React.Component {
             <div className="HullStrength-label">HEALTH</div>
             <div className="HullStrength-bar">
               <div className="HullStrength-bar-label">
-                {`${hullStrength}/${maxHullStrength}`}
+                {`${hullStrength < (maxHullStrength / 4) ? hullStrength.toFixed(1) : hullStrength.toFixed(0)}/${maxHullStrength}`}
               </div>
               <div className="HullStrength-bar-inner" style={{ width: `${hullStrength / maxHullStrength * hullBarWidth}%` }}/>
             </div>

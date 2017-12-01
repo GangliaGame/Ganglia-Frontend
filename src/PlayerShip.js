@@ -37,6 +37,15 @@ export default class PlayerShip extends Phaser.Sprite {
     this.weapons = []
     this.weaponDamage = 10
     this.currentWeapon = 0
+
+    // Repairs
+    this.repairPercentagePerSecond = 0
+    this.repairIntervalMsec = 60
+    setInterval(this.onRepair.bind(this), this.repairIntervalMsec)
+  }
+
+  onRepair() {
+    this.heal((this.repairPercentagePerSecond * this.maxHealth) * (this.repairIntervalMsec / 1000))
   }
 
   toggleShield() {
@@ -100,6 +109,11 @@ export default class PlayerShip extends Phaser.Sprite {
   setPropulsionLevel(level) {
     const levelSpeedMap = [0, 25, 100]
     this.movementSpeed = levelSpeedMap[level]
+  }
+
+  setRepairLevel(level) {
+    const repairSpeedMap = [0, 0.005, 0.01, 0.025]
+    this.repairPercentagePerSecond = repairSpeedMap[level]
   }
 
   update() {

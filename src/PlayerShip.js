@@ -12,8 +12,7 @@ export default class PlayerShip extends Phaser.Sprite {
     game.physics.enable(this, Phaser.Physics.ARCADE)
     this.anchor.setTo(0.4, 0.4)
 
-    // Firing
-    this.sightOffset = 100
+    this.scale.set(this.game.scaleFactor, this.game.scaleFactor)
 
     // Movement
     this.movementSpeed = 100
@@ -31,9 +30,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.health = 100
 
     // Sight
-    this.sight = this.game.add.graphics()
-    this.sight.beginFill(0xffffff, 0.25)
-    this.sight.drawRoundedRect(0, 0, this.game.width * 0.7, 5, 10)
+    this.sight = game.add.sprite(this.x, this.y, 'weapon-sight')
 
     // HP bar
     this.healthBar = new HealthBar(this)
@@ -92,8 +89,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.body.velocity.set(0)
 
     // Update crosshair location
-    this.sight.x = this.x + this.sightOffset * Math.cos(toRadians(0))
-    this.sight.y = this.y - this.sightOffset * Math.sin(toRadians(0))
+    this.sight.y = this.y + 12 * this.game.scaleFactor
 
     // Shield
     this.shield.x = this.x

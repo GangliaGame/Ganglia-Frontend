@@ -37,6 +37,10 @@ class App extends React.Component {
     this.game.state.start('Main')
     this.game.server = new GameServer()
 
+    const nativeWidth = 1920
+    const nativeHeight = 1080
+    this.game.scaleFactor = window.innerHeight / nativeHeight
+
     const gameMainState = this.game.state.states.Main
 
     // Server events

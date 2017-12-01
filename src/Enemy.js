@@ -41,7 +41,7 @@ export class Enemy extends Phaser.Sprite {
     this.weaponType = weaponType
 
     // Size and anchoring
-    this.scaleFactor = 0.75
+    this.scaleFactor = this.game.scaleFactor
     this.anchor.setTo(0.5, 0.5)
     this.scale.y = this.scaleFactor
     this.scale.x = this.scaleFactor
@@ -63,8 +63,26 @@ export class Enemy extends Phaser.Sprite {
     // Physics and movement
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
     this.body.collideWorldBounds = true
-    this.movementSpeed = 2
+    this.movementSpeed = 5
+    this.verticalDriftSpeed = this.movementSpeed / 2
     this.body.velocity.x = -this.movementSpeed
+    this.body.velocity.y = Math.random() > 0.5 ? this.verticalDriftSpeed : -this.verticalDriftSpeed
+  }
+
+  update() {
+    // Drift vertically
+    if (this.y - this.height < 0) {
+      this.body.velocity.y = this.verticalDriftSpeed
+    } else if (this.y + this.height > this.game.height) {
+      this.body.velocity.y = -this.verticalDriftSpeed
+    }
+    // if (Math.random() < 0.0005) {
+    //   if (this.y > this.game.height / 2) {
+    //     this.body.velocity.y = -this.verticalDriftSpeed
+    //   } else {
+    //     this.body.velocity.y = this.verticalDriftSpeed
+    //   }
+    // }
   }
 
   fire() {

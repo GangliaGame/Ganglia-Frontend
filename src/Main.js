@@ -29,7 +29,8 @@ export default class Main extends Phaser.State {
     this.load.image('shield_Y', 'assets/shields/shield_Y.png')
     this.load.image('shield_B', 'assets/shields/shield_B.png')
 
-    // Giada's Edition: Enemy's Color(R/Y/B) + Its Weapon's Color(R/Y/B)
+    this.load.image('weapon-sight', 'assets/weapon-sight.png')
+
     const enemyWidth = 150
     const enemyHeight = 65
     this.load.spritesheet('enemy_RR', 'assets/enemies/enemy_RR.png', enemyWidth, enemyHeight)
@@ -45,36 +46,36 @@ export default class Main extends Phaser.State {
 
   create() {
     // Background
-    const bgHeightTweak = 7.1
+    const bgHeightTweak = 10 * this.game.scaleFactor
     this.background = this.add.tileSprite(0, 0, this.game.height * bgHeightTweak, this.game.height, 'background')
     this.background.autoScroll(-10, 0)
 
     // Planet
     this.planet = this.add.sprite(this.game.world.centerX, this.game.height, 'planet')
     this.planet.anchor.setTo(0.5, 0.5)
-    this.planet.scale.set(0.70, 0.70)
+    this.planet.scale.set(this.game.scaleFactor, this.game.scaleFactor)
     this.planet.x = this.game.width
     this.planet.y = this.game.height / 2
     this.planet.update = () => { this.planet.angle -= 0.05 }
 
     // Distance to planet text
-    const rectWidth = 160
-    const rectHeight = 46
-    const rectOffsetFromEdge = 30
-    const offsetLeft = 14
-    const offsetTop = 5
+    const rectWidth = 248 * this.game.scaleFactor
+    const rectHeight = 69 * this.game.scaleFactor
+    const rectOffsetFromEdge = 45 * this.game.scaleFactor
+    const offsetLeft = 21 * this.game.scaleFactor
+    const offsetTop = 7.5 * this.game.scaleFactor
     const graphics = this.game.add.graphics(
       this.game.width - rectWidth - rectOffsetFromEdge,
       this.game.height / 2 - (rectHeight / 2),
     )
     graphics.lineStyle(2, 0x000000, 1)
     graphics.beginFill(0xffffff)
-    graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 25)
+    graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 37.5 * this.game.scaleFactor)
     this.distanceText = this.game.add.text(
       this.game.width - rectWidth - rectOffsetFromEdge + offsetLeft,
       this.game.height / 2 - (rectHeight / 2) + offsetTop,
       '',
-      { font: '31px DDC Hardware', fill: 'black' },
+      { font: `${47 * this.game.scaleFactor}px DDC Hardware`, fill: 'black' },
     )
     this.maxX = this.game.width - this.planet.width / 2 - rectOffsetFromEdge
 
@@ -85,7 +86,7 @@ export default class Main extends Phaser.State {
     // Add left and right enemies
     this.enemies = []
     // _.times(10, () => this.addPatrolEnemy(false))
-    _.times(3, i => this.addEnemy(70 + i * this.game.height / 3))
+    _.times(3, i => this.addEnemy(105 * this.game.scaleFactor + i * this.game.height / 3))
 
     // Input
     // Add enemy to left or right side (randomly)

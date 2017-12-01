@@ -25,8 +25,8 @@ export default class Weapon extends Phaser.Group {
 
     this.nextFire = 0
     this.bulletDamage = bulletDamage
-    this.bulletVelocity = 200
     this.isPlayerWeapon = ship.key === 'player'
+    this.bulletVelocity = this.isPlayerWeapon ? 400 : 100
     this.bulletVelocity = this.isPlayerWeapon ? this.bulletVelocity : -this.bulletVelocity
     this.fireRate = 1000
     this.yOffset = yOffset

@@ -87,7 +87,7 @@ export default class Main extends Phaser.State {
     this.game.player = this.player
 
     // Add starting enemies
-    const numStartingEnemies = 3
+    const numStartingEnemies = 2
     this.enemies = []
     _.times(numStartingEnemies, i => {
       this.spawnEnemy(105 * this.game.scaleFactor + i * this.game.height / numStartingEnemies)
@@ -116,13 +116,13 @@ export default class Main extends Phaser.State {
   }
 
   onMoveUp(data) {
-    if (data === 'stop') window.clearTimeout(this.moveTimer)
-    else this.moveTimer = window.setInterval(() => this.player.moveUp(), 10)
+    window.clearTimeout(this.moveTimer)
+    if (data === 'start') this.moveTimer = window.setInterval(() => this.player.moveUp(), 10)
   }
 
   onMoveDown(data) {
-    if (data === 'stop') window.clearTimeout(this.moveTimer)
-    else this.moveTimer = window.setInterval(() => this.player.moveDown(), 10)
+    window.clearTimeout(this.moveTimer)
+    if (data === 'start') this.moveTimer = window.setInterval(() => this.player.moveDown(), 10)
   }
 
   onWeaponsChanged(colors) {

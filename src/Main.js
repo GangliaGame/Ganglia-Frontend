@@ -85,7 +85,7 @@ export default class Main extends Phaser.State {
     // Add left and right enemies
     this.enemies = []
     // _.times(10, () => this.addPatrolEnemy(false))
-    _.times(3, i => this.addEnemy(100 + 100 * i))
+    _.times(3, i => this.addEnemy(70 + i * this.game.height / 3))
 
     // Input
     // Add enemy to left or right side (randomly)

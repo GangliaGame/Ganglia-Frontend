@@ -1,5 +1,5 @@
 import HealthBar from './HealthBar'
-import { SingleBulletWeapon } from './weapons'
+import Weapon from './Weapon'
 
 const toDegrees = radians => radians * 180 / Math.PI
 
@@ -53,7 +53,7 @@ export class Enemy extends Phaser.Sprite {
 
     // Weapon
     const baseFiringRate = 7000
-    this.weapon = new SingleBulletWeapon(this, 10)
+    this.weapon = new Weapon(this, 10, weaponType)
     this.fireTimer = window.setInterval(
       this.fire.bind(this),
       baseFiringRate + (baseFiringRate / 100 * Math.random()),

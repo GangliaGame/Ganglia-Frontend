@@ -1,4 +1,4 @@
-import { SingleBulletWeapon, TripleBulletWeapon, BeamWeapon } from './weapons'
+import Weapon from './Weapon'
 import HealthBar from './HealthBar'
 
 const toRadians = angle => angle * (Math.PI / 180)
@@ -39,11 +39,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.weapons = []
     this.currentWeapon = 0
 
-    this.weapons.push(
-      new SingleBulletWeapon(this, 10),
-      new TripleBulletWeapon(this.game),
-      new BeamWeapon(this.game),
-    )
+    this.weapons.push(new Weapon(this, 10, 'R'))
     for (let i = 1; i < this.weapons.length; i++) {
       this.weapons[i].visible = false
     }

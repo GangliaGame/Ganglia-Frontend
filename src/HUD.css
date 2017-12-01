@@ -69,7 +69,7 @@
 
 .Panel-description {
   text-align: center;
-  font-size: 1.7vw;
+  font-size: 1.8vw;
   max-width: 90%;
   margin-top: 5%;
   margin-bottom: 5%;
@@ -131,7 +131,7 @@
 .HullStrength-bar-inner {
   background-color: #30ee02;
   border-radius: 1.5vw;
-  height: 2.6vw;
+  height: 2.5vw;
   position: absolute;
   z-index: 700;
 }
@@ -154,4 +154,15 @@
 
 .Panel-Propulsion img {
   height: 30vh;
+}
+
+.Panel-Repairs > .Panel-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80%;
+}
+
+.Panel-Repairs img {
+  height: 23vh;
 }

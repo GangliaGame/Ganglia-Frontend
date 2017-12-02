@@ -63,7 +63,7 @@
   height: 5.25vh;
   width: 100%;
   text-transform: uppercase;
-  font-size: 2.5vw;
+  font-size: 2.25vw;
   font-family: 'DDC Hardware'
 }
 
@@ -75,48 +75,38 @@
   margin-bottom: 5%;
 }
 
-.Panel-Communication {
-  width: 24vw;
-  z-index: 100;
-}
-
-.Panel-Communication > .Panel-content > img {
-  max-width: 100%;
-  padding-top: 5%;
-  padding-bottom: 5%;
-}
-
-.Panel-Communication > .Panel-content {
+.MiddleArea {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  height: 45vh;
 }
 
-.HullStrength-label {
-  background-color: white;
-  font-size: 2.3vw;
-  width: 95%;
-  text-align: center;
-  padding-bottom: 0.25vw;
-  margin-bottom: -0.25vw;
-  color: black;
-  border-top-left-radius: 1vw;
-  border-top-right-radius: 1vw;
-  font-family: 'DDC Hardware';
+/*.Panel-Communication {
+  width: 24vw;
+  z-index: 100;
+  height: 27vh;
+  align-self: flex-start;
 }
+
+.Panel-Health {
+  width: 24vw;
+  z-index: 100;
+  height: 27vh;
+  align-self: flex-start;
+}*/
+
 
 .HullStrength-bar {
   color: black;
   background-color: white;
   font-size: 2vw;
-  height: 2.5vw;
+  height: 3vw;
   border-radius: 1.5vw;
   border: 0.35vw solid black;
-  width: 115%;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
 }
 
 .HullStrength-bar-label {
@@ -131,7 +121,7 @@
 .HullStrength-bar-inner {
   background-color: #30ee02;
   border-radius: 1.5vw;
-  height: 2.5vw;
+  height: 3vw;
   position: absolute;
   z-index: 700;
 }
@@ -165,4 +155,37 @@
 
 .Panel-Repairs img {
   height: 23vh;
+}
+
+#Waveform {
+  width: 28vh;
+  height: 8vh;
+}
+
+wave {
+  border-right: none !important;
+}
+
+.Panel-Microphone, .Panel-Health {
+  width: 40vh;
+}
+
+.Panel-Health > .Panel-content {
+  width: 120%;
+  margin-top: 2.5vh;
+  /*z-index: 100;*/
+}
+
+
+.HullStrength-label {
+  background-color: white;
+  font-size: 2.3vw;
+  width: 95%;
+  text-align: center;
+  padding-bottom: 0.25vw;
+  margin-bottom: -0.25vw;
+  color: black;
+  border-top-left-radius: 1vw;
+  border-top-right-radius: 1vw;
+  font-family: 'DDC Hardware';
 }

@@ -52,7 +52,7 @@ export class Enemy extends Phaser.Sprite {
     this.healthBar = new HealthBar(this)
 
     // Weapon
-    const baseFiringRate = 7000
+    const baseFiringRate = 10000
     this.bulletDamage = 7.5
     this.weapon = new Weapon(this, this.bulletDamage, weaponType)
     this.fireTimer = window.setInterval(

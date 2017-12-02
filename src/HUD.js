@@ -1,5 +1,7 @@
 import React from 'react'
 import _ from 'lodash'
+import WaveSurfer from 'wavesurfer.js'
+import MicrophonePlugin from 'wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js';
 import './HUD.css'
 import ColorChart from './ColorChart'
 
@@ -44,6 +46,42 @@ const Panel = ({ name, description, children }) => {
   )
 }
 
+class Waveform extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.wavesurfer = null
+  }
+
+  componentDidMount() {
+    this.wavesurfer.microphone.start()
+  }
+
+  initialize(container) {
+    this.wavesurfer = WaveSurfer.create({
+      container: '#Waveform',
+      waveColor: 'white',
+      barWidth: 15,
+      interact: false,
+      height: 140,
+      normalize: true,
+      plugins: [MicrophonePlugin.create({ bufferSize: 2048 })],
+    })
+
+    // microphone.on('deviceReady', stream => {
+    //   console.log('Device ready!', stream)
+    // })
+    // microphone.on('deviceError', code => {
+    //   console.warn('Device error: ' + code)
+    // })
+  }
+
+  render() {
+    return (
+      <div id="Waveform" ref={e => this.initialize(e)}/>
+    )
+  }
+}
 
 export default class HUD extends React.Component {
 
@@ -60,17 +98,21 @@ export default class HUD extends React.Component {
           <Panel name="Shields" description="Protected from">
             <ColorChart colors={this.props.shields}/>
           </Panel>
-          <Panel wide name="Communication">
-            <img src={waveform}/>
-            <div className="HullStrength-label">HEALTH</div>
-            <div className="HullStrength-bar">
-              <div className="HullStrength-bar-label">
-                {`${hullStrength < (maxHullStrength / 4) ? hullStrength.toFixed(1) : hullStrength.toFixed(0)}%`}
+          <div className="MiddleArea">
+            <Panel wide name="Microphone">
+              <Waveform/>
+            </Panel>
+            <Panel wide name="Health">
+              <div className="HullStrength-label">HEALTH</div>
+              <div className="HullStrength-bar">
+                <div className="HullStrength-bar-label">
+                  {`${hullStrength < (maxHullStrength / 4) ? hullStrength.toFixed(1) : hullStrength.toFixed(0)}%`}
+                </div>
+                <div className="HullStrength-bar-inner" style={{ width: `${hullStrength / maxHullStrength * hullBarWidth}%` }}/>
               </div>
-              <div className="HullStrength-bar-inner" style={{ width: `${hullStrength / maxHullStrength * hullBarWidth}%` }}/>
-            </div>
+            </Panel>
+          </div>
 
-          </Panel>
           <Panel name="Propulsion">
             <img src={propulsionCharts[this.props.propulsion]}/>
           </Panel>

@@ -107,6 +107,7 @@
   border: 0.35vw solid black;
   display: flex;
   align-items: center;
+    margin-left: -1.25vw;
 }
 
 .HullStrength-bar-label {
@@ -120,10 +121,12 @@
 
 .HullStrength-bar-inner {
   background-color: #30ee02;
-  border-radius: 1.5vw;
+  border-radius: 1vw;
   height: 3vw;
   position: absolute;
-  z-index: 700;
+  width: 123%;
+  /*z-index: 700;
+      margin-left: -1.25vw;*/
 }
 
 .ColorChart {
@@ -172,8 +175,26 @@ wave {
 
 .Panel-Health > .Panel-content {
   width: 120%;
-  margin-top: 2.5vh;
-  /*z-index: 100;*/
+  margin-top: 6.5vh;
+  z-index: 100;
+
+
+}
+
+.Panel-Health {
+  border: 0;
+}
+
+.Panel-Health::before {
+  display: none;
+}
+
+.Panel-Health::after {
+  display: none;
+}
+
+.Panel-Health > .Panel-title {
+  display: none;
 }
 
 
@@ -182,8 +203,8 @@ wave {
   font-size: 2.3vw;
   width: 95%;
   text-align: center;
-  padding-bottom: 0.25vw;
-  margin-bottom: -0.25vw;
+    padding-bottom: 1.25vw;
+    margin-bottom: -1.25vw;
   color: black;
   border-top-left-radius: 1vw;
   border-top-right-radius: 1vw;

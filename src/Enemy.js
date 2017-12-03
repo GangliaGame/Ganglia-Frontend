@@ -47,12 +47,12 @@ export class Enemy extends Phaser.Sprite {
     this.scale.x = this.scaleFactor
 
     // Health
-    this.health = 25
+    this.health = 13
     this.maxHealth = this.health
     this.healthBar = new HealthBar(this)
 
     // Weapon
-    const baseFiringRate = 7000
+    const baseFiringRate = 10000
     this.bulletDamage = 7.5
     this.weapon = new Weapon(this, this.bulletDamage, weaponType)
     this.fireTimer = window.setInterval(
@@ -61,7 +61,7 @@ export class Enemy extends Phaser.Sprite {
     )
 
     // Death
-    this.events.onKilled.add(() => this.createExplosion(), this)
+    this.events.onKilled.add(this.onKilled.bind(this), this)
     this.collisionDamage = 35
 
     // Physics and movement
@@ -71,6 +71,11 @@ export class Enemy extends Phaser.Sprite {
     this.verticalDriftSpeed = this.movementSpeed / 2
     this.body.velocity.x = -this.movementSpeed + (this.movementSpeed * Math.random())
     this.body.velocity.y = Math.random() > 0.5 ? this.verticalDriftSpeed : -this.verticalDriftSpeed
+  }
+
+  onKilled() {
+    window.clearInterval(this.fireTimer)
+    this.createExplosion()
   }
 
   getHurtTint() {

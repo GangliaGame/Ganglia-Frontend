@@ -5,7 +5,7 @@ export default class GameServer {
     this.baseURL = (function () {
       return window.location.search.includes('local') ?
         'http://localhost:9000' :
-        'https://ganglia-server.herokuapp.com'
+        'https://server.toomanycaptains.com'
     }())
     this.socket = io(this.baseURL)
   }

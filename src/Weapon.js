@@ -8,6 +8,8 @@ class Bullet extends Phaser.Sprite {
     this.exists = false
     this.scale.set(this.game.scaleFactor * 1.5, this.game.scaleFactor * 1.5)
     this.scale.x = isPlayer ? -this.scale.x : this.scale.x
+    game.physics.enable(this, Phaser.Physics.ARCADE)
+    this.body.setSize(28, 3.5, 15.5, 15.5)
   }
 
   fire(x, y, angle, speed) {

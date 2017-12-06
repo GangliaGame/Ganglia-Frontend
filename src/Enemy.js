@@ -71,6 +71,11 @@ export class Enemy extends Phaser.Sprite {
     this.verticalDriftSpeed = this.movementSpeed / 2
     this.body.velocity.x = -this.movementSpeed + (this.movementSpeed * Math.random())
     this.body.velocity.y = Math.random() > 0.5 ? this.verticalDriftSpeed : -this.verticalDriftSpeed
+
+    // Hitbox size adjustment
+    this.body.setSize(102, 38, 13.5, 12.5)
+
+    // Fire when created
     this.fire()
   }
 

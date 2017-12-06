@@ -3,7 +3,7 @@ import HealthBar from './HealthBar'
 
 export default class PlayerShip extends Phaser.Sprite {
   constructor(game) {
-    super(game, 50, game.height / 2, 'player')
+    super(game, 125 * game.scaleFactor, game.height / 2, 'player')
     this.animations.add('move')
     this.animations.play('move', 20, true)
 
@@ -11,6 +11,9 @@ export default class PlayerShip extends Phaser.Sprite {
     this.anchor.setTo(0.5, 0.5)
 
     this.scale.set(this.game.scaleFactor, this.game.scaleFactor)
+
+    // Set hitbox size
+    this.body.setSize(165.4, 63.2, 25.8, 28.4)
 
     // Movement
     this.movementSpeed = 0
@@ -29,7 +32,8 @@ export default class PlayerShip extends Phaser.Sprite {
 
     // Sight
     this.sight = game.add.sprite(this.x, this.y, 'weapon-sight')
-    this.sight.anchor.setTo(-0.25, 0.5)
+    this.sight.scale.set(this.game.scaleFactor, this.game.scaleFactor)
+    this.sight.anchor.setTo(0, 0.5)
 
     // HP bar
     this.healthBar = new HealthBar(this)

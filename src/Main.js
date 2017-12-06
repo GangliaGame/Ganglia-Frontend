@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import PlayerShip from './PlayerShip'
 import { Enemy } from './Enemy'
+import Asteroid from './Asteroid'
 
 export default class Main extends Phaser.State {
   init() {
@@ -47,6 +48,8 @@ export default class Main extends Phaser.State {
     this.load.spritesheet('enemy_BR', 'assets/enemies/enemy_BR.png', enemyWidth, enemyHeight)
     this.load.spritesheet('enemy_BY', 'assets/enemies/enemy_BY.png', enemyWidth, enemyHeight)
     this.load.spritesheet('enemy_BB', 'assets/enemies/enemy_BB.png', enemyWidth, enemyHeight)
+
+    this.load.image('asteroid', 'assets/asteroid.png')
   }
 
   create() {
@@ -95,6 +98,14 @@ export default class Main extends Phaser.State {
       this.spawnEnemy(105 * this.game.scaleFactor + i * this.game.height / numStartingEnemies)
     })
 
+    // Periodically spawn an asteroid
+    const asteroidSpawnIntervalSecs = 1
+    this.asteroids = []
+    setInterval(
+      () => this.spawnAsteroid(this.game.height * Math.random()),
+      asteroidSpawnIntervalSecs * 1000,
+    )
+
     // Periodically spawn a new enemy
     const enemySpawnIntervalSecs = 35
     setInterval(
@@ -115,6 +126,12 @@ export default class Main extends Phaser.State {
     const randomEnemyType = _.sample(allEnemyTypes)
     const enemy = this.game.add.existing(new Enemy(this.game, x, yInitial, ...randomEnemyType))
     this.enemies.push(enemy)
+  }
+
+  spawnAsteroid(yInitial) {
+    const x = this.maxX
+    const asteroid = this.game.add.existing(new Asteroid(this.game, x, yInitial))
+    this.asteroids.push(asteroid)
   }
 
   onMoveUp(data) {
@@ -210,6 +227,19 @@ export default class Main extends Phaser.State {
         enemy.kill_in_next_tick = true
         player.getHurtTint()
         player.damage(enemy.collisionDamage)
+      },
+      null,
+      this,
+    ))
+
+    // Player <-> asteroid collision
+    this.asteroids.forEach(asteroid => this.physics.arcade.overlap(
+      asteroid,
+      this.player,
+      (e, player) => {
+        asteroid.kill_in_next_tick = true
+        player.getHurtTint()
+        player.damage(asteroid.collisionDamage)
       },
       null,
       this,

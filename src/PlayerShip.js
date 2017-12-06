@@ -43,6 +43,9 @@ export default class PlayerShip extends Phaser.Sprite {
     this.weaponDamage = 10
     this.currentWeapon = 0
 
+    // Sound
+    this.shootFx = this.game.add.audio('shoot')
+
     // Repairs
     this.repairPercentagePerSecond = 0
     this.repairIntervalMsec = 60
@@ -93,7 +96,15 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   fire() {
-    this.weapons.forEach(weapon => weapon.fire(this))
+    let didFire = false
+    this.weapons.forEach(weapon => {
+      if (weapon.fire(this) && !didFire) {
+        didFire = true
+      }
+    })
+    if (didFire) {
+      this.shootFx.play()
+    }
   }
 
   moveDown() {

@@ -1,3 +1,5 @@
+const toDegrees = radians => radians * 180 / Math.PI
+
 class Bullet extends Phaser.Sprite {
   constructor(game, key, isPlayer = false) {
     super(game, 0, 0, key)
@@ -14,6 +16,7 @@ class Bullet extends Phaser.Sprite {
 
   fire(x, y, angle, speed) {
     this.reset(x, y)
+    this.angle = angle
     this.game.physics.arcade.velocityFromAngle(angle, speed, this.body.velocity)
   }
 }
@@ -44,12 +47,14 @@ export default class Weapon extends Phaser.Group {
   }
 
   fire() {
-    if (this.game.time.time < this.nextFire) return
+    if (this.game.time.time < this.nextFire) return false
 
     const x = this.isPlayerWeapon ? this.ship.x + this.ship.width / 2 : this.ship.x
     const y = this.ship.y + this.yOffset
 
-    this.getFirstExists(false).fire(x, y, 0, this.bulletVelocity, 0, 600)
+    const angleToPlayer = toDegrees(this.game.physics.arcade.angleToXY(this.game.player, x, y))
+    this.getFirstExists(false).fire(x, y, this.isPlayerWeapon ? 0 : angleToPlayer, this.bulletVelocity, 0, 600)
     this.nextFire = this.game.time.time + this.fireRate
+    return true
   }
 }

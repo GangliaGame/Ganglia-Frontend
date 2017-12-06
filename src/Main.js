@@ -50,6 +50,8 @@ export default class Main extends Phaser.State {
     this.load.spritesheet('enemy_BB', 'assets/enemies/enemy_BB.png', enemyWidth, enemyHeight)
 
     this.load.image('asteroid', 'assets/asteroid.png')
+
+    this.load.audio('shoot', 'assets/sounds/shoot.wav')
   }
 
   create() {

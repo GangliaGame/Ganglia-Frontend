@@ -75,7 +75,7 @@ class App extends React.Component {
 
     this.game.onHullStrengthChanged = this.onHullStrengthChanged.bind(this)
 
-    this.setupPerformanceStatistics()
+    // this.setupPerformanceStatistics()
   }
 
   onHullStrengthChanged(hullStrength) {

@@ -61,10 +61,10 @@ class Waveform extends React.Component {
     this.wavesurfer = WaveSurfer.create({
       container: '#Waveform',
       waveColor: 'white',
-      barWidth: 15,
+      barWidth: 13,
       interact: false,
       height: 140,
-      normalize: true,
+      // normalize: true,
       plugins: [MicrophonePlugin.create({ bufferSize: 2048 })],
     })
 
@@ -86,7 +86,7 @@ class Waveform extends React.Component {
 export default class HUD extends React.Component {
 
   render() {
-    const hullBarWidth = 115
+    const hullBarWidth = 123
     const maxHullStrength = 100
     const hullStrength = Math.max(0, this.props.hullStrength / maxHullStrength) * 100
     return (
@@ -100,6 +100,7 @@ export default class HUD extends React.Component {
           </Panel>
           <div className="MiddleArea">
             <Panel wide name="Microphone">
+              <div className="FakeWaveform"/>
               <Waveform/>
             </Panel>
             <Panel wide name="Health">

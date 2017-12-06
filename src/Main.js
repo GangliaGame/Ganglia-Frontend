@@ -89,7 +89,7 @@ export default class Main extends Phaser.State {
     this.game.player = this.player
 
     // Add starting enemies
-    const numStartingEnemies = 2
+    const numStartingEnemies = 3
     this.enemies = []
     _.times(numStartingEnemies, i => {
       this.spawnEnemy(105 * this.game.scaleFactor + i * this.game.height / numStartingEnemies)

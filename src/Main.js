@@ -9,6 +9,7 @@ export default class Main extends Phaser.State {
     this.physics.startSystem(Phaser.Physics.ARCADE)
     this.maxDistance = 3000
     this.minutesToPlanet = 3
+    this.recentlyEnded = false
     this.gameState = 'start'
     this.distanceRemaining = this.maxDistance
     this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.maxDistance
@@ -53,12 +54,15 @@ export default class Main extends Phaser.State {
     this.load.spritesheet('enemy_BB', 'assets/enemies/enemy_BB.png', enemyWidth, enemyHeight)
 
     this.load.image('gameover', 'assets/gameover.png')
-
     this.load.image('asteroid', 'assets/asteroid.png')
+
+    // XXX: Not actually rendered by phaser, but this is a way to preload the image
+    this.load.image('gameover-bg', 'assets/gameover-bg.png')
 
     this.load.audio('shoot', 'assets/sounds/shoot.wav')
     this.load.audio('move_slow', 'assets/sounds/move_slow.wav')
     this.load.audio('move_fast', 'assets/sounds/move_fast.wav')
+    this.load.audio('charging', 'assets/sounds/charging.wav')
   }
 
   create() {
@@ -73,6 +77,7 @@ export default class Main extends Phaser.State {
     this.planet.scale.set(this.game.scaleFactor, this.game.scaleFactor)
     this.planet.x = this.game.width
     this.planet.y = this.game.height / 2
+    this.game.physics.enable(this.planet, Phaser.Physics.ARCADE)
     this.planet.update = () => { this.planet.angle -= 0.05 }
 
     // Score
@@ -136,6 +141,7 @@ export default class Main extends Phaser.State {
     // Sound FX
     this.moveSlowFx = this.game.add.audio('move_slow')
     this.moveFastFx = this.game.add.audio('move_fast')
+    this.chargingFx = this.game.add.audio('charging')
 
     // Input
     this.game.input.keyboard
@@ -211,11 +217,21 @@ export default class Main extends Phaser.State {
     console.log('communications', isEnabled)
   }
 
-  onFire() {
-    if (this.gameState === 'over') {
+  onFire(state) {
+    if (this.gameState === 'over' && !this.recentlyEnded) {
       window.location.reload()
     }
-    this.player.fire()
+    if (this.player.weapons.length === 0) {
+      return
+    }
+    console.log(state)
+    if (state === 'stop') {
+      this.chargingFx.stop()
+      this.player.fire()
+    } else {
+      this.chargingFx.play()
+    }
+
   }
 
   update() {
@@ -247,6 +263,17 @@ export default class Main extends Phaser.State {
         //   player.damage(enemy.weapon.bulletDamage * 0.25)
         }
         player.getHurtTint()
+        bullet.kill()
+      },
+      null,
+      this,
+    ))
+
+    // Planet <-> enemy bullet collision
+    this.player.weapons.forEach(weapon => this.physics.arcade.overlap(
+      this.planet,
+      weapon,
+      (planet, bullet) => {
         bullet.kill()
       },
       null,
@@ -314,9 +341,11 @@ export default class Main extends Phaser.State {
       this.gameState = 'over'
       this.game.server.notifyGameState(this.gameState)
       this.game.paused = true
+      this.recentlyEnded = true
+      window.setTimeout(() => this.recentlyEnded = false, 7500)
       window.document.querySelector('#gameover').style.display = 'unset'
       window.document.querySelector('#gameoversound').play()
-      window.document.querySelector('.GameOver-score').innerText = `Score: ${this.game.score}` 
+      window.document.querySelector('.GameOver-score').innerText = `Score: ${this.game.score}`
     }
   }
 }

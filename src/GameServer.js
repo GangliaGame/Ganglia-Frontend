@@ -10,7 +10,7 @@ export default class GameServer {
     this.socket = io(this.baseURL)
   }
 
-  notifyGameLost() {
-    this.socket.emit('state', { victory: false })
+  notifyGameState(gameState) {
+    this.socket.emit('state', gameState)
   }
 }

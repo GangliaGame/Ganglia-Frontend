@@ -9,7 +9,7 @@ export default class Main extends Phaser.State {
     this.physics.startSystem(Phaser.Physics.ARCADE)
     this.maxDistance = 3000
     this.minutesToPlanet = 3
-    this.isGameOver = false
+    this.gameState = 'start'
     this.distanceRemaining = this.maxDistance
     this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.maxDistance
     this.game.stage.disableVisibilityChange = true
@@ -51,6 +51,8 @@ export default class Main extends Phaser.State {
     this.load.spritesheet('enemy_BR', 'assets/enemies/enemy_BR.png', enemyWidth, enemyHeight)
     this.load.spritesheet('enemy_BY', 'assets/enemies/enemy_BY.png', enemyWidth, enemyHeight)
     this.load.spritesheet('enemy_BB', 'assets/enemies/enemy_BB.png', enemyWidth, enemyHeight)
+
+    this.load.image('gameover', 'assets/gameover.png')
 
     this.load.image('asteroid', 'assets/asteroid.png')
 
@@ -142,6 +144,8 @@ export default class Main extends Phaser.State {
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.A)
       .onDown.add(() => this.spawnAsteroid(this.game.height * Math.random()), this)
+
+    this.game.server.notifyGameState(this.gameState)
   }
 
   spawnEnemy(yInitial) {
@@ -208,6 +212,9 @@ export default class Main extends Phaser.State {
   }
 
   onFire() {
+    if (this.gameState === 'over') {
+      window.location.reload()
+    }
     this.player.fire()
   }
 
@@ -298,23 +305,18 @@ export default class Main extends Phaser.State {
 
   checkAndNotifyIfGameEnded() {
     let isGameEnding = false
-    if (this.player.health === 0) {
-      isGameEnding = true
-    }
-    if (this.distanceRemaining === 0) {
+    if (! this.player.alive) {
       isGameEnding = true
     }
 
     // Did the game just end now (i.e. it was previously not ended)?
-    if (isGameEnding && this.isGameOver === false) {
-      this.game.server.notifyGameLost()
-      this.isGameOver = true
+    if (isGameEnding && this.gameState === 'start') {
+      this.gameState = 'over'
+      this.game.server.notifyGameState(this.gameState)
+      this.game.paused = true
+      window.document.querySelector('#gameover').style.display = 'unset'
+      window.document.querySelector('#gameoversound').play()
+      window.document.querySelector('.GameOver-score').innerText = `Score: ${this.game.score}` 
     }
-  }
-
-  render() {
-    // this.asteroids.forEach(a => this.game.debug.body(a))
-    // this.asteroids.forEach(a => a.sendToBack())
-    // this.background.sendToBack()
   }
 }

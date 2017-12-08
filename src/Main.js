@@ -80,6 +80,8 @@ export default class Main extends Phaser.State {
     this.load.audio('move_slow', 'assets/sounds/move_slow.wav')
     this.load.audio('move_fast', 'assets/sounds/move_fast.wav')
     this.load.audio('charging', 'assets/sounds/charging.wav')
+    this.load.audio('doors_open', 'assets/sounds/doors_open.wav')
+    this.load.audio('doors_close', 'assets/sounds/doors_close.wav')
   }
 
   create() {
@@ -158,6 +160,8 @@ export default class Main extends Phaser.State {
     this.moveSlowFx = this.game.add.audio('move_slow')
     this.moveFastFx = this.game.add.audio('move_fast')
     this.chargingFx = this.game.add.audio('charging')
+    this.doorsOpenFx = this.game.add.audio('doors_open')
+    this.doorsCloseFx = this.game.add.audio('doors_close')
 
     // Input
     this.game.input.keyboard
@@ -383,6 +387,7 @@ export default class Main extends Phaser.State {
     const gbi = window.document.querySelector('.GameBeforeInner')
     gbi.classList.add('hidden')
     gbi.addEventListener('transitionend', () => {
+      this.doorsOpenFx.play()
       window.document.querySelectorAll('.Door').forEach(door => {
         door.classList.add('opened')
       })
@@ -396,6 +401,7 @@ export default class Main extends Phaser.State {
     this.game.paused = true
     this.recentlyEnded = true
     window.setTimeout(() => this.recentlyEnded = false, 7500)
+    window.document.querySelector('#doorsclosesound').play()
     window.document.querySelectorAll('.Door').forEach(door => {
       door.classList.remove('opened')
     })

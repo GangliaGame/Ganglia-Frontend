@@ -207,35 +207,42 @@ export default class Main extends Phaser.State {
   }
 
   onMoveUp(data) {
+    if (this.gameState !== 'start') return
     this.setMoveSounds(data === 'start')
     window.clearTimeout(this.moveTimer)
     if (data === 'start') this.moveTimer = window.setInterval(() => this.player.moveUp(), 10)
   }
 
   onMoveDown(data) {
+    if (this.gameState !== 'start') return
     this.setMoveSounds(data === 'start')
     window.clearTimeout(this.moveTimer)
     if (data === 'start') this.moveTimer = window.setInterval(() => this.player.moveDown(), 10)
   }
 
   onWeaponsChanged(colors) {
+    if (this.gameState !== 'start') return
     this.player.setWeapons(colors)
   }
 
   onShieldsChanged(colors) {
+    if (this.gameState !== 'start') return
     this.player.setShields(colors)
   }
 
   onPropulsionChanged(level) {
+    if (this.gameState !== 'start') return
     this.player.setPropulsionLevel(level)
   }
 
   onRepairsChanged(level) {
+    if (this.gameState !== 'start') return
     this.player.setRepairLevel(level)
   }
 
   onCommunicationsChanged(isEnabled) {
-    console.log('communications', isEnabled)
+    if (this.gameState !== 'start') return
+    console.info('communications', isEnabled)
   }
 
   onFire(state) {

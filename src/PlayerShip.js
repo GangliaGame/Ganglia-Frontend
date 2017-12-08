@@ -18,6 +18,7 @@ export default class PlayerShip extends Phaser.Sprite {
     // Movement
     this.movementSpeed = 0
     this.body.collideWorldBounds = true
+    this.propulsionLevel = 0
 
     // Shields
     this.shieldColors = []
@@ -29,11 +30,6 @@ export default class PlayerShip extends Phaser.Sprite {
     // Health
     this.maxHealth = 100
     this.health = 100
-
-    // Sight
-    this.sight = game.add.sprite(this.x, this.y, 'weapon-sight')
-    this.sight.scale.set(this.game.scaleFactor, this.game.scaleFactor)
-    this.sight.anchor.setTo(0, 0.5)
 
     // HP bar
     this.healthBar = new HealthBar(this)
@@ -123,12 +119,13 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   setPropulsionLevel(level) {
+    this.propulsionLevel = level
     const levelSpeedMap = [0, 25, 100]
     this.movementSpeed = levelSpeedMap[level]
   }
 
   setRepairLevel(level) {
-    const repairSpeedMap = [0, 0.005, 0.01, 0.025]
+    const repairSpeedMap = [0, 0.015, 0.025, 0.065]
     this.repairPercentagePerSecond = repairSpeedMap[level]
   }
 
@@ -138,7 +135,7 @@ export default class PlayerShip extends Phaser.Sprite {
       this.prevHealth = this.health
     }
 
-    this.sight.y = this.y
+    // this.sight.y = this.y
 
     this.body.velocity.set(0)
 
@@ -148,7 +145,7 @@ export default class PlayerShip extends Phaser.Sprite {
     if (this.shield.health === 0) {
       this.isShieldActive = false
       this.shield.visible = false
-      this.sight.visible = false
+      // this.sight.visible = false
     }
   }
 }

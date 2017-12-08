@@ -8,10 +8,8 @@ export class PatrolEnemy extends Phaser.Sprite {
   constructor(game, x, y) {
     super(game, x, y, 'enemy')
 
-    this.scaleFactor = 0.5
     this.anchor.setTo(0.5, 0.5)
-    this.scale.y = this.scaleFactor
-    this.scale.x = this.scaleFactor
+    this.scale.set(this.game.scaleFactor, this.game.scaleFactor)
 
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
     this.body.collideWorldBounds = true
@@ -47,7 +45,7 @@ export class Enemy extends Phaser.Sprite {
     this.scale.x = this.scaleFactor
 
     // Health
-    this.health = 13
+    this.health = 20
     this.maxHealth = this.health
     this.healthBar = new HealthBar(this)
 
@@ -75,11 +73,12 @@ export class Enemy extends Phaser.Sprite {
     // Hitbox size adjustment
     this.body.setSize(102, 38, 13.5, 12.5)
 
-    // Fire when created
-    this.fire()
+    // // Fire when created
+    // this.fire()
   }
 
   onKilled() {
+    this.game.score += 150
     window.clearInterval(this.fireTimer)
     this.createExplosion()
   }

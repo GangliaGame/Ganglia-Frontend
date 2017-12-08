@@ -5,7 +5,7 @@ export default class GameServer {
     this.baseURL = (function () {
       return window.location.search.includes('local') ?
         'http://localhost:9000' :
-        'https://server.toomanycaptains.com'
+        'http://server.toomanycaptains.com'
     }())
     this.socket = io(this.baseURL)
   }

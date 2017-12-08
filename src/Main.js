@@ -7,8 +7,8 @@ export default class Main extends Phaser.State {
   init() {
     this.game.renderer.renderSession.roundPixels = true
     this.physics.startSystem(Phaser.Physics.ARCADE)
-    this.maxDistance = 5000
-    this.minutesToPlanet = 5
+    this.maxDistance = 3000
+    this.minutesToPlanet = 3
     this.isGameOver = false
     this.distanceRemaining = this.maxDistance
     this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.maxDistance
@@ -22,6 +22,9 @@ export default class Main extends Phaser.State {
     this.load.image('bullet', 'assets/bullets/beam_Y.png')
 
     this.load.image('bullet_R', 'assets/bullets/beam_R.png')
+    // this.load.spritesheet('bullet_R', 'assets/bullets/bullet_R.png', 58, 33)
+    // this.load.spritesheet('bullet_Y', 'assets/bullets/bullet_R.png', 58, 33)
+    // this.load.spritesheet('bullet_B', 'assets/bullets/bullet_R.png', 58, 33)
     this.load.image('bullet_Y', 'assets/bullets/beam_Y.png')
     this.load.image('bullet_B', 'assets/bullets/beam_B.png')
 
@@ -52,6 +55,8 @@ export default class Main extends Phaser.State {
     this.load.image('asteroid', 'assets/asteroid.png')
 
     this.load.audio('shoot', 'assets/sounds/shoot.wav')
+    this.load.audio('move_slow', 'assets/sounds/move_slow.wav')
+    this.load.audio('move_fast', 'assets/sounds/move_fast.wav')
   }
 
   create() {
@@ -68,12 +73,16 @@ export default class Main extends Phaser.State {
     this.planet.y = this.game.height / 2
     this.planet.update = () => { this.planet.angle -= 0.05 }
 
+    // Score
+    this.game.score = 0
+    window.setInterval(() => this.game.score += 1, 250)
+
     // Distance to planet text
-    const rectWidth = 248 * this.game.scaleFactor
+    const rectWidth = 260 * this.game.scaleFactor
     const rectHeight = 69 * this.game.scaleFactor
-    const rectOffsetFromEdge = 45 * this.game.scaleFactor
+    const rectOffsetFromEdge = 15 * this.game.scaleFactor
     const offsetLeft = 21 * this.game.scaleFactor
-    const offsetTop = 7.5 * this.game.scaleFactor
+    const offsetTop = 14 * this.game.scaleFactor
     const graphics = this.game.add.graphics(
       this.game.width - rectWidth - rectOffsetFromEdge,
       this.game.height / 2 - (rectHeight / 2),
@@ -81,11 +90,17 @@ export default class Main extends Phaser.State {
     graphics.lineStyle(2, 0x000000, 1)
     graphics.beginFill(0xffffff)
     graphics.drawRoundedRect(0, 0, rectWidth, rectHeight, 37.5 * this.game.scaleFactor)
-    this.distanceText = this.game.add.text(
+    // this.distanceText = this.game.add.text(
+    //   this.game.width - rectWidth - rectOffsetFromEdge + offsetLeft,
+    //   this.game.height / 2 - (rectHeight / 2) + offsetTop,
+    //   '',
+    //   { font: `${47 * this.game.scaleFactor}px DDC Hardware`, fill: 'black' },
+    // )
+    this.scoreText = this.game.add.text(
       this.game.width - rectWidth - rectOffsetFromEdge + offsetLeft,
       this.game.height / 2 - (rectHeight / 2) + offsetTop,
       '',
-      { font: `${47 * this.game.scaleFactor}px DDC Hardware`, fill: 'black' },
+      { font: `${34 * this.game.scaleFactor}px DDC Hardware`, fill: 'black' },
     )
     this.maxX = this.game.width - this.planet.width / 2 - rectOffsetFromEdge
 
@@ -101,12 +116,13 @@ export default class Main extends Phaser.State {
     })
 
     // Periodically spawn an asteroid
-    const asteroidSpawnIntervalSecs = 1
+    const asteroidSpawnIntervalSecs = 20
     this.asteroids = []
     setInterval(
       () => this.spawnAsteroid(this.game.height * Math.random()),
       asteroidSpawnIntervalSecs * 1000,
     )
+    // this.spawnAsteroid(this.game.height * Math.random())
 
     // Periodically spawn a new enemy
     const enemySpawnIntervalSecs = 35
@@ -115,10 +131,17 @@ export default class Main extends Phaser.State {
       enemySpawnIntervalSecs * 1000,
     )
 
+    // Sound FX
+    this.moveSlowFx = this.game.add.audio('move_slow')
+    this.moveFastFx = this.game.add.audio('move_fast')
+
     // Input
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.E)
       .onDown.add(() => this.spawnEnemy(this.game.height * Math.random()), this)
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.A)
+      .onDown.add(() => this.spawnAsteroid(this.game.height * Math.random()), this)
   }
 
   spawnEnemy(yInitial) {
@@ -133,15 +156,33 @@ export default class Main extends Phaser.State {
   spawnAsteroid(yInitial) {
     const x = this.maxX
     const asteroid = this.game.add.existing(new Asteroid(this.game, x, yInitial))
+    asteroid.sendToBack()
+    this.background.sendToBack()
     this.asteroids.push(asteroid)
   }
 
+  setMoveSounds(start) {
+    if (start) {
+      if (this.player.propulsionLevel === 2) {
+        this.moveFastFx.play()
+      } else {
+        this.moveSlowFx.play()
+      }
+    } else if (this.player.propulsionLevel === 2) {
+      this.moveFastFx.stop()
+    } else {
+      this.moveSlowFx.stop()
+    }
+  }
+
   onMoveUp(data) {
+    this.setMoveSounds(data === 'start')
     window.clearTimeout(this.moveTimer)
     if (data === 'start') this.moveTimer = window.setInterval(() => this.player.moveUp(), 10)
   }
 
   onMoveDown(data) {
+    this.setMoveSounds(data === 'start')
     window.clearTimeout(this.moveTimer)
     if (data === 'start') this.moveTimer = window.setInterval(() => this.player.moveDown(), 10)
   }
@@ -175,9 +216,10 @@ export default class Main extends Phaser.State {
     this.game.playTimeMS = this.game.time.now - this.game.time.pauseDuration
 
     // Update distance travelled
-    const distanceTravelled = this.game.playTimeMS / this.msPerDistanceUnit
-    this.distanceRemaining = _.round(Math.max(0, this.maxDistance - distanceTravelled))
-    this.distanceText.text = `${this.distanceRemaining} KM`
+    // const distanceTravelled = this.game.playTimeMS / this.msPerDistanceUnit
+    // this.distanceRemaining = _.round(Math.max(0, this.maxDistance - distanceTravelled))
+    // this.distanceText.text = `${this.distanceRemaining} KM`
+    this.scoreText.text = `SCORE: ${this.game.score}`
 
     // Kill sprites marked for killing
     this.game.world.children
@@ -194,8 +236,10 @@ export default class Main extends Phaser.State {
         // Bullet hits
         if (player.shieldColors.length === 0 || !playerHasMatchingShield) {
           player.damage(enemy.weapon.bulletDamage)
-          player.getHurtTint()
+        // } else {
+        //   player.damage(enemy.weapon.bulletDamage * 0.25)
         }
+        player.getHurtTint()
         bullet.kill()
       },
       null,
@@ -208,8 +252,9 @@ export default class Main extends Phaser.State {
         enemy,
         weapon,
         (e, bullet) => {
-          const playerBulletCanHurtEnemy = this.player.weapons
-            .some(({ bulletColor }) => bulletColor === enemy.type)
+          // const playerBulletCanHurtEnemy = this.player.weapons
+          //   .some(({ bulletColor }) => bulletColor === enemy.type)
+          const playerBulletCanHurtEnemy = bullet.color === enemy.type
           // Bullet hits
           if (playerBulletCanHurtEnemy) {
             enemy.getHurtTint()
@@ -265,5 +310,11 @@ export default class Main extends Phaser.State {
       this.game.server.notifyGameLost()
       this.isGameOver = true
     }
+  }
+
+  render() {
+    // this.asteroids.forEach(a => this.game.debug.body(a))
+    // this.asteroids.forEach(a => a.sendToBack())
+    // this.background.sendToBack()
   }
 }

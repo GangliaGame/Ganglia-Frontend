@@ -1,3 +1,8 @@
+body {
+  overflow: hidden;
+}
+
+
 .HUD {
   height: 45%;
   border-top: 2px solid white;
@@ -163,6 +168,7 @@
 #Waveform {
   width: 28vh;
   height: 8vh;
+  margin-top: -6vh;
 }
 
 wave {
@@ -209,4 +215,20 @@ wave {
   border-top-left-radius: 1vw;
   border-top-right-radius: 1vw;
   font-family: 'DDC Hardware';
+}
+
+
+.FakeWaveform {
+  height: 3px;
+  background-color: white;
+  width: 100%;
+  display: block;
+  margin-top: 5vh;
+}
+
+.Panel-Microphone > .Panel-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }

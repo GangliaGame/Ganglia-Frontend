@@ -3,7 +3,7 @@ import HealthBar from './HealthBar'
 
 export default class PlayerShip extends Phaser.Sprite {
   constructor(game) {
-    super(game, 50, game.height / 2, 'player')
+    super(game, 125 * game.scaleFactor, game.height / 2, 'player')
     this.animations.add('move')
     this.animations.play('move', 20, true)
 
@@ -12,9 +12,13 @@ export default class PlayerShip extends Phaser.Sprite {
 
     this.scale.set(this.game.scaleFactor, this.game.scaleFactor)
 
+    // Set hitbox size
+    this.body.setSize(165.4, 63.2, 25.8, 28.4)
+
     // Movement
     this.movementSpeed = 0
     this.body.collideWorldBounds = true
+    this.propulsionLevel = 0
 
     // Shields
     this.shieldColors = []
@@ -27,10 +31,6 @@ export default class PlayerShip extends Phaser.Sprite {
     this.maxHealth = 100
     this.health = 100
 
-    // Sight
-    this.sight = game.add.sprite(this.x, this.y, 'weapon-sight')
-    this.sight.anchor.setTo(-0.25, 0.5)
-
     // HP bar
     this.healthBar = new HealthBar(this)
 
@@ -38,6 +38,9 @@ export default class PlayerShip extends Phaser.Sprite {
     this.weapons = []
     this.weaponDamage = 10
     this.currentWeapon = 0
+
+    // Sound
+    this.shootFx = this.game.add.audio('shoot')
 
     // Repairs
     this.repairPercentagePerSecond = 0
@@ -89,7 +92,15 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   fire() {
-    this.weapons.forEach(weapon => weapon.fire(this))
+    let didFire = false
+    this.weapons.forEach(weapon => {
+      if (weapon.fire(this) && !didFire) {
+        didFire = true
+      }
+    })
+    if (didFire) {
+      this.shootFx.play()
+    }
   }
 
   moveDown() {
@@ -108,12 +119,13 @@ export default class PlayerShip extends Phaser.Sprite {
   }
 
   setPropulsionLevel(level) {
+    this.propulsionLevel = level
     const levelSpeedMap = [0, 25, 100]
     this.movementSpeed = levelSpeedMap[level]
   }
 
   setRepairLevel(level) {
-    const repairSpeedMap = [0, 0.005, 0.01, 0.025]
+    const repairSpeedMap = [0, 0.015, 0.025, 0.065]
     this.repairPercentagePerSecond = repairSpeedMap[level]
   }
 
@@ -123,7 +135,7 @@ export default class PlayerShip extends Phaser.Sprite {
       this.prevHealth = this.health
     }
 
-    this.sight.y = this.y
+    // this.sight.y = this.y
 
     this.body.velocity.set(0)
 
@@ -133,7 +145,7 @@ export default class PlayerShip extends Phaser.Sprite {
     if (this.shield.health === 0) {
       this.isShieldActive = false
       this.shield.visible = false
-      this.sight.visible = false
+      // this.sight.visible = false
     }
   }
 }

@@ -8,11 +8,9 @@ export class PatrolEnemy extends Phaser.Sprite {
   constructor(game, x, y) {
     super(game, x, y, 'enemy')
 
-
-    this.scaleFactor = 0.5
     this.anchor.setTo(0.5, 0.5)
-    this.scale.y = this.scaleFactor
-    this.scale.x = this.scaleFactor
+    this.scale.set(this.game.scaleFactor, this.game.scaleFactor)
+
     this.game.physics.enable(this, Phaser.Physics.ARCADE)
     this.body.collideWorldBounds = true
     this.movementSpeed = 5
@@ -47,13 +45,13 @@ export class Enemy extends Phaser.Sprite {
     this.scale.x = this.scaleFactor
 
     // Health
-    this.health = 13
+    this.health = 20
     this.maxHealth = this.health
     this.healthBar = new HealthBar(this)
 
     // Weapon
     const baseFiringRate = 10000
-    this.bulletDamage = 7.5
+    this.bulletDamage = 17.5
     this.weapon = new Weapon(this, this.bulletDamage, weaponType)
     this.fireTimer = window.setInterval(
       this.fire.bind(this),
@@ -71,9 +69,16 @@ export class Enemy extends Phaser.Sprite {
     this.verticalDriftSpeed = this.movementSpeed / 2
     this.body.velocity.x = -this.movementSpeed + (this.movementSpeed * Math.random())
     this.body.velocity.y = Math.random() > 0.5 ? this.verticalDriftSpeed : -this.verticalDriftSpeed
+
+    // Hitbox size adjustment
+    this.body.setSize(102, 38, 13.5, 12.5)
+
+    // // Fire when created
+    // this.fire()
   }
 
   onKilled() {
+    this.game.score += 150
     window.clearInterval(this.fireTimer)
     this.createExplosion()
   }

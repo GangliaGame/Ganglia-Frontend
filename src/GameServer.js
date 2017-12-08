@@ -13,4 +13,8 @@ export default class GameServer {
   notifyGameState(gameState) {
     this.socket.emit('state', gameState)
   }
+
+  notifyReady() {
+    this.socket.emit('frontend-ready')
+  }
 }

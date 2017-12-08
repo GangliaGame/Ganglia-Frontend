@@ -91,7 +91,8 @@ export default class PlayerShip extends Phaser.Sprite {
     ))
   }
 
-  fire() {
+  fire(strength) {
+    console.log(`firing with strength: ${strength}`)
     let didFire = false
     this.weapons.forEach(weapon => {
       if (weapon.fire(this) && !didFire) {

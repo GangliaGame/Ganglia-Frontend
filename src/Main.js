@@ -147,9 +147,14 @@ export default class Main extends Phaser.State {
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.E)
       .onDown.add(() => this.spawnEnemy(this.game.height * Math.random()), this)
+
     this.game.input.keyboard
       .addKey(Phaser.Keyboard.A)
       .onDown.add(() => this.spawnAsteroid(this.game.height * Math.random()), this)
+
+    this.game.input.keyboard
+      .addKey(Phaser.Keyboard.K)
+      .onDown.add(() => this.player.kill(), this)
 
     this.game.server.notifyGameState(this.gameState)
   }
@@ -227,9 +232,11 @@ export default class Main extends Phaser.State {
     console.log(state)
     if (state === 'stop') {
       this.chargingFx.stop()
-      this.player.fire()
+      const strength = _.clamp(Date.now() - this.timeChargingStarted, 100, 4000)
+      this.player.fire(strength)
     } else {
       this.chargingFx.play()
+      this.timeChargingStarted = Date.now()
     }
 
   }

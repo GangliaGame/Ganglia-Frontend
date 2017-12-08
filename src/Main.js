@@ -82,6 +82,10 @@ export default class Main extends Phaser.State {
     this.load.audio('charging', 'assets/sounds/charging.wav')
     this.load.audio('doors_open', 'assets/sounds/doors_open.wav')
     this.load.audio('doors_close', 'assets/sounds/doors_close.wav')
+    this.load.audio('explosion', 'assets/sounds/explosion.wav')
+    this.load.audio('shield', 'assets/sounds/shield.wav')
+    this.load.audio('damaged', 'assets/sounds/damaged.wav')
+    this.load.audio('collide', 'assets/sounds/collide.wav')
   }
 
   create() {
@@ -162,6 +166,9 @@ export default class Main extends Phaser.State {
     this.chargingFx = this.game.add.audio('charging')
     this.doorsOpenFx = this.game.add.audio('doors_open')
     this.doorsCloseFx = this.game.add.audio('doors_close')
+    this.shieldFx = this.game.add.audio('shield')
+    this.damagedFx = this.game.add.audio('damaged')
+    this.collideFx = this.game.add.audio('collide')
 
     // Input
     this.game.input.keyboard
@@ -307,10 +314,11 @@ export default class Main extends Phaser.State {
         // Bullet hits
         if (player.shieldColors.length === 0 || !playerHasMatchingShield) {
           player.damage(enemy.weapon.bulletDamage)
-        // } else {
-        //   player.damage(enemy.weapon.bulletDamage * 0.25)
+          this.damagedFx.play()
+          player.getHurtTint()
+        } else {
+          this.shieldFx.play()
         }
-        player.getHurtTint()
         bullet.kill()
       },
       null,
@@ -371,6 +379,7 @@ export default class Main extends Phaser.State {
         asteroid.kill_in_next_tick = true
         player.getHurtTint()
         player.damage(asteroid.collisionDamage)
+        this.collideFx.play()
       },
       null,
       this,

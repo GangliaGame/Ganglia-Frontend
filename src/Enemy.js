@@ -50,7 +50,7 @@ export class Enemy extends Phaser.Sprite {
     this.healthBar = new HealthBar(this)
 
     // Weapon
-    const baseFiringRate = 10000
+    const baseFiringRate = 3000 || 10000
     this.bulletDamage = 17.5
     this.weapon = new Weapon(this, this.bulletDamage, weaponType)
     this.fireTimer = this.game.time.create()
@@ -74,12 +74,14 @@ export class Enemy extends Phaser.Sprite {
 
     // // Fire when created
     // this.fire()
+    this.explosionFx = this.game.add.audio('explosion')
   }
 
   onKilled() {
     this.game.score += 150
     this.fireTimer.stop()
     this.createExplosion()
+    this.explosionFx.play()
   }
 
   getHurtTint() {

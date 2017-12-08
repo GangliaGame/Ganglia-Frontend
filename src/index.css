@@ -17,6 +17,7 @@ body {
   background-color: black;
   font-family: 'DDC Hardware Condensed';
   color: white;
+  cursor: none;
 }
 
 html, body, #root, .App {
@@ -117,7 +118,8 @@ html, body, #root, .App {
 }
 
 .Door.right {
-  transform: translateX(-5.2vw);
+  transform: translateX(-5.220vw);
+  /*margin-top: -5px;*/
 }
 
 .Door.left.opened {

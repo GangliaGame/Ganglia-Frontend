@@ -380,8 +380,25 @@ export default class Main extends Phaser.State {
     this.gameState = 'start'
     this.game.server.notifyGameState(this.gameState)
     this.game.paused = false
-    window.document.querySelector('#gamebefore').style.display = 'none'
+    // window.document.querySelector('#gamebefore').style.display = 'none'
+    window.document.querySelectorAll('.Door').forEach(door => {
+      door.classList.add('opened')
+    })
     this.game.server.notifyReady()
+  }
+
+  endGame() {
+    this.gameState = 'over'
+    this.game.server.notifyGameState(this.gameState)
+    this.game.paused = true
+    this.recentlyEnded = true
+    window.setTimeout(() => this.recentlyEnded = false, 7500)
+    window.document.querySelectorAll('.Door').forEach(door => {
+      door.classList.remove('opened')
+    })
+    // window.document.querySelector('#gameover').style.display = 'unset'
+    window.document.querySelector('#gameoversound').play()
+    window.document.querySelector('.GameOver-score').innerText = `Score: ${this.game.score}`
   }
 
   checkAndNotifyIfGameEnded() {
@@ -392,14 +409,15 @@ export default class Main extends Phaser.State {
 
     // Did the game just end now (i.e. it was previously not ended)?
     if (isGameEnding && this.gameState === 'start') {
-      this.gameState = 'over'
-      this.game.server.notifyGameState(this.gameState)
-      this.game.paused = true
-      this.recentlyEnded = true
-      window.setTimeout(() => this.recentlyEnded = false, 7500)
-      window.document.querySelector('#gameover').style.display = 'unset'
-      window.document.querySelector('#gameoversound').play()
-      window.document.querySelector('.GameOver-score').innerText = `Score: ${this.game.score}`
+      this.endGame()
+
     }
   }
+  //
+  // render() {
+  //   if (this.player.weapon) {
+  //     this.player.weapon.bullets.forEach(b => this.game.debug.body(b))
+  //   }
+  //   this.background.sendToBack()
+  // }
 }

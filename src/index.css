@@ -32,17 +32,23 @@ html, body, #root, .App {
 }
 
 #gameover {
-  display: none;
   height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 .GameOverInner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   height: 100%;
-  background-image: url(/assets/gameover-bg.png);
+  /*background-image: url(/assets/gameover-bg.png);*/
 }
 
 .GameOver-title {
@@ -52,7 +58,6 @@ html, body, #root, .App {
 }
 
 .GameOver-score {
-  font-size: 100px;
   font-size: 12vh;
 }
 
@@ -69,10 +74,11 @@ html, body, #root, .App {
 
 
 .GameOver-cta {
-  width: 60%;
+  /*width: 60%;*/
   opacity: 0;
   animation: blink-animation 1.5s linear infinite;
-  animation-delay: 7.5s;
+  visibility: hidden;
+  /*animation-delay: 7.5s;*/
 }
 
 #gamebefore {
@@ -84,11 +90,18 @@ html, body, #root, .App {
 }
 
 .GameBeforeInner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   height: 100%;
+  z-index: 10000%;
+  transition-property: opacity;
+  transition-duration: 1s;
 }
 
 .Doors {
@@ -117,4 +130,34 @@ html, body, #root, .App {
 
 .Doors > img {
   /*width: 50%;*/
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.GameBefore-logo {
+  /*position: fixed;*/
+  /*top: 13vh;*/
+  margin-top: 13vh;
+  width: 80%;
+}
+
+.GameInner-buttontext {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DDC Hardware';
+  animation: blink-animation 1.5s linear infinite;
+}
+
+
+.GameInner-buttontext {
+  margin-top: 5vh;
+  font-size: 12vh;
+}
+
+.GameInner-buttontext-button {
+  margin-left: 2.5vw;
+  margin-right: 2.5vw;
 }

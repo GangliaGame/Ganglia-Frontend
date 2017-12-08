@@ -380,11 +380,14 @@ export default class Main extends Phaser.State {
     this.gameState = 'start'
     this.game.server.notifyGameState(this.gameState)
     this.game.paused = false
-    // window.document.querySelector('#gamebefore').style.display = 'none'
-    window.document.querySelectorAll('.Door').forEach(door => {
-      door.classList.add('opened')
-    })
-    this.game.server.notifyReady()
+    const gbi = window.document.querySelector('.GameBeforeInner')
+    gbi.classList.add('hidden')
+    gbi.addEventListener('transitionend', () => {
+      window.document.querySelectorAll('.Door').forEach(door => {
+        door.classList.add('opened')
+      })
+      this.game.server.notifyReady()
+    }, false)
   }
 
   endGame() {
@@ -396,9 +399,15 @@ export default class Main extends Phaser.State {
     window.document.querySelectorAll('.Door').forEach(door => {
       door.classList.remove('opened')
     })
-    // window.document.querySelector('#gameover').style.display = 'unset'
+    const door = window.document.querySelectorAll('.Door')[0]
+    door.addEventListener('transitionend', () => {
+      window.document.querySelector('.GameOver-score').innerText = `Score: ${this.game.score}`
+      setTimeout(() => {
+        window.document.querySelector('.GameOverInner').classList.remove('hidden')
+        setTimeout(() => window.document.querySelector('.GameOver-cta').style.visibility = 'visible', 3300)
+      }, 4300)
+    }, false)
     window.document.querySelector('#gameoversound').play()
-    window.document.querySelector('.GameOver-score').innerText = `Score: ${this.game.score}`
   }
 
   checkAndNotifyIfGameEnded() {

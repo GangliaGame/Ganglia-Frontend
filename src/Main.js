@@ -10,10 +10,14 @@ export default class Main extends Phaser.State {
     this.maxDistance = 3000
     this.minutesToPlanet = 3
     this.recentlyEnded = false
-    this.gameState = 'start'
+    this.gameState = 'before'
     this.distanceRemaining = this.maxDistance
     this.msPerDistanceUnit = (this.minutesToPlanet * 60 * 1000) / this.maxDistance
     this.game.stage.disableVisibilityChange = true
+    this.game.paused = true
+
+    // XXX: Periodically notify controller about state, since its not persisted
+    setInterval(() => this.game.server.notifyGameState(this.gameState), 250)
   }
 
   preload() {
@@ -82,7 +86,9 @@ export default class Main extends Phaser.State {
 
     // Score
     this.game.score = 0
-    window.setInterval(() => this.game.score += 1, 250)
+    const scoreTimer = this.game.time.create()
+    scoreTimer.loop(250, () => this.game.score += 1)
+    scoreTimer.start()
 
     // Distance to planet text
     const rectWidth = 260 * this.game.scaleFactor
@@ -124,19 +130,16 @@ export default class Main extends Phaser.State {
 
     // Periodically spawn an asteroid
     const asteroidSpawnIntervalSecs = 20
+    const asteroidTimer = this.game.time.create()
+    asteroidTimer.loop(asteroidSpawnIntervalSecs * 1000, () => this.spawnAsteroid(this.game.height * Math.random()))
+    asteroidTimer.start()
     this.asteroids = []
-    setInterval(
-      () => this.spawnAsteroid(this.game.height * Math.random()),
-      asteroidSpawnIntervalSecs * 1000,
-    )
-    // this.spawnAsteroid(this.game.height * Math.random())
 
     // Periodically spawn a new enemy
     const enemySpawnIntervalSecs = 35
-    setInterval(
-      () => this.spawnEnemy(this.game.height * Math.random()),
-      enemySpawnIntervalSecs * 1000,
-    )
+    const enemyTimer = this.game.time.create()
+    enemyTimer.loop(enemySpawnIntervalSecs * 1000, () => this.spawnEnemy(this.game.height * Math.random()))
+    enemyTimer.start()
 
     // Sound FX
     this.moveSlowFx = this.game.add.audio('move_slow')
@@ -223,13 +226,15 @@ export default class Main extends Phaser.State {
   }
 
   onFire(state) {
+    if (this.gameState === 'before') {
+      this.startGame()
+    }
     if (this.gameState === 'over' && !this.recentlyEnded) {
       window.location.reload()
     }
     if (this.player.weapons.length === 0) {
       return
     }
-    console.log(state)
     if (state === 'stop') {
       this.chargingFx.stop()
       const strength = _.clamp(Date.now() - this.timeChargingStarted, 100, 4000)
@@ -335,6 +340,13 @@ export default class Main extends Phaser.State {
 
     // Check if game ended and notify server if needed
     this.checkAndNotifyIfGameEnded()
+  }
+
+  startGame() {
+    this.gameState = 'start'
+    this.game.server.notifyGameState(this.gameState)
+    this.game.paused = false
+    window.document.querySelector('#gamebefore').style.display = 'none'
   }
 
   checkAndNotifyIfGameEnded() {

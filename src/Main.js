@@ -250,6 +250,9 @@ export default class Main extends Phaser.State {
     }
     const calculateStrength = () => _.clamp(Date.now() - this.timeChargingStarted, 100, 4000) / 4000
     if (state === 'stop') {
+      if (!this.growingBullet) {
+        return
+      }
       this.chargingFx.stop()
       this.player.fire(calculateStrength())
       this.growingBullet.destroy()
@@ -266,7 +269,6 @@ export default class Main extends Phaser.State {
       }
       this.chargingFx.play()
     }
-
   }
 
   update() {
@@ -372,6 +374,7 @@ export default class Main extends Phaser.State {
     this.game.server.notifyGameState(this.gameState)
     this.game.paused = false
     window.document.querySelector('#gamebefore').style.display = 'none'
+    this.game.server.notifyReady()
   }
 
   checkAndNotifyIfGameEnded() {

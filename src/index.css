@@ -77,6 +77,10 @@ html, body, #root, .App {
 
 #gamebefore {
   height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000000;
 }
 
 .GameBeforeInner {
@@ -85,4 +89,32 @@ html, body, #root, .App {
   justify-content: center;
   flex-direction: column;
   height: 100%;
+}
+
+.Doors {
+  height: 100%;
+  display: flex;
+  /*transition-delay: 2s;*/
+}
+
+.Door {
+  transition-property: transform;
+  transition-duration: 2s;
+  margin-top: -1px;
+}
+
+.Door.right {
+  transform: translateX(-5.2vw);
+}
+
+.Door.left.opened {
+  transform: translateX(-55vw);
+}
+
+.Door.right.opened {
+  transform: translateX(50vw);
+}
+
+.Doors > img {
+  /*width: 50%;*/
 }

@@ -3,7 +3,7 @@ export default class Asteroid extends Phaser.Sprite {
   constructor(game, x, y) {
     super(game, x, y, 'asteroid')
 
-    this.collisionDamage = 50
+    this.collisionDamage = 35
 
     // Physics and movement
     this.anchor.setTo(0.5, 0.5)

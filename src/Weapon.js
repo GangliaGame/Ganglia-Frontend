@@ -70,7 +70,7 @@ class Bullet extends Phaser.Sprite {
     this.scale.set(scale, scale)
     this.scale.x = -this.scale.x
     game.physics.enable(this, Phaser.Physics.ARCADE)
-    this.body.setSize(28, 3.5, 15.5, 15.5)
+    this.body.setSize(350, 100, 0, 25)
     this.damage = 0
   }
 
@@ -95,7 +95,7 @@ export class PlayerWeapon extends Phaser.Group {
     this.nextFire = 0
     this.bulletVelocity = 400
     this.bulletVelocity = this.bulletVelocity
-    this.fireRate = 250
+    this.fireRate = 100
 
     this.pattern = Phaser.ArrayUtils.numberArrayStep(-800, 800, 200)
     this.pattern = this.pattern.concat(Phaser.ArrayUtils.numberArrayStep(800, -800, -200))

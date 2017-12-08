@@ -68,12 +68,13 @@ export default class PlayerShip extends Phaser.Sprite {
     const colorToWeaponType = color => color[0].toUpperCase()
     if (colors.length === 0) {
       this.weapon = null
+    } else {
+      this.weapon = new PlayerWeapon(
+        this,
+        this.weaponDamage,
+        colors.map(colorToWeaponType).join(''),
+      )
     }
-    this.weapon = new PlayerWeapon(
-      this,
-      this.weaponDamage,
-      colors.map(colorToWeaponType).join(''),
-    )
   }
 
   fire(strength) {

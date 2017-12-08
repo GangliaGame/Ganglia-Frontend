@@ -26,12 +26,25 @@ export default class Main extends Phaser.State {
     this.load.spritesheet('player', 'assets/player-ship.png', 200, 120)
     this.load.image('bullet', 'assets/bullets/beam_Y.png')
 
-    this.load.image('bullet_R', 'assets/bullets/beam_R.png')
-    // this.load.spritesheet('bullet_R', 'assets/bullets/bullet_R.png', 58, 33)
-    // this.load.spritesheet('bullet_Y', 'assets/bullets/bullet_R.png', 58, 33)
-    // this.load.spritesheet('bullet_B', 'assets/bullets/bullet_R.png', 58, 33)
-    this.load.image('bullet_Y', 'assets/bullets/beam_Y.png')
-    this.load.image('bullet_B', 'assets/bullets/beam_B.png')
+    this.load.image('beam_B', 'assets/bullets/beam_B.png')
+    this.load.image('beam_Y', 'assets/bullets/beam_Y.png')
+    this.load.image('beam_R', 'assets/bullets/beam_R.png')
+
+    this.load.image('bullet_B', 'assets/bullets/bullet_B.png')
+    this.load.image('bullet_BY', 'assets/bullets/bullet_BY.png')
+    this.load.image('bullet_BRY', 'assets/bullets/bullet_BRY.png')
+    this.load.image('bullet_BR', 'assets/bullets/bullet_BR.png')
+    this.load.image('bullet_R', 'assets/bullets/bullet_R.png')
+    this.load.image('bullet_RY', 'assets/bullets/bullet_RY.png')
+    this.load.image('bullet_Y', 'assets/bullets/bullet_Y.png')
+
+    this.load.image('bullet_shoot_B', 'assets/bullets/bullet_shoot_B.png')
+    this.load.image('bullet_shoot_BY', 'assets/bullets/bullet_shoot_BY.png')
+    this.load.image('bullet_shoot_BRY', 'assets/bullets/bullet_shoot_BRY.png')
+    this.load.image('bullet_shoot_BR', 'assets/bullets/bullet_shoot_BR.png')
+    this.load.image('bullet_shoot_R', 'assets/bullets/bullet_shoot_R.png')
+    this.load.image('bullet_shoot_RY', 'assets/bullets/bullet_shoot_RY.png')
+    this.load.image('bullet_shoot_Y', 'assets/bullets/bullet_shoot_Y.png')
 
     this.load.image('shield_B', 'assets/shields/shield_B.png')
     this.load.image('shield_BY', 'assets/shields/shield_YB.png')
@@ -232,16 +245,26 @@ export default class Main extends Phaser.State {
     if (this.gameState === 'over' && !this.recentlyEnded) {
       window.location.reload()
     }
-    if (this.player.weapons.length === 0) {
+    if (!this.player.weapon) {
       return
     }
+    const calculateStrength = () => _.clamp(Date.now() - this.timeChargingStarted, 100, 4000) / 4000
     if (state === 'stop') {
       this.chargingFx.stop()
-      const strength = _.clamp(Date.now() - this.timeChargingStarted, 100, 4000)
-      this.player.fire(strength)
+      this.player.fire(calculateStrength())
+      this.growingBullet.destroy()
     } else {
-      this.chargingFx.play()
       this.timeChargingStarted = Date.now()
+      const x = this.player.x + this.player.width / 2
+      const y = this.player.y
+      this.growingBullet = this.add.sprite(x, y, `bullet_${this.player.weapon.color}`)
+      this.growingBullet.anchor.setTo(0.5, 0.5)
+      this.growingBullet.update = () => {
+        const strength = calculateStrength()
+        const scale = this.game.scaleFactor * 0.25 * (1 + strength * 1.5)
+        this.growingBullet.scale.setTo(scale, scale)
+      }
+      this.chargingFx.play()
     }
 
   }
@@ -282,35 +305,37 @@ export default class Main extends Phaser.State {
     ))
 
     // Planet <-> enemy bullet collision
-    this.player.weapons.forEach(weapon => this.physics.arcade.overlap(
-      this.planet,
-      weapon,
-      (planet, bullet) => {
-        bullet.kill()
-      },
-      null,
-      this,
-    ))
+    if (this.player.weapon) {
+      this.physics.arcade.overlap(
+        this.planet,
+        this.player.weapon,
+        (planet, bullet) => {
+          bullet.kill()
+        },
+        null,
+        this,
+      )
+    }
 
-    // Enemy <-> player bullet collision (player may have multiple weapons)
-    this.player.weapons.forEach(weapon =>
+
+    // Enemy <-> player bullet collision
+    if (this.player.weapon) {
       this.enemies.forEach(enemy => this.physics.arcade.overlap(
         enemy,
-        weapon,
+        this.player.weapon,
         (e, bullet) => {
-          // const playerBulletCanHurtEnemy = this.player.weapons
-          //   .some(({ bulletColor }) => bulletColor === enemy.type)
-          const playerBulletCanHurtEnemy = bullet.color === enemy.type
+          const playerBulletCanHurtEnemy = bullet.color.includes(enemy.type)
           // Bullet hits
           if (playerBulletCanHurtEnemy) {
             enemy.getHurtTint()
-            enemy.damage(weapon.bulletDamage)
+            enemy.damage(bullet.damage)
           }
           bullet.kill()
         },
         null,
         this,
-      )))
+      ))
+    }
 
     // Enemy <-> player ship (no shield) collision
     this.enemies.forEach(enemy => this.physics.arcade.overlap(

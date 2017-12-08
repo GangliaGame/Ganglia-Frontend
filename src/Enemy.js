@@ -1,5 +1,5 @@
 import HealthBar from './HealthBar'
-import Weapon from './Weapon'
+import { Weapon } from './Weapon'
 
 const toDegrees = radians => radians * 180 / Math.PI
 

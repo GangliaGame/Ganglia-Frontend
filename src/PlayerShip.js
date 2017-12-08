@@ -1,4 +1,4 @@
-import Weapon from './Weapon'
+import { PlayerWeapon } from './Weapon'
 import HealthBar from './HealthBar'
 
 export default class PlayerShip extends Phaser.Sprite {
@@ -35,9 +35,7 @@ export default class PlayerShip extends Phaser.Sprite {
     this.healthBar = new HealthBar(this)
 
     // Weapons
-    this.weapons = []
-    this.weaponDamage = 10
-    this.currentWeapon = 0
+    this.weapon = null
 
     // Sound
     this.shootFx = this.game.add.audio('shoot')
@@ -68,40 +66,22 @@ export default class PlayerShip extends Phaser.Sprite {
   setWeapons(colors) {
     colors.sort()
     const colorToWeaponType = color => color[0].toUpperCase()
-    const bulletSpread = 10 * this.game.scaleFactor
-    const bulletAngle = 0
-    const spreadRange = [
-      [0],
-      [bulletSpread / 2, -bulletSpread / 2],
-      [0, bulletSpread, -bulletSpread],
-    ]
-    const angleRange = [
-      [0],
-      [bulletAngle / 2, -bulletAngle / 2],
-      [0, bulletAngle, -bulletAngle],
-    ]
-    this.weapons = colors.map((color, i) => (
-      new Weapon(
-        this,
-        this.weaponDamage,
-        colorToWeaponType(color),
-        spreadRange[colors.length - 1][i],
-        angleRange[colors.length - 1][i],
-      )
-    ))
+    if (colors.length === 0) {
+      this.weapon = null
+    }
+    this.weapon = new PlayerWeapon(
+      this,
+      this.weaponDamage,
+      colors.map(colorToWeaponType).join(''),
+    )
   }
 
   fire(strength) {
-    console.log(`firing with strength: ${strength}`)
-    let didFire = false
-    this.weapons.forEach(weapon => {
-      if (weapon.fire(this) && !didFire) {
-        didFire = true
-      }
-    })
-    if (didFire) {
-      this.shootFx.play()
+    if (!this.weapon) {
+      return
     }
+    this.weapon.fire(strength)
+    this.shootFx.play()
   }
 
   moveDown() {

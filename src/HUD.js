@@ -54,7 +54,7 @@ class Waveform extends React.Component {
   }
 
   componentDidMount() {
-    this.wavesurfer.microphone.start()
+    // this.wavesurfer.microphone.start()
   }
 
   initialize(container) {

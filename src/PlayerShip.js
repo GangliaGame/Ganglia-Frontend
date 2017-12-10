@@ -42,7 +42,7 @@ export default class PlayerShip extends Phaser.Sprite {
 
     // Repairs
     this.repairPercentagePerSecond = 0
-    this.repairIntervalMsec = 60
+    this.repairIntervalMsec = 250
     setInterval(this.onRepair.bind(this), this.repairIntervalMsec)
   }
 

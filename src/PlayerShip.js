@@ -1,3 +1,4 @@
+import { clamp } from 'lodash'
 import { PlayerWeapon } from './Weapon'
 import HealthBar from './HealthBar'
 
@@ -36,16 +37,32 @@ export default class PlayerShip extends Phaser.Sprite {
 
     // Weapons
     this.weapon = null
+    this.timeChargingStarted = 0
+    const x = this.x + this.width / 2
+    const y = this.y
+    this.growingBullet = this.game.add.sprite(x, y)
+    this.growingBullet.anchor.setTo(0.5, 0.5)
+    this.growingBullet.update = () => {
+      const scale = this.game.scaleFactor * 0.25 * (1 + this.weaponCharge * 1.5)
+      this.growingBullet.scale.setTo(scale, scale)
+      this.growingBullet.y = this.y
+    }
 
     // Sound effects
     this.shootFx = this.game.add.audio('shoot')
     this.moveSlowFx = this.game.add.audio('move_slow')
     this.moveFastFx = this.game.add.audio('move_fast')
+    this.chargingFx = this.game.add.audio('charging')
 
     // Repairs
     this.repairPercentagePerSecond = 0
     this.repairIntervalMsec = 250
     setInterval(this.onRepair.bind(this), this.repairIntervalMsec)
+  }
+
+  get weaponCharge() {
+    const maxCharge = 4000
+    return clamp(Date.now() - this.timeChargingStarted, 100, maxCharge) / maxCharge
   }
 
   onRepair() {
@@ -70,6 +87,7 @@ export default class PlayerShip extends Phaser.Sprite {
     const colorToWeaponType = color => color[0].toUpperCase()
     if (colors.length === 0) {
       this.weapon = null
+      this.stopChargingWeaponAndFireIfPossible()
     } else {
       this.weapon = new PlayerWeapon(
         this,
@@ -79,12 +97,28 @@ export default class PlayerShip extends Phaser.Sprite {
     }
   }
 
-  fire(strength) {
+  fireWeapon() {
     if (!this.weapon) {
       return
     }
-    this.weapon.fire(strength)
+    this.weapon.fire(this.weaponCharge)
     this.shootFx.play()
+  }
+
+  startChargingWeapon() {
+    if (!this.weapon) { return }
+    this.timeChargingStarted = Date.now()
+    this.growingBullet.loadTexture(`bullet_${this.weapon.color}`)
+    this.growingBullet.visible = true
+    this.chargingFx.play()
+  }
+
+  stopChargingWeaponAndFireIfPossible() {
+    this.chargingFx.stop()
+    this.growingBullet.visible = false
+    if (this.weapon) {
+      this.fireWeapon()
+    }
   }
 
   startMovingDown() {

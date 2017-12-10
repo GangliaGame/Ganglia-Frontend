@@ -161,7 +161,6 @@ export default class Main extends Phaser.State {
     enemyTimer.start()
 
     // Sound FX
-    this.chargingFx = this.game.add.audio('charging')
     this.doorsOpenFx = this.game.add.audio('doors_open')
     this.doorsCloseFx = this.game.add.audio('doors_close')
     this.shieldFx = this.game.add.audio('shield')
@@ -224,7 +223,7 @@ export default class Main extends Phaser.State {
       this.player.startMovingDown()
     } else if (data === 'stop') {
       this.player.stopMoving()
-  }
+    }
   }
 
   onWeaponsChanged(colors) {
@@ -255,34 +254,12 @@ export default class Main extends Phaser.State {
   onFire(state) {
     if (this.gameState === 'before') {
       this.startGame()
-    }
-    if (this.gameState === 'over' && !this.recentlyEnded) {
+    } else if (this.gameState === 'over' && !this.recentlyEnded) {
       window.location.reload()
-    }
-    if (!this.player.weapon) {
-      return
-    }
-    const calculateStrength = () => _.clamp(Date.now() - this.timeChargingStarted, 100, 4000) / 4000
-    if (state === 'stop') {
-      if (!this.growingBullet) {
-        return
-      }
-      this.chargingFx.stop()
-      this.player.fire(calculateStrength())
-      this.growingBullet.destroy()
-    } else {
-      this.timeChargingStarted = Date.now()
-      const x = this.player.x + this.player.width / 2
-      const y = this.player.y
-      this.growingBullet = this.add.sprite(x, y, `bullet_${this.player.weapon.color}`)
-      this.growingBullet.anchor.setTo(0.5, 0.5)
-      this.growingBullet.update = () => {
-        const strength = calculateStrength()
-        const scale = this.game.scaleFactor * 0.25 * (1 + strength * 1.5)
-        this.growingBullet.scale.setTo(scale, scale)
-        this.growingBullet.y = this.player.y
-      }
-      this.chargingFx.play()
+    } else if (state === 'start') {
+      this.player.startChargingWeapon.call(this.player)
+    } else if (state === 'stop') {
+      this.player.stopChargingWeaponAndFireIfPossible()
     }
   }
 

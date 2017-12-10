@@ -2,7 +2,6 @@ body {
   overflow: hidden;
 }
 
-
 .HUD {
   height: 45%;
   border-top: 2px solid white;
@@ -33,8 +32,6 @@ body {
   align-items: center;
   justify-content: flex-start;
   position: relative;
-  /*box-shadow: 0 0 10px 5px rgba(0,0,0,0.7);*/
-  /*position: absolute;*/
 }
 
 .Panel::before {
@@ -53,9 +50,6 @@ body {
   content: '';
   position: absolute;
   bottom: 10px;
-}
-
-.Panel:nth-child(2) {
 }
 
 .Panel-title {
@@ -88,21 +82,6 @@ body {
   height: 45vh;
 }
 
-/*.Panel-Communication {
-  width: 24vw;
-  z-index: 100;
-  height: 27vh;
-  align-self: flex-start;
-}
-
-.Panel-Health {
-  width: 24vw;
-  z-index: 100;
-  height: 27vh;
-  align-self: flex-start;
-}*/
-
-
 .HullStrength-bar {
   color: black;
   background-color: white;
@@ -131,8 +110,6 @@ body {
   position: absolute;
   width: 123%;
   max-width: 123%;
-  /*z-index: 700;
-      margin-left: -1.25vw;*/
 }
 
 .ColorChart {
@@ -204,7 +181,6 @@ wave {
   display: none;
 }
 
-
 .HullStrength-label {
   background-color: white;
   font-size: 2.3vw;
@@ -217,7 +193,6 @@ wave {
   border-top-right-radius: 1vw;
   font-family: 'DDC Hardware';
 }
-
 
 .FakeWaveform {
   height: 3px;

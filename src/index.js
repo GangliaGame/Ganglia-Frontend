@@ -60,6 +60,17 @@ class App extends React.Component {
     this.game.server = new GameServer()
     this.game.config = _.cloneDeep(this.state.config)
     const nativeHeight = 1080
+    if (window.innerHeight !== nativeHeight) {
+      alert(`Hey, bad news. This game only works on 1920x1080 resolution displays.
+
+Unfortunately, yours isn't that — it's ${window.innerWidth}x${window.innerHeight}.
+
+So, the game won't display correctly. Please plug into an external monitor or TV that's 1080p and reload this page.
+
+(Alternatively, you could emulate a 1080p display using your browser's developer tools.)
+      `)
+    }
+
     this.game.scaleFactor = window.innerHeight / nativeHeight
 
     const gameMainState = this.game.state.states.Main

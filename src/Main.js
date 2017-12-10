@@ -187,7 +187,7 @@ export default class Main extends Phaser.State {
     }
 
     if (this.game.config.invulnerable) {
-      const health = 100 * 100
+      const health = 100 * 1000
       this.player.maxHealth = health
       this.player.health = health
     }
@@ -402,15 +402,11 @@ export default class Main extends Phaser.State {
   }
 
   checkAndNotifyIfGameEnded() {
-    let isGameEnding = false
-    if (! this.player.alive) {
-      isGameEnding = true
-    }
+    const isGameEnding = !this.player.alive
 
     // Did the game just end now (i.e. it was previously not ended)?
     if (isGameEnding && this.gameState === 'start') {
       this.endGame()
-
     }
   }
   //

@@ -207,7 +207,3 @@ html, body, #root, .App {
   line-height: 30px;
   white-space: pre-wrap;
 }
-
-#gamebefore {
-  display: none;
-}

@@ -46,14 +46,11 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.checkIfValidDisplay()
-    window.setInterval(() => this.checkIfValidDisplay(), 250)
-    window.document.addEventListener('webkitfullscreenchange', () => {
-      window.setTimeout(() => this.start(), 250)
-    })
+    this.checkDisplay()
+    window.setInterval(() => this.checkDisplay(), 250)
   }
 
-  checkIfValidDisplay() {
+  checkDisplay() {
     const isOnValidDisplay = window.screen.height === 1080 && window.screen.width === 1920
     if (this.state.isStarted && (!isOnValidDisplay || !window.document.webkitIsFullScreen)) {
       this.setState({ isOnValidDisplay })
@@ -64,16 +61,28 @@ class App extends React.Component {
   }
 
   start() {
-    this.setState({ isStarted: true })
-    if (!this.game) {
-      this.initializeGameOnSurface()
+    const htmlEl = window.document.querySelector('html')
+    if (htmlEl.webkitRequestFullScreen) {
+      htmlEl.webkitRequestFullScreen()
+    } else if (window.document.mozRequestFullScreen) {
+      htmlEl.mozRequestFullScreen()
+    } else if (window.document.requestFullscreen) {
+      htmlEl.requestFullscreen()
+    } else {
+      alert('sorry, your browser doesn\'t support the fullscreen API :(')
+      return
     }
-    this.game.paused = false
-    window.document.querySelector('#gamebefore').style.display = 'unset'
+    window.setTimeout(() => {
+      this.setState({ isStarted: true })
+      if (!this.game) {
+        this.initializeGameOnSurface()
+      }
+      this.game.paused = false
+      window.document.querySelector('#gamebefore').style.display = 'unset'
+    }, 250)
   }
 
   unstart() {
-    console.log('unstarting')
     this.setState({ isStarted: false })
     this.game.paused = true
     window.document.querySelector('#gamebefore').style.display = 'none'
@@ -185,7 +194,6 @@ class App extends React.Component {
   }
 
   render() {
-    console.log(this.state.isStarted)
     return (
       <div className="App">
         {
@@ -194,7 +202,9 @@ class App extends React.Component {
           <div className="Splash">
             {
               this.state.isOnValidDisplay ?
-              <div className="Splash-button" onClick={() => window.document.querySelector('html').webkitRequestFullScreen()}>PLAY</div> 
+              <div className="Splash-button" onClick={() => this.start()}>
+               {this.game ? 'RESUME' : 'PLAY'}
+              </div> 
               :
               <div className="Splash-instructions">{`Hey, bad news. This game only works on 1920x1080 resolution displays.
 

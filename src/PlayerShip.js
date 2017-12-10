@@ -37,8 +37,10 @@ export default class PlayerShip extends Phaser.Sprite {
     // Weapons
     this.weapon = null
 
-    // Sound
+    // Sound effects
     this.shootFx = this.game.add.audio('shoot')
+    this.moveSlowFx = this.game.add.audio('move_slow')
+    this.moveFastFx = this.game.add.audio('move_fast')
 
     // Repairs
     this.repairPercentagePerSecond = 0
@@ -85,12 +87,36 @@ export default class PlayerShip extends Phaser.Sprite {
     this.shootFx.play()
   }
 
-  moveDown() {
+  startMovingDown() {
+    // Can't move up with 0 propulsion
+    if (this.propulsionLevel === 0) {
+      return
+    }
     this.body.velocity.y = this.movementSpeed
+    if (this.propulsionLevel === 1) {
+      this.moveFastFx.play()
+    } else if (this.propulsionLevel === 2) {
+      this.moveSlowFx.play()
+    }
   }
 
-  moveUp() {
+  startMovingUp() {
+    // Can't move up with 0 propulsion
+    if (this.propulsionLevel === 0) {
+      return
+    }
     this.body.velocity.y = -this.movementSpeed
+    if (this.propulsionLevel === 1) {
+      this.moveFastFx.play()
+    } else if (this.propulsionLevel === 2) {
+      this.moveSlowFx.play()
+    }
+  }
+
+  stopMoving() {
+    this.body.velocity.y = 0
+    this.moveFastFx.stop()
+    this.moveSlowFx.stop()
   }
 
   getHurtTint() {
@@ -104,6 +130,9 @@ export default class PlayerShip extends Phaser.Sprite {
     this.propulsionLevel = level
     const levelSpeedMap = [0, 25, 100]
     this.movementSpeed = levelSpeedMap[level]
+    if (this.movementSpeed === 0) {
+      this.stopMoving()
+    }
   }
 
   setRepairLevel(level) {
@@ -117,17 +146,8 @@ export default class PlayerShip extends Phaser.Sprite {
       this.prevHealth = this.health
     }
 
-    // this.sight.y = this.y
-
-    this.body.velocity.set(0)
-
     // Shield
     this.shield.x = this.x
     this.shield.y = this.y
-    if (this.shield.health === 0) {
-      this.isShieldActive = false
-      this.shield.visible = false
-      // this.sight.visible = false
-    }
   }
 }

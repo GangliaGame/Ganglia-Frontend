@@ -161,8 +161,6 @@ export default class Main extends Phaser.State {
     enemyTimer.start()
 
     // Sound FX
-    this.moveSlowFx = this.game.add.audio('move_slow')
-    this.moveFastFx = this.game.add.audio('move_fast')
     this.chargingFx = this.game.add.audio('charging')
     this.doorsOpenFx = this.game.add.audio('doors_open')
     this.doorsCloseFx = this.game.add.audio('doors_close')
@@ -213,32 +211,20 @@ export default class Main extends Phaser.State {
     this.asteroids.push(asteroid)
   }
 
-  setMoveSounds(start) {
-    if (start) {
-      if (this.player.propulsionLevel === 2) {
-        this.moveFastFx.play()
-      } else {
-        this.moveSlowFx.play()
-      }
-    } else if (this.player.propulsionLevel === 2) {
-      this.moveFastFx.stop()
-    } else {
-      this.moveSlowFx.stop()
+  onMoveUp(data) {
+    if (data === 'start') {
+      this.player.startMovingUp()
+    } else if (data === 'stop') {
+      this.player.stopMoving()
     }
   }
 
-  onMoveUp(data) {
-    if (this.gameState !== 'start') return
-    this.setMoveSounds(data === 'start')
-    window.clearTimeout(this.moveTimer)
-    if (data === 'start') this.moveTimer = window.setInterval(() => this.player.moveUp(), 10)
-  }
-
   onMoveDown(data) {
-    if (this.gameState !== 'start') return
-    this.setMoveSounds(data === 'start')
-    window.clearTimeout(this.moveTimer)
-    if (data === 'start') this.moveTimer = window.setInterval(() => this.player.moveDown(), 10)
+    if (data === 'start') {
+      this.player.startMovingDown()
+    } else if (data === 'stop') {
+      this.player.stopMoving()
+  }
   }
 
   onWeaponsChanged(colors) {

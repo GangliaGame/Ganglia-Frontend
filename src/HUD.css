@@ -130,6 +130,7 @@ body {
   height: 3vw;
   position: absolute;
   width: 123%;
+  max-width: 123%;
   /*z-index: 700;
       margin-left: -1.25vw;*/
 }

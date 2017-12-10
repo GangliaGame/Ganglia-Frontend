@@ -9,9 +9,23 @@ import Main from './Main'
 import './index.css'
 import GameServer from './GameServer'
 
+function getUrlParams(search) {
+  const hashes = search.slice(search.indexOf('?') + 1).split('&')
+  const params = {}
+  hashes.map(hash => {
+    const [key, val] = hash.split('=')
+    params[key] = decodeURIComponent(val)
+  })
+
+  return params
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props)
+
+    const urlParams = getUrlParams(window.location.search)
+
     this.state = {
       stats: {
         hullStrength: 100,
@@ -21,7 +35,15 @@ class App extends React.Component {
         repairs: 0,
         communications: false,
       },
+      config: {
+        debug: _.has(urlParams, 'debug'),
+        skip: _.has(urlParams, 'skip'),
+        invulnerable: _.has(urlParams, 'invuln'),
+      },
     }
+  }
+
+  componentDidMount() {
     this.initializeGameOnSurface()
   }
 
@@ -36,8 +58,7 @@ class App extends React.Component {
     this.game.state.add('Main', Main, false)
     this.game.state.start('Main')
     this.game.server = new GameServer()
-
-    const nativeWidth = 1920
+    this.game.config = _.cloneDeep(this.state.config)
     const nativeHeight = 1080
     this.game.scaleFactor = window.innerHeight / nativeHeight
 
@@ -75,7 +96,9 @@ class App extends React.Component {
 
     this.game.onHullStrengthChanged = this.onHullStrengthChanged.bind(this)
 
-    // this.setupPerformanceStatistics()
+    if (this.state.config.debug) {
+      this.setupPerformanceStatistics()
+    }
   }
 
   onHullStrengthChanged(hullStrength) {

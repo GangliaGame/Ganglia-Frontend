@@ -184,6 +184,16 @@ export default class Main extends Phaser.State {
       .onDown.add(() => this.player.kill(), this)
 
     this.game.server.notifyGameState(this.gameState)
+
+    if (this.game.config.skip) {
+      this.startGame()
+    }
+
+    if (this.game.config.invulnerable) {
+      const health = 100 * 100
+      this.player.maxHealth = health
+      this.player.health = health
+    }
   }
 
   spawnEnemy(yInitial) {
@@ -339,7 +349,6 @@ export default class Main extends Phaser.State {
         this,
       )
     }
-
 
     // Enemy <-> player bullet collision
     if (this.player.weapon) {

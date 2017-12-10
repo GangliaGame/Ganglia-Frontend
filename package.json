@@ -36,6 +36,7 @@
   },
   "scripts": {
     "hack": "webpack-dev-server",
-    "build-prod": "webpack --config webpack.production.config.js"
+    "build-prod": "webpack --config webpack.production.config.js",
+    "deploy": "npm run build-prod && surge dist play.toomanycaptains.com"
   }
 }

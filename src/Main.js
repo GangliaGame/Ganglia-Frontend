@@ -284,6 +284,7 @@ export default class Main extends Phaser.State {
         const strength = calculateStrength()
         const scale = this.game.scaleFactor * 0.25 * (1 + strength * 1.5)
         this.growingBullet.scale.setTo(scale, scale)
+        this.growingBullet.y = this.player.y
       }
       this.chargingFx.play()
     }

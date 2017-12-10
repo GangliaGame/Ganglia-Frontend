@@ -27,6 +27,8 @@ class App extends React.Component {
     const urlParams = getUrlParams(window.location.search)
 
     this.state = {
+      isStarted: false,
+      isOnValidDisplay: false,
       stats: {
         hullStrength: 100,
         weapons: [],
@@ -44,7 +46,37 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.initializeGameOnSurface()
+    this.checkIfValidDisplay()
+    window.setInterval(() => this.checkIfValidDisplay(), 250)
+    window.document.addEventListener('webkitfullscreenchange', () => {
+      window.setTimeout(() => this.start(), 250)
+    })
+  }
+
+  checkIfValidDisplay() {
+    const isOnValidDisplay = window.screen.height === 1080 && window.screen.width === 1920
+    if (this.state.isStarted && (!isOnValidDisplay || !window.document.webkitIsFullScreen)) {
+      this.setState({ isOnValidDisplay })
+      this.unstart()
+    } else {
+      this.setState({ isOnValidDisplay })
+    }
+  }
+
+  start() {
+    this.setState({ isStarted: true })
+    if (!this.game) {
+      this.initializeGameOnSurface()
+    }
+    this.game.paused = false
+    window.document.querySelector('#gamebefore').style.display = 'unset'
+  }
+
+  unstart() {
+    console.log('unstarting')
+    this.setState({ isStarted: false })
+    this.game.paused = true
+    window.document.querySelector('#gamebefore').style.display = 'none'
   }
 
   initializeGameOnSurface() {
@@ -60,16 +92,6 @@ class App extends React.Component {
     this.game.server = new GameServer()
     this.game.config = _.cloneDeep(this.state.config)
     const nativeHeight = 1080
-    if (window.innerHeight !== nativeHeight) {
-      alert(`Hey, bad news. This game only works on 1920x1080 resolution displays.
-
-Unfortunately, yours isn't that — it's ${window.innerWidth}x${window.innerHeight}.
-
-So, the game won't display correctly. Please plug into an external monitor or TV that's 1080p and reload this page.
-
-(Alternatively, you could emulate a 1080p display using your browser's developer tools.)
-      `)
-    }
 
     this.game.scaleFactor = window.innerHeight / nativeHeight
 
@@ -163,8 +185,26 @@ So, the game won't display correctly. Please plug into an external monitor or TV
   }
 
   render() {
+    console.log(this.state.isStarted)
     return (
       <div className="App">
+        {
+          this.state.isStarted ? null
+          : 
+          <div className="Splash">
+            {
+              this.state.isOnValidDisplay ?
+              <div className="Splash-button" onClick={() => window.document.querySelector('html').webkitRequestFullScreen()}>PLAY</div> 
+              :
+              <div className="Splash-instructions">{`Hey, bad news. This game only works on 1920x1080 resolution displays.
+
+Unfortunately, this browser window is on a ${window.screen.width}x${window.screen.height} resolution display.
+
+To fix this problem, please plug your comptuer into an external monitor or TV that's 1080p.`}
+              </div>
+            }
+          </div>
+        }
         <HUD {...this.state.stats}/>
       </div>
     )

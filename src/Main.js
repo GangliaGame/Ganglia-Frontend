@@ -318,6 +318,7 @@ export default class Main extends Phaser.State {
           this.damagedFx.play()
           player.getHurtTint()
         } else {
+          player.damage(enemy.weapon.bulletDamage * 0.05)
           this.shieldFx.play()
         }
         bullet.kill()

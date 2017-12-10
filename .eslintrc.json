@@ -20,7 +20,8 @@
       "no-mixed-operators": 0,
       "prefer-destructuring": 0,
       "no-param-reassign": 0,
-      "arrow-parens": ["error", "as-needed"]
+      "arrow-parens": ["error", "as-needed"],
+      "react/jsx-uses-vars": 2
     },
     "globals": {
       "PIXI": false,

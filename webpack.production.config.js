@@ -2,6 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 // Phaser webpack config
 const phaserModule = path.join(__dirname, '/node_modules/phaser-ce/')
@@ -30,7 +31,26 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: 'index.html',
+      minify: {
+        removeAttributeQuotes: true,
+        collapseWhitespace: true,
+        html5: true,
+        minifyCSS: true,
+        minifyJS: true,
+        minifyURLs: true,
+        removeComments: true,
+        removeEmptyAttributes: true,
+      },
+      hash: true,
     }),
+    new UglifyJsPlugin({
+      parallel: true,
+      sourceMap: true,
+      cache: true,
+    }),
+    new CopyWebpackPlugin([
+      { from: 'assets', to: 'assets' },
+    ]),
   ],
 
   module: {
@@ -68,12 +88,6 @@ module.exports = {
       { test: /phaser-split\.js$/, use: ['expose-loader?Phaser'] },
       { test: /p2\.js/, use: ['expose-loader?p2'] },
     ],
-  },
-
-  devServer: {
-    open: true,
-    port: 3000,
-    compress: true,
   },
 
   resolve: {

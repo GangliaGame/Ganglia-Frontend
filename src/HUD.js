@@ -1,7 +1,6 @@
 import React from 'react'
-import _ from 'lodash'
 import WaveSurfer from 'wavesurfer.js'
-import MicrophonePlugin from 'wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js';
+import MicrophonePlugin from 'wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js'
 import './HUD.css'
 import ColorChart from './ColorChart'
 
@@ -54,10 +53,11 @@ class Waveform extends React.Component {
   }
 
   componentDidMount() {
-    this.wavesurfer.microphone.start()
+    // initialize()
+    // this.wavesurfer.microphone.start()
   }
 
-  initialize(container) {
+  initialize() {
     this.wavesurfer = WaveSurfer.create({
       container: '#Waveform',
       waveColor: 'white',
@@ -78,13 +78,12 @@ class Waveform extends React.Component {
 
   render() {
     return (
-      <div id="Waveform" ref={e => this.initialize(e)}/>
+      <div id="Waveform"/>
     )
   }
 }
 
 export default class HUD extends React.Component {
-
   render() {
     const hullBarWidth = 123
     const maxHullStrength = 100
